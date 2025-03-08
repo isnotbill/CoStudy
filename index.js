@@ -20,10 +20,11 @@ app.use(cookieParser());
 // routes
 app.use('/register', require('./backend/routes/register'));
 app.use('/auth', require('./backend/routes/authenticate'));
-app.use('/logout', require('./backend/routes/logout'));
+
 app.use('/refresh', require('./backend/routes/refresh'));
 
 app.use(authenticateJWT);
+app.use('/logout', require('./backend/routes/logout'));
 
 mongoose.connection.once('open', () => {
     console.log('Connected to MongoDB database');
