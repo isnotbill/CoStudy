@@ -1,0 +1,14 @@
+html, body {
+  background-color: rgb(70, 60, 102);
+  color:white;
+  margin: 0;
+  
+}
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none; 
+  -moz-user-select: none;      
+  cursor: default;           
+}
+

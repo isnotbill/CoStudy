@@ -1,0 +1,59 @@
+header {
+    color:rgb(242, 247, 253);
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    height: 70px;
+
+    margin-top:5px;
+    margin-bottom:70px;
+    
+}
+
+.pages {
+    display:flex;
+    align-items: center;
+    gap:80px;
+    font-size: 10px;
+    font-family: "Kumbh Sans", sans-serif;
+    font-weight: 500;
+
+    margin-right: 100px;
+}
+
+.title {
+    font-family: "Cedarville Cursive", cursive;
+    font-weight: 200;
+    font-size:45px;
+
+    margin-left: 80px;
+    margin-right: 80px;
+}
+
+.pages button {
+    border: none; 
+    background-color: rgb(244, 249, 253); 
+    color: rgb(72, 23, 112); 
+    padding: 4px 40px; 
+    border-radius: 30px; 
+    font-family: "Kumbh Sans", sans-serif; 
+    font-size: 20px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.pages button:hover {
+    background-color: #d4d4d4;
+
+}
+.nav-link {
+    color: #dfebf7;
+    text-decoration: none;
+    font-size: 20px;
+}
+  
+.nav-link:hover {
+    color: #d6d6d6;
+    text-decoration: underline;
+}
