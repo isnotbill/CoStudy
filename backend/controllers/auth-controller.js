@@ -11,19 +11,22 @@ const loginUser = async (req, res) => {
 
     const correctPwd = bcrypt.compare(pwd, found.password);
     if (correctPwd) {
-
         // Create JWTs
         const accessToken = jwt.sign(
             {
-                "UserInfo": {
-                    "username": found.username
-                }
+                userId: found._id, // MongoDB: ObjectId
+                username: found.username,
+                role: found.role
             },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: '10s' }
+            { expiresIn: '3m' }
         );
         const refreshToken = jwt.sign(
-            { "username": found.username },
+            { 
+                userId: found._id,
+                username: found.username,
+                role: found.role
+            },
             process.env.REFRESH_TOKEN_SECRET,
             { expiresIn: '1d' }
         );
@@ -34,7 +37,11 @@ const loginUser = async (req, res) => {
         console.log(result);
 
         // Create secure cookie with refresh token
-        res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000});
+        res.cookie('refreshToken', refreshToken, { 
+                httpOnly: true,
+                maxAge: 24 * 60 * 60 * 1000
+            }
+        );
 
         // Send access token to user
         res.json({ accessToken });

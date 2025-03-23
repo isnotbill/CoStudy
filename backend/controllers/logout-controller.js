@@ -5,10 +5,10 @@ const logoutUser = async (req, res) => {
     const cookies = req.cookies;
     if (!cookies) return res.sendStatus(204);
     
-    const refreshToken = cookies.jwt;
+    const refreshToken = cookies.refreshToken;
     const found = await User.findOne({ refreshToken: refreshToken }).exec();
     if (!found) {
-        res.clearCookie('jwt', { httpOnly: true, secure: true, sameSite: 'None' });
+        res.clearCookie('refreshToken', { httpOnly: true });
         return res.sendStatus(204);
     }
 
@@ -16,7 +16,7 @@ const logoutUser = async (req, res) => {
     const result = await found.save();
     console.log(result);
 
-    res.clearCookie('jwt', { httpOnly: true, secure: true, sameSite: 'None' });
+    res.clearCookie('refreshToken', { httpOnly: true });
     res.sendStatus(204);
 }
 

@@ -11,7 +11,7 @@ const authenticateJWT = (req, res, next) => {
         process.env.ACCESS_TOKEN_SECRET,
         (err, user) => {
             if (err) return res.sendStatus(403);
-            req.user = user;
+            req.userInfo = user;
             next();
         }
     )
