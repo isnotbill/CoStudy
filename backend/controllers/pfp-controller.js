@@ -1,7 +1,9 @@
-const Image = require('../models/Image');
+const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 const {uploadToCloudinary} = require('../helpers/cloudinaryHelper');
+const fs = require('fs')
 
-const uploadImage = async (req, res) => {
+const uploadProfilePicture = async (req, res) => {
     try {
         // Check if file exists
         if(!req.file) {
@@ -11,22 +13,23 @@ const uploadImage = async (req, res) => {
             });
         }
 
+        const user = await User.findOne({ username: req.userInfo.username });
+        if(!user) return res.sendStatus(401);
+
         // upload to cloudinary
         const {url, publicId} = await uploadToCloudinary(req.file.path);
 
-        // store image
-        const uploadedImage = new Image({
-            url,
-            publicId,
-            uploadedBy: req.userInfo.userId
-        });
+        user.profilePicture.url = url;
+        user.profilePicture.publicId = publicId;
 
-        await uploadedImage.save();
+        await user.save();
+        
+        // prevent local storage
+        fs.unlinkSync(req.file.path);
 
         res.status(201).json({
             success: true,
-            message: "Uploaded image",
-            image: uploadedImage
+            message: "Uploaded profile picture",
         })
 
     } catch(e) {
@@ -38,4 +41,4 @@ const uploadImage = async (req, res) => {
     }
 };
 
-module.exports = uploadImage;
+module.exports = uploadProfilePicture;

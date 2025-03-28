@@ -7,6 +7,7 @@ const logoutUser = async (req, res) => {
     
     const refreshToken = cookies.refreshToken;
     const found = await User.findOne({ refreshToken: refreshToken }).exec();
+    
     if (!found) {
         res.clearCookie('refreshToken', { httpOnly: true });
         return res.sendStatus(204);

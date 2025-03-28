@@ -15,6 +15,18 @@ const userSchema = new mongoose.Schema({
         enum: ['admin', 'user'],
         default: 'user'
     },
+    profilePicture: {
+        url: {
+            type: String,
+            required: true,
+            default: 'https://res.cloudinary.com/danxaoae0/image/upload/v1742871587/default_zkhpfk.jpg'
+        },
+        publicId: {
+            type: String,
+            required: true,
+            default: 'default_zkhpfk'
+        }
+    },
     refreshToken: String
 }, { timestamps: true });
 
