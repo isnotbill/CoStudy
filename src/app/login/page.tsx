@@ -5,7 +5,7 @@ export default function Login() {
     <>
 
     <main className='bg-[rgb(70,60,102)] h-screen'>
-        
+
         <div className='flex justify-center items-center h-full'>
             
             <form className="flex flex-col justify-center items-center bg-gray-100 h-[700] w-[500] gap-12 px-28 rounded-l-xl shadow-lg">
