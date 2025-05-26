@@ -18,7 +18,7 @@ const Header = () => {
           About Us
         </Link>
 
-        <Link href="/registration" passHref>
+        <Link href="/login" passHref>
           <button
             className="border-none bg-[rgb(244,249,253)] text-[rgb(72,23,112)] px-[40px] py-1 rounded-[30px] font-kumbh font-normal text-[20px] cursor-pointer transition-colors duration-200 hover:bg-[#d4d4d4]"
           >
