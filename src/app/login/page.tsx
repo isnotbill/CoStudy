@@ -5,7 +5,7 @@ export default function Login() {
     <>
     <main className='bg-[rgb(70,60,102)] h-screen'>
         <div className='flex justify-center items-center h-full'>
-            <form className="flex flex-col justify-center items-center bg-white h-[700] w-[500] gap-16 px-28 rounded-l-xl">
+            <form className="flex flex-col justify-center items-center bg-gray-100 h-[700] w-[500] gap-12 px-28 rounded-l-xl">
                 <h1 className='font-cedarville text-4xl text-[rgba(49,32,77,0.8)] text-center'>costudy</h1>
                 <div className='flex flex-col w-full gap-2'>
                     <div className='w-full'>

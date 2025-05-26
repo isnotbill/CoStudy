@@ -17,7 +17,7 @@ export default function Home() {
             height={800}
           />
         </div>
-        <form className="bg-[rgb(255,255,255,0.8)] w-full max-w-[400px] min-w-[300px] h-[500px] px-[20] gap-8 rounded-2xl flex flex-col justify-center items-center">
+        <form className="bg-gray-100 w-full max-w-[400px] min-w-[300px] h-[500px] px-[20] gap-8 rounded-2xl flex flex-col justify-center items-center">
           <h2 className="text-2xl font-bold text-[rgba(49,32,77,0.8)] text-center">Create Your Account</h2>
 
           <div className="flex flex-col gap-2 w-full">
