@@ -3,7 +3,7 @@ import Header from "@/components/Header"
 
 export default function Home() {
   return (
-    <main className="h-screen flex flex-col">
+    <main className="h-screen flex flex-col select-none">
       <Header/>
 
       <section className="flex-1 bg-[rgb(70,60,102)] flex items-center justify-center gap-[160]">

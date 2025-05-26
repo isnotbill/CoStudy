@@ -4,7 +4,7 @@ export default function Login() {
     return (
     <>
 
-    <main className='bg-[rgb(70,60,102)] h-screen'>
+    <main className='bg-[rgb(70,60,102)] h-screen select-none'>
         
         <div className='flex justify-center items-center h-full'>
             
