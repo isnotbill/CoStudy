@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function Login() {
     return (
@@ -8,7 +9,7 @@ export default function Login() {
         
         <div className='flex justify-center items-center h-full'>
             
-            <form className="flex flex-col justify-center items-center bg-gray-100 h-[620px] w-[450px] gap-12 px-28 rounded-l-xl shadow-lg">
+            <form className="flex flex-col justify-center items-center bg-gray-100 h-[580px] w-[450px] gap-12 px-28 rounded-l-xl shadow-lg">
                 <h1 className='font-cedarville text-4xl text-[rgba(49,32,77,0.8)] text-center'>costudy</h1>
                 <div className='flex flex-col w-full gap-2'>
                     <div className='w-full'>
@@ -45,8 +46,16 @@ export default function Login() {
                         className="w-full bg-indigo-600 text-white py-3 rounded-2xl font-semibold hover:bg-indigo-700 transition">
                         Log In
                     </button>
+
+                    <div className="flex items-center space-x-1 mt-[-35px] text-xs text-gray-500">
+                    <span>Don't have an account?</span>
+                    <Link href="/" className="text-indigo-600 hover:underline">
+                        Sign up
+                    </Link>
+                    </div>
+                
             </form>
-            <div className="relative bg-[rgb(169,177,194)] w-[450px] h-[620px] rounded-r-xl overflow-visible flex justify-center shadow-lg">
+            <div className="relative bg-[rgb(169,177,194)] w-[450px] h-[580px] rounded-r-xl overflow-visible flex justify-center shadow-lg">
                 <Image
                 src="/images/loginchalkboard.png"
                 alt="chalkboard"
@@ -57,9 +66,9 @@ export default function Login() {
                 <Image
                     src="/images/loginblob.png"
                     alt="main blob"
-                    width={620}
+                    width={600}
                     height={520}
-                    className="absolute h-auto max-w-none mt-[235px] object-contain drop-shadow-2xl"
+                    className="absolute h-auto max-w-none mt-[205px] object-contain drop-shadow-2xl"
                 />
                 <div 
                     className=" 
