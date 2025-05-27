@@ -66,7 +66,7 @@ export default function Login() {
                 <Image
                     src="/images/loginblob.png"
                     alt="main blob"
-                    width={600}
+                    width={590}
                     height={520}
                     className="absolute h-auto max-w-none mt-[205px] object-contain drop-shadow-2xl"
                 />
