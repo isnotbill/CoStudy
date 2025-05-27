@@ -4,7 +4,6 @@ import Link from 'next/link'
 export default function Login() {
     return (
     <>
-
     <main className='bg-[rgb(70,60,102)] h-screen select-none overflow-hidden'>
         
         <div className='flex justify-center items-center h-full'>
