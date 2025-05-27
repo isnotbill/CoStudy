@@ -52,47 +52,6 @@ export default function PublicProfile() {
         </div>
       </div>
 
-      {/* Username section */}
-      <div className="flex items-center justify-center space-x-4">
-        <label className="font-medium whitespace-nowrap">Username:</label>
-        {editing ? (
-          <>
-            <input
-              type="text"
-              value={draft}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setDraft(e.target.value)
-              }
-              className="px-3 py-2 border rounded-lg focus:outline-none focus:ring"
-            />
-            <button
-              onClick={saveUsername}
-              className="px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-            >
-              Save
-            </button>
-            <button
-              onClick={() => {
-                setDraft(username);
-                setEditing(false);
-              }}
-              className="px-3 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
-            >
-              Cancel
-            </button>
-          </>
-        ) : (
-          <>
-            <span className="font-semibold">{username}</span>
-            <button
-              onClick={() => setEditing(true)}
-              className="text-purple-600 hover:underline"
-            >
-              Change
-            </button>
-          </>
-        )}
-      </div>
     </div>
   );
 }
