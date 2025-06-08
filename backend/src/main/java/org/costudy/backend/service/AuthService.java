@@ -16,8 +16,16 @@ public class AuthService {
         this.encoder = new BCryptPasswordEncoder(12);
     }
 
-    public User saveUser(User user){
+    public void register(User user){
+        if(repo.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+        if(repo.existsByUsername(user.getUsername())) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+
         user.setPassword(encoder.encode(user.getPassword()));
-        return repo.save(user);
+
+        repo.save(user);
     }
 }
