@@ -1,16 +1,22 @@
 package org.costudy.backend.controller;
 
 import org.costudy.backend.model.User;
+import org.costudy.backend.response.ApiResponse;
 import org.costudy.backend.service.AuthService;
 import org.costudy.backend.service.JwtService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
     private final AuthService authService;
@@ -24,19 +30,26 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public User register(@RequestBody User user){
-        return authService.saveUser(user);
+    public ResponseEntity<ApiResponse> register(@RequestBody User user){
+        authService.register(user);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Registration successful"));
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User user){
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+    public ResponseEntity<ApiResponse<String>> login(@RequestBody User user){
 
-        if (authentication.isAuthenticated()){
-            return jwtService.generateToken(user.getUsername());
-        } else {
-            return "Login Failed";
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+            );
+
+            String token = jwtService.generateToken(user.getUsername());
+            return ResponseEntity.ok(new ApiResponse<>(true, "Login successful", token));
+
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new ApiResponse<>(false, "Invalid credentials", null)
+            );
         }
     }
 
