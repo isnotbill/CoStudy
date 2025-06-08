@@ -1,7 +1,8 @@
 package org.costudy.backend.dto;
 
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,16 +13,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RegisterDto {
 
-    @NotNull
-    @Size(min = 3, max = 16)
+    @NotBlank
+    @Size(min = 3, max = 16, message = "Invalid username")
     private String username;
 
-    @NotNull
-    @Size(min = 3, max = 16)
+    @NotBlank
+    @Size(min = 8, max = 32, message = "Invalid password")
     private String password;
 
-    @NotNull
-    @Size(min = 3, max = 16)
+    @NotBlank
+    @Email(message = "Invalid email")
     private String email;
 
 }
