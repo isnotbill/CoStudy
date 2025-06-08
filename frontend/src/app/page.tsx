@@ -7,7 +7,7 @@ import { useState } from 'react';
 
 export default function Home() {
   const [error, setError] = useState<string | null>(null);
-  // console.log("hello");
+
   async function handleSubmit(e: React.FormEvent){
     e.preventDefault()
     setError(null)
@@ -25,14 +25,12 @@ export default function Home() {
     }
 
     try {
-      const { data } = await axios.post(
+      const res = await axios.post(
         'http://localhost:8080/register',
         payload,
         { timeout: 5000 }
       )
-      // window.location.href='/home'
-      console.log(data);
-
+      window.location.href='/login'
     } catch (error: any) {
       setError(error.message)
     }

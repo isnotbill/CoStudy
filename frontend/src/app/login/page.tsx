@@ -1,14 +1,44 @@
+'use client'
+
+import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState } from 'react'
 
 export default function Login() {
+    const [error, setError] = useState<null | string>(null)
+
+    async function handleSubmit(e: React.FormEvent){
+        e.preventDefault()
+        setError(null)
+        const form = new FormData(e.currentTarget as HTMLFormElement)
+        const payload = {
+            username: form.get("username"),
+            password: form.get("password")
+        }
+        try {
+            const { data } = await axios.post(
+                'http://localhost:8080/login',
+                payload,
+                { timeout: 5000 }
+                
+            )
+            console.log(data)
+            window.location.href='/home'
+        } catch (err: any) {
+            setError(err.message)
+        }
+    }
+
     return (
     <>
     <main className='bg-[rgb(70,60,102)] h-screen select-none overflow-hidden'>
         
         <div className='flex justify-center items-center h-full'>
             
-            <form className="flex flex-col justify-center items-center bg-gray-100 h-[580px] w-[450px] gap-12 px-28 rounded-l-xl shadow-lg">
+            <form
+            onSubmit={handleSubmit}
+            className="flex flex-col justify-center items-center bg-gray-100 h-[580px] w-[450px] gap-12 px-28 rounded-l-xl shadow-lg">
                 <h1 className='font-cedarville text-4xl text-[rgba(49,32,77,0.8)] text-center'>costudy</h1>
                 <div className='flex flex-col w-full gap-2'>
                     <div className='w-full'>
@@ -17,6 +47,7 @@ export default function Login() {
                                 Username
                             </label>
                             <input
+                                name="username"
                                 type="text"
                                 id="username"
                                 placeholder="Your username"
@@ -31,7 +62,8 @@ export default function Login() {
                                 Password
                             </label>
                             <input
-                                type="text"
+                                name="password"
+                                type="password"
                                 id="password"
                                 placeholder="Enter password"
                                 required
@@ -45,6 +77,8 @@ export default function Login() {
                         className="w-full bg-indigo-600 text-white py-3 rounded-2xl font-semibold hover:bg-indigo-700 transition">
                         Log In
                     </button>
+
+                    {error && <p className="text-red-500 text-sm mt-[-30px]">{error}</p>}
 
                     <div className="flex items-center space-x-1 mt-[-35px] text-xs text-gray-500">
                     <span>Don't have an account?</span>
