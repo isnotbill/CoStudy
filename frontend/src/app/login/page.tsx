@@ -20,8 +20,9 @@ export default function Login() {
             const { data } = await axios.post(
                 'http://localhost:8080/login',
                 payload,
-                { timeout: 5000 }
-                
+                { 
+                    withCredentials: true,
+                    timeout: 5000 }
             )
             console.log(data)
             window.location.href='/home'
