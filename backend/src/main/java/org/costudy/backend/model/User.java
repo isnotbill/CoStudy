@@ -20,10 +20,4 @@ public class User {
     private String password;
     private String email;
     private String image;
-
-    public User(RegisterDto registerDto) {
-        this.username = registerDto.getUsername();
-        this.password = registerDto.getPassword();
-        this.email = registerDto.getEmail();
-    }
 }

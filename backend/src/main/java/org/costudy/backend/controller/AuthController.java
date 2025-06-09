@@ -1,6 +1,7 @@
 package org.costudy.backend.controller;
 
 import jakarta.validation.Valid;
+import org.costudy.backend.dto.LoginDto;
 import org.costudy.backend.dto.RegisterDto;
 import org.costudy.backend.model.User;
 import org.costudy.backend.response.ApiResponse;
@@ -57,14 +58,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<?>> login(@RequestBody User user){
+    public ResponseEntity<ApiResponse<?>> login(@Valid @RequestBody LoginDto loginDto){
 
         try {
             Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+                    .authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword())
             );
 
-            String token = jwtService.generateToken(user.getUsername());
+            String token = jwtService.generateToken(loginDto.getUsername());
             ResponseCookie cookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
                     .secure(false) // TODO: SET TRUE IN PRODUCTION

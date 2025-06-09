@@ -2,6 +2,7 @@ package org.costudy.backend.service;
 
 import org.costudy.backend.dto.RegisterDto;
 import org.costudy.backend.exception.InvalidCredentialsException;
+import org.costudy.backend.mapper.UserMapper;
 import org.costudy.backend.model.User;
 import org.costudy.backend.repo.UserRepo;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,7 +27,7 @@ public class AuthService {
             throw new InvalidCredentialsException("Username already exists");
         }
 
-        User user = new User(registerDto);
+        User user = UserMapper.toUser(registerDto);
         user.setPassword(encoder.encode(user.getPassword()));
 
         repo.save(user);
