@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 export default function Login() {
-    const [error, setError] = useState<null | string>(null)
+    const [error, setError] = useState<null | string[]>(null)
 
     async function handleSubmit(e: React.FormEvent){
         e.preventDefault()
@@ -26,7 +26,24 @@ export default function Login() {
             console.log(data)
             window.location.href='/home'
         } catch (err: any) {
-            setError(err.message)
+
+            if (err.response && err.response.data) {
+                const apiBody = err.response.data as {
+                    success?: boolean
+                    message?: string
+                    data?: string[]
+                    error?: string                    
+                }
+
+                if (Array.isArray(apiBody.data)){
+                    setError(apiBody.data)
+                } else {
+                    setError([apiBody.message ?? apiBody.error ?? "Unexpected Error"])
+                }
+            } else {
+                setError(err.message)
+            }
+
         }
     }
 
@@ -99,9 +116,9 @@ export default function Login() {
                 <Image
                     src="/images/loginblob.png"
                     alt="main blob"
-                    width={590}
-                    height={520}
-                    className="absolute h-auto max-w-none mt-[205px] object-contain drop-shadow-2xl"
+                    width={540}
+                    height={490}
+                    className="absolute h-auto max-w-none mt-[230px] object-contain drop-shadow-2xl"
                 />
                 <div 
                     className=" 

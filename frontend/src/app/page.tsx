@@ -4,13 +4,15 @@ import axios from 'axios'
 import Image from "next/image"
 import Header from "@/components/Header"
 import { useState } from 'react';
+import { errorToJSON } from 'next/dist/server/render';
 
 export default function Home() {
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string[] | null>(null);
 
   async function handleSubmit(e: React.FormEvent){
     e.preventDefault()
     setError(null)
+
     const form = new FormData(e.currentTarget as HTMLFormElement)
     const confirmPassword = form.get("confirm")
     const payload = {
@@ -20,7 +22,7 @@ export default function Home() {
     }
 
     if (payload.password != confirmPassword) {
-      setError("Passwords don't match!")
+      setError(["Passwords don't match!"])
       return
     }
 
@@ -32,7 +34,26 @@ export default function Home() {
       )
       window.location.href='/login'
     } catch (error: any) {
-      setError(error.message)
+      
+      if (error.response && error.response.data){
+        const apiBody= error.response.data as {
+          success?: boolean
+          message?: string
+          data?: string[]
+          error?: string
+        }
+        if (Array.isArray(apiBody.data)){
+          setError(apiBody.data)
+          
+        } else {
+          setError([apiBody.message ?? apiBody.error ?? "Unexpected Error"])
+        }
+      } else {
+        setError([error.message])
+        console.log(error.message)
+        
+      }
+
     }
   }
 
@@ -53,7 +74,7 @@ export default function Home() {
         </div>
         <form 
         onSubmit={handleSubmit}
-        className="bg-gray-100 w-full max-w-[400px] min-w-[300px] h-[500px] px-[20] gap-8 rounded-2xl flex flex-col justify-center items-center">
+        className="bg-gray-100 w-full max-w-[400px] min-w-[300px] h-[550px] px-[20] gap-8 rounded-2xl flex flex-col justify-center items-center">
           <h2 className="text-2xl font-bold text-[rgba(49,32,77,0.8)] text-center">Create Your Account</h2>
 
           <div className="flex flex-col gap-2 w-full">
@@ -114,7 +135,9 @@ export default function Home() {
                 minLength={8}
               />
             </div>
-            {error && <p className="text-red-500">{error}</p>}
+            {error && <div className="text-red-500">{
+              error.map((msg, i) => (<p key={i}>{msg}</p>))
+              }</div>}
           </div>
           <button
             type="submit"

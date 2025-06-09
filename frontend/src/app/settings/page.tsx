@@ -18,7 +18,7 @@ export default function AccountPage()
         <MainHeader />
         <div className="flex justify-center items-center h-full w-full">
           <div className="flex flex-col items-center bg-[rgb(70,60,102)]
-          h-[600] w-[300] px-10 text-white">
+          h-[550] w-[300] px-10 text-white">
 
           <label className="font-cedarville text-[45px] my-[60px]">Settings</label>
 
@@ -43,8 +43,8 @@ export default function AccountPage()
           </button>
 
           </div>
-          <div className="flex flex-col justify-center items-center bg-gray-200 h-[600]
-          w-[700] gap-12 px-10">
+          <div className="flex flex-col justify-center items-center bg-gray-200 h-[550]
+          w-[620] gap-12 px-10">
 
             {activeTab === "profile" && <PublicProfile />}
             {activeTab === "account" && <AccountSettings />}
