@@ -1,5 +1,7 @@
 package org.costudy.backend.controller;
 
+import jakarta.validation.Valid;
+import org.costudy.backend.dto.RegisterDto;
 import org.costudy.backend.model.User;
 import org.costudy.backend.response.ApiResponse;
 import org.costudy.backend.service.AuthService;
@@ -10,10 +12,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -30,8 +36,20 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse> register(@RequestBody User user){
-        authService.register(user);
+    public ResponseEntity<ApiResponse<?>> register(@Valid @RequestBody RegisterDto registerDto, BindingResult bindingResult){
+        if(bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getFieldErrors()
+                    .stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .toList();
+
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false,
+                    "Registration failed",
+                    errors
+            ));
+        }
+        System.out.println(bindingResult.hasErrors());
+        authService.register(registerDto);
         return ResponseEntity.ok(new ApiResponse<>(true, "Registration successful"));
     }
 

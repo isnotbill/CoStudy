@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.costudy.backend.dto.RegisterDto;
 
 @Entity
 @Data
@@ -19,4 +20,10 @@ public class User {
     private String password;
     private String email;
     private String image;
+
+    public User(RegisterDto registerDto) {
+        this.username = registerDto.getUsername();
+        this.password = registerDto.getPassword();
+        this.email = registerDto.getEmail();
+    }
 }

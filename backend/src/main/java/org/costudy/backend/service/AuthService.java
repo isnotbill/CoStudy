@@ -1,5 +1,7 @@
 package org.costudy.backend.service;
 
+import org.costudy.backend.dto.RegisterDto;
+import org.costudy.backend.exception.InvalidCredentialsException;
 import org.costudy.backend.model.User;
 import org.costudy.backend.repo.UserRepo;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,14 +18,15 @@ public class AuthService {
         this.encoder = new BCryptPasswordEncoder(12);
     }
 
-    public void register(User user){
-        if(repo.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("Email already exists");
+    public void register(RegisterDto registerDto){
+        if(repo.existsByEmail(registerDto.getEmail())) {
+            throw new InvalidCredentialsException("Email already exists");
         }
-        if(repo.existsByUsername(user.getUsername())) {
-            throw new IllegalArgumentException("Username already exists");
+        if(repo.existsByUsername(registerDto.getUsername())) {
+            throw new InvalidCredentialsException("Username already exists");
         }
 
+        User user = new User(registerDto);
         user.setPassword(encoder.encode(user.getPassword()));
 
         repo.save(user);
