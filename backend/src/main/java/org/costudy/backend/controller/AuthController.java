@@ -6,6 +6,7 @@ import org.costudy.backend.model.User;
 import org.costudy.backend.response.ApiResponse;
 import org.costudy.backend.service.AuthService;
 import org.costudy.backend.service.JwtService;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,7 +41,7 @@ public class AuthController {
         if(bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getFieldErrors()
                     .stream()
-                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
                     .toList();
 
             return ResponseEntity.badRequest().body(new ApiResponse<>(false,

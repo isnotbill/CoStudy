@@ -14,11 +14,11 @@ import lombok.NoArgsConstructor;
 public class RegisterDto {
 
     @NotBlank
-    @Size(min = 3, max = 16, message = "Invalid username")
+    @Size(min = 3, max = 16, message = "Username must be between 3 and 16 characters long.")
     private String username;
 
     @NotBlank
-    @Size(min = 8, max = 32, message = "Invalid password")
+    @Size(min = 8, max = 32, message = "Password must be between 8 and 32 characters.")
     private String password;
 
     @NotBlank
