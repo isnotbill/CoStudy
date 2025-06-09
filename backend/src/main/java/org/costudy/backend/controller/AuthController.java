@@ -7,7 +7,9 @@ import org.costudy.backend.response.ApiResponse;
 import org.costudy.backend.service.AuthService;
 import org.costudy.backend.service.JwtService;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -55,7 +57,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<String>> login(@RequestBody User user){
+    public ResponseEntity<ApiResponse<?>> login(@RequestBody User user){
 
         try {
             Authentication authentication = authenticationManager
@@ -63,11 +65,20 @@ public class AuthController {
             );
 
             String token = jwtService.generateToken(user.getUsername());
-            return ResponseEntity.ok(new ApiResponse<>(true, "Login successful", token));
+            ResponseCookie cookie = ResponseCookie.from("token", token)
+                    .httpOnly(true)
+                    .secure(false) // TODO: SET TRUE IN PRODUCTION
+                    .path("/")
+                    .maxAge(24*60*60)
+                    .sameSite("Lax")
+                    .build();
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .body(new ApiResponse<>(true, "Login successful"));
 
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    new ApiResponse<>(false, "Invalid credentials", null)
+                    new ApiResponse<>(false, "Invalid credentials")
             );
         }
     }
