@@ -2,6 +2,7 @@ package org.costudy.backend.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.costudy.backend.service.JwtService;
@@ -31,13 +32,24 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
-        String token = "";
+        String token = null;
         String userName = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")){
             token = authHeader.substring(7);
-            userName = jwtService.extractUserName(token);
+
+        } else {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null){
+                for (Cookie cookie : cookies){
+                    if ("token".equals(cookie.getName())){
+                        token = cookie.getValue();
+                        break;
+                    }
+                }
+            }
         }
+        if (token != null){userName = jwtService.extractUserName(token);}
         if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             UserDetails userDetails = context.getBean(MyUserDetailsService.class).loadUserByUsername(userName);
