@@ -26,7 +26,7 @@ export default function PublicProfile() {
       {/* Avatar + actions */}
       <div className="flex items-center space-x-6">
         {/* circle container */}
-        <div className="relative w-[250] h-[250] rounded-full border-4 border-white overflow-hidden">
+        <div className="relative w-[250px] h-[250px] rounded-full border-4 border-white overflow-hidden">
           <Image
             src="/images/loginblob.png"
             alt="Profile avatar"

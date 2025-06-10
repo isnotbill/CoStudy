@@ -15,7 +15,7 @@ export default function AccountSettings() {
   }
 
   return (
-    <div className="flex V items-center justify-center h-screen ">
+    <div className="flex items-center justify-center h-screen ">
       <form
         onSubmit={handleSubmit}
         className="flex flex-col p-8 

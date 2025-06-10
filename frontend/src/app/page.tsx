@@ -61,7 +61,7 @@ export default function Home() {
     <main className="h-screen flex flex-col select-none">
       <Header/>
 
-      <section className="flex-1 bg-[rgb(70,60,102)] flex items-center justify-center gap-[160]">
+      <section className="flex-1 bg-[rgb(70,60,102)] flex items-center justify-center gap-[160px]">
         <div className="flex flex-col items-left justify-center">
           <h1 className="text-white font-cedarville text-5xl font-normal">Study Together, Stress-Free</h1>
           <h2 className="text-gray-300 font-kumbh my-5 text-lg font-normal">Join virtual study groups, stay motivated, and collaborate with friends.</h2>
