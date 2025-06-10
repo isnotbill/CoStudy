@@ -6,6 +6,7 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 
 export default function HomePage(){
+
     const [profile, setProfile] = useState<any>(null)
     const [error, setError] = useState<string | null>(null)
     useEffect(()=> {
@@ -26,16 +27,24 @@ export default function HomePage(){
 
     }, [])
 
-    //if (error){window.location.href='/login'}
-    
+    if (error){window.location.href='/login'}
+    const src = profile.image
+        ? 'http://localhost:8080/avatars/${user.avatarPath}'
+        : 'http://localhost:8080/default-avatar.png'
+
     return (
         <>
         <main className='bg-[rgb(53,46,78)] w-screen h-screen flex flex-col items-center'>
             <MainHeader/>
             <div className='flex flex-col gap-4 w-full h-full justify-center items-center p-4'>
                 <div className='relative flex items-center justify-start gap-4 bg-[rgb(70,60,102)] rounded-3xl w-[1000px] h-[200px]'>
-                    <div className="flex-none border-8 border-[rgb(70,60,102)]  bg-white min-w-[200px] w-[200px] min-h-[200px] h-[200px] rounded-full">
-
+                    <div className="flex-none relative border-8 border-[rgb(70,60,102)]  bg-white min-w-[200px] w-[200px] min-h-[200px] h-[200px] rounded-full">
+                        <Image
+                            src={src}
+                            alt="Profile avatar"
+                            fill
+                            className="object-cover"
+                        />
                     </div>
                     <h1 className="text-white text-3xl">{profile?.username}</h1>
                 </div>
