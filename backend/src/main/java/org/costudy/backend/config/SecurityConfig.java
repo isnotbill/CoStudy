@@ -40,7 +40,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(customizer -> customizer.disable());
         http.authorizeHttpRequests(request -> request
-                .requestMatchers("/register","/login", "/refresh-token","/default-avatar.png")
+                .requestMatchers("/register","/login", "/refresh-token","/default-avatar.png", "/avatars/**")
                 .permitAll()
                 .anyRequest().authenticated())
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

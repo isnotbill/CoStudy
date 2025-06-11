@@ -23,6 +23,6 @@ public class LocalFileStorageService implements FileStorageService{
         Path dest = uploadDir.resolve(filename);
         Files.copy(input, dest, StandardCopyOption.REPLACE_EXISTING);
 
-        return "/avatars" + filename;
+        return "/avatars/" + filename;
     }
 }

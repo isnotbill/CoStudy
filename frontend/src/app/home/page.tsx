@@ -24,28 +24,30 @@ export default function HomePage(){
             }
         }
         fetchProfile()
+        console.log(profile)
 
     }, [])
 
     if (error){window.location.href='/login'}
-    const src = profile.image
-        ? 'http://localhost:8080/avatars/${user.avatarPath}'
-        : 'http://localhost:8080/default-avatar.png'
+    let src = 'http://localhost:8080/default-avatar.png'
+
+    if (profile?.image != null){src = `http://localhost:8080/avatars/${profile.image}`}
 
     return (
         <>
         <main className='bg-[rgb(53,46,78)] w-screen h-screen flex flex-col items-center'>
             <MainHeader/>
             <div className='flex flex-col gap-4 w-full h-full justify-center items-center p-4'>
-                <div className='relative flex items-center justify-start gap-4 bg-[rgb(70,60,102)] rounded-3xl w-[1000px] h-[200px]'>
-                    <div className="flex-none relative border-8 border-[rgb(70,60,102)]  bg-white min-w-[200px] w-[200px] min-h-[200px] h-[200px] rounded-full">
+                <div className='relative flex items-center justify-start gap-4 rounded-3xl w-[1000px] h-[200px]'>
+
                         <Image
                             src={src}
                             alt="Profile avatar"
-                            fill
-                            className="object-cover"
+                            width={150}
+                            height={150}
+                            className="ml-[30px] flex-none relative w-[120px] h-[120px] rounded-full"
                         />
-                    </div>
+
                     <h1 className="text-white text-3xl">{profile?.username}</h1>
                 </div>
                 <div className='w-[1000] h-full flex gap-4'>
