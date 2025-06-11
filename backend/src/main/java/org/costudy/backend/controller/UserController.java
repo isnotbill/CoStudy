@@ -42,12 +42,12 @@ public class UserController {
 
         String ext = StringUtils.getFilenameExtension(file.getOriginalFilename());
         String filename = "user-" + id + "-" + UUID.randomUUID() + "." + ext;
-        String publicPath = storage.store(file.getInputStream(), filename, file.getContentType());
+        storage.store(file.getInputStream(), filename, file.getContentType());
 
         user.setImage(filename);
         userService.save(user);
 
-        return ResponseEntity.ok(Map.of("avatarUrl", publicPath));
+        return ResponseEntity.ok(Map.of("avatarUrl", filename));
     }
 
 }

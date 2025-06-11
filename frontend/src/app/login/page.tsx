@@ -42,7 +42,7 @@ export default function Login() {
                     setError([apiBody.message ?? apiBody.error ?? "Unexpected Error"])
                 }
             } else {
-                setError(err.message)
+                setError([err.message])
             }
 
         }
