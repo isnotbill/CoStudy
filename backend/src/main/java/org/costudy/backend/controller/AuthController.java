@@ -1,5 +1,8 @@
 package org.costudy.backend.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.costudy.backend.dto.LoginDto;
 import org.costudy.backend.dto.RegisterDto;
@@ -17,10 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,16 +65,31 @@ public class AuthController {
                     .authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword())
             );
 
-            String token = jwtService.generateToken(loginDto.getUsername());
-            ResponseCookie cookie = ResponseCookie.from("token", token)
+            String accessToken = jwtService.generateAccessToken(loginDto.getUsername());
+            String refreshToken = jwtService.generateRefreshToken(loginDto.getUsername());
+
+            ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
                     .httpOnly(true)
                     .secure(false) // TODO: SET TRUE IN PRODUCTION
                     .path("/")
                     .maxAge(24*60*60)
                     .sameSite("Lax")
                     .build();
+
+            ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
+                    .httpOnly(true)
+                    .secure(false) // TODO: SET TRUE IN PRODUCTION
+                    .path("/")
+                    .maxAge(24*60*60)
+                    .sameSite("Lax")
+                    .build();
+
+            System.out.println("Refresh: " + refreshToken);
+            System.out.println("Access: " + accessToken);
+
             return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+                    .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                     .body(new ApiResponse<>(true, "Login successful"));
 
         } catch (AuthenticationException e) {
@@ -82,6 +97,44 @@ public class AuthController {
                     new ApiResponse<>(false, "Invalid credentials")
             );
         }
+    }
+
+    @GetMapping("/refresh-token")
+    public ResponseEntity<ApiResponse<?>> refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response
+            ) {
+
+        Cookie[] cookies = request.getCookies();
+        String refreshToken = null;
+        for(Cookie c : cookies) {
+            if("refresh_token".equals(c.getName())) {
+                refreshToken = c.getValue();
+                break;
+            }
+        }
+
+        if(refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new ApiResponse<>(false, "Invalid refresh token"));
+        }
+
+        String username = jwtService.extractUserName(refreshToken);
+        String accessToken = jwtService.generateAccessToken(username);
+        ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
+                .httpOnly(true)
+                .secure(false) // TODO: SET TRUE IN PRODUCTION
+                .path("/")
+                .maxAge(24*60*60)
+                .sameSite("Lax")
+                .build();
+
+        System.out.println("Refresh: " + refreshToken);
+        System.out.println("Access: " + accessToken);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+                .body(new ApiResponse<>(true, "Token refreshed"));
     }
 
 }

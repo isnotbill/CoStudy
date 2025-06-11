@@ -26,21 +26,38 @@ public class JwtService {
     private String secretKey;
 
     @Value("${jwt.expiration}")
-    private int expiration;
+    private long expiration;
 
-    public String generateToken(String username) {
+    @Value("${jwt.refreshExpiration}")
+    private long refreshExpiration;
 
-        Map<String, Object> claims = new HashMap<>();
-
+    private String generateToken(
+            String username,
+            Map<String, Object> claims,
+            long expiration
+    ) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getKey(), SignatureAlgorithm.HS256).compact();
-
-
     }
+
+    public String generateRefreshToken(String username) {
+
+        Map<String, Object> claims = new HashMap<>();
+
+        return generateToken(username, claims, refreshExpiration);
+    }
+
+    public String generateAccessToken(String username) {
+
+        Map<String, Object> claims = new HashMap<>();
+
+        return generateToken(username, claims, expiration);
+    }
+
     private Key getKey(){
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
