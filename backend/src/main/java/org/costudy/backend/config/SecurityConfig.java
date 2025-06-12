@@ -38,6 +38,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.cors(withDefaults -> {});
         http.csrf(customizer -> customizer.disable());
         http.authorizeHttpRequests(request -> request
                 .requestMatchers("/register","/login", "/refresh-token","/default-avatar.png", "/avatars/**")

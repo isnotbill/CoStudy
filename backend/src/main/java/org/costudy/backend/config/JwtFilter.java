@@ -44,7 +44,6 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
 
-
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String userName = null;
@@ -56,7 +55,7 @@ public class JwtFilter extends OncePerRequestFilter {
             Cookie[] cookies = request.getCookies();
             if (cookies != null){
                 for (Cookie cookie : cookies){
-                    if ("token".equals(cookie.getName())){
+                    if ("access_token".equals(cookie.getName())){
                         token = cookie.getValue();
                         break;
                     }
@@ -78,11 +77,16 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             }
         } catch (ExpiredJwtException ex) {
-            ResponseCookie expired = ResponseCookie.from("token", "")
-                    .path("/")
-                    .maxAge(0)
-                    .build();
-            response.setHeader(HttpHeaders.SET_COOKIE, expired.toString());
+//            ResponseCookie expired = ResponseCookie.from("token", "")
+//                    .path("/")
+//                    .maxAge(0)
+//                    .build();
+//            response.setHeader(HttpHeaders.SET_COOKIE, expired.toString());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Token expired\"");
+            response.getWriter().flush();
+            return;
         }
         filterChain.doFilter(request, response);
     }

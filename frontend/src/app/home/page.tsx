@@ -4,34 +4,44 @@ import Image from 'next/image'
 import MainHeader from '@/components/MainHeader'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import apiClient from '../../../lib/apiClient' 
+
+interface Profile {
+  username: string
+  image?: string | null
+}
 
 export default function HomePage(){
 
-    const [profile, setProfile] = useState<any>(null)
+    const [profile, setProfile] = useState<Profile | null>(null)
     const [error, setError] = useState<string | null>(null)
-    useEffect(()=> {
-        async function fetchProfile(){
-            try {
-                const res = await axios.get('http://localhost:8080/user',
-                     { withCredentials: true, timeout: 5000 }
-                    )
-                setProfile(res.data)    
-            } catch (err: any){
-                const msg = err.message
-                setError(msg)
-                console.log("hello")
-                console.log(msg)
-            }
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        async function fetchProfile() {
+        try {
+            const response = await apiClient.get('/user')
+            setProfile(response.data)
+        } catch (err: any) {
+            setError(err.message || 'Failed to fetch user profile')
+        } finally {
+            setLoading(false)
+        }
         }
         fetchProfile()
-        console.log(profile)
-
     }, [])
 
-    if (error){window.location.href='/login'}
-    let src = 'http://localhost:8080/default-avatar.png'
 
-    if (profile?.image != null){src = `http://localhost:8080/avatars/${profile.image}`}
+    useEffect(() => {
+        if (error) {
+            window.location.href = '/login'
+        }
+    }, [error])
+
+    let src = 'http://localhost:8080/default-avatar.png'
+    if (profile?.image) {
+        src = `http://localhost:8080/avatars/${profile.image}`
+    }
 
     return (
         <>
