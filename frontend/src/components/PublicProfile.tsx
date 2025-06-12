@@ -15,26 +15,6 @@ export default function PublicProfile() {
 
   const [src, setSrc] = useState('http://localhost:8080/default-avatar.png')
 
-
-  // useEffect(()=> {
-  //     async function fetchProfile(){
-  //         try {
-  //             const res = await axios.get('http://localhost:8080/user',
-  //                   { withCredentials: true, timeout: 5000 }
-  //                 )
-  //                 const data = res.data
-  //             setProfile(data) 
-  //             if (data.image != null){setSrc(`http://localhost:8080/avatars/${data.image}`)}   
-
-  //         } catch (err: any){
-  //             const msg = err.message
-  //             setError(msg)
-  //         }
-  //     }
-  //     fetchProfile()
-
-  //   }, [])
-
     useEffect(() => {
       async function fetchProfile() {
       try {
@@ -63,7 +43,7 @@ export default function PublicProfile() {
     formData.append('file', file)
 
     try {
-      const res = await axios.post(
+      const res = await apiClient.post(
         `http://localhost:8080/${profile.id}/avatar`,
         formData,
         {
