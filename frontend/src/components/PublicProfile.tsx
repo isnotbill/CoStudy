@@ -3,6 +3,7 @@
 import { useState, ChangeEvent, FormEvent, useRef, useEffect } from "react";
 import Image from "next/image";
 import axios from "axios";
+import apiClient from "../../lib/apiClient";
 
 export default function PublicProfile() {
 
@@ -15,24 +16,38 @@ export default function PublicProfile() {
   const [src, setSrc] = useState('http://localhost:8080/default-avatar.png')
 
 
-  useEffect(()=> {
-      async function fetchProfile(){
-          try {
-              const res = await axios.get('http://localhost:8080/user',
-                    { withCredentials: true, timeout: 5000 }
-                  )
-                  const data = res.data
-              setProfile(data) 
-              if (data.image != null){setSrc(`http://localhost:8080/avatars/${data.image}`)}   
+  // useEffect(()=> {
+  //     async function fetchProfile(){
+  //         try {
+  //             const res = await axios.get('http://localhost:8080/user',
+  //                   { withCredentials: true, timeout: 5000 }
+  //                 )
+  //                 const data = res.data
+  //             setProfile(data) 
+  //             if (data.image != null){setSrc(`http://localhost:8080/avatars/${data.image}`)}   
 
-          } catch (err: any){
-              const msg = err.message
-              setError(msg)
-          }
+  //         } catch (err: any){
+  //             const msg = err.message
+  //             setError(msg)
+  //         }
+  //     }
+  //     fetchProfile()
+
+  //   }, [])
+
+    useEffect(() => {
+      async function fetchProfile() {
+      try {
+          const response = await apiClient.get('/user')
+          const data = response.data
+          setProfile(data)
+          if (data.image != null){setSrc(`http://localhost:8080/avatars/${data.image}`)}   
+        } catch (err: any) {
+          setError(err.message || 'Failed to fetch user profile')
+        }
       }
       fetchProfile()
-
-    }, [])
+  }, [])
 
   async function handleFileChange(e: ChangeEvent<HTMLInputElement>){
     const file = e.target.files?.[0]

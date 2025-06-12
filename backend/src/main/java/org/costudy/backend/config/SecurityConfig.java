@@ -41,7 +41,7 @@ public class SecurityConfig {
         http.cors(withDefaults -> {});
         http.csrf(customizer -> customizer.disable());
         http.authorizeHttpRequests(request -> request
-                .requestMatchers("/register","/login", "/refresh-token","/default-avatar.png", "/avatars/**")
+                .requestMatchers("/register","/login", "/refresh-token","/default-avatar.png", "/avatars/**","/logout")
                 .permitAll()
                 .anyRequest().authenticated())
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
