@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, ChangeEvent, FormEvent, useRef, useEffect } from "react";
+import { useState, ChangeEvent, useRef, useEffect } from "react";
 import Image from "next/image";
 import axios from "axios";
 import apiClient from "../../lib/apiClient";

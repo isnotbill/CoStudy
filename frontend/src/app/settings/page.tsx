@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import AccountSettings from "@/components/AccountSettings";
 import PublicProfile from "@/components/PublicProfile";
 import MainHeader from "@/components/MainHeader";
-import axios from "axios"
+import apiClient from "../../../lib/apiClient";
 
 
 export default function AccountPage()
@@ -24,12 +24,8 @@ export default function AccountPage()
     setLogoutError(null)
 
     try {
-      const res = await axios.post(
-        'http://localhost:8080/logout',
-        {},
-        { withCredentials: true},
-      )
-      // router.push('/login')
+      await apiClient.post("/logout")
+      router.push('/login')
     } catch (err: any) {
       setLogoutError(err.message)
     } finally {
