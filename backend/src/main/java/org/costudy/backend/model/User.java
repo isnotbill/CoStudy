@@ -1,12 +1,16 @@
 package org.costudy.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.costudy.backend.dto.RegisterDto;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -20,4 +24,8 @@ public class User {
     private String password;
     private String email;
     private String image;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<UserStudyRoom> userStudyRooms;
 }

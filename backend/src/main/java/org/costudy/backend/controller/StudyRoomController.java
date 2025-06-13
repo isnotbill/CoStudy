@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/room")
 public class StudyRoomController {
 
     private final StudyRoomService roomService;
@@ -21,13 +22,17 @@ public class StudyRoomController {
         this.userService = userService;
     }
 
-    @PostMapping("/studyroom")
-    public ResponseEntity<ApiResponse<?>> createStudyRoom(@AuthenticationPrincipal UserDetails userDetails) {
-        roomService.createRoom(userService.getCurrentUser(userDetails.getUsername()));
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse<?>> createStudyRoom(@AuthenticationPrincipal UserDetails userDetails, @RequestBody(required = false) String name) {
+        if(name == null || name.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse<>(false, "Invalid name"));
+        }
+        roomService.createRoom(userService.getCurrentUser(userDetails.getUsername()), name);
         return ResponseEntity.ok(new ApiResponse<>(true, "Created Study Room"));
     }
 
-    @GetMapping("/studyroom/{roomCode}")
+    @GetMapping("/{roomCode}")
     public ResponseEntity<ApiResponse<?>> getStudyRoom(@PathVariable String roomCode) {
         StudyRoom studyRoom = roomService.getStudyRoom(roomCode);
         return ResponseEntity.ok(new ApiResponse<>(true, "Fetched study room", studyRoom));

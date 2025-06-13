@@ -51,5 +51,12 @@ public class UserController {
         return ResponseEntity.ok(Map.of("avatarUrl", filename));
     }
 
+    @GetMapping("/rooms")
+    public ResponseEntity<ApiResponse<?>> getUserRooms(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok().body(
+                new ApiResponse<>(true, "Rooms fetched", userService.getUserRooms(userDetails.getUsername()))
+        );
+    }
+
 
 }
