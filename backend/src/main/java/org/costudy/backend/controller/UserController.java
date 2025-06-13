@@ -2,6 +2,7 @@ package org.costudy.backend.controller;
 
 
 import org.costudy.backend.model.User;
+import org.costudy.backend.response.ApiResponse;
 import org.costudy.backend.service.FileStorageService;
 import org.costudy.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,5 +50,6 @@ public class UserController {
 
         return ResponseEntity.ok(Map.of("avatarUrl", filename));
     }
+
 
 }
