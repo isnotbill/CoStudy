@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StudyRoomRepo extends JpaRepository<StudyRoom, Integer> {
     StudyRoom findByCode(String code);
+    boolean existsByCode(String code);
 }
