@@ -98,7 +98,7 @@ export default function PublicProfile() {
             type='button'
             disabled={uploading}
             onClick={() => fileInputRef.current?.click()}
-            className="block w-full px-4 py-2 bg-[rgb(106,91,155)] text-white rounded-lg hover:bg-[rgb(70,60,102)]"
+            className="block w-full px-4 py-2 bg-[rgb(84,78,143)] text-white rounded-lg hover:bg-[rgb(70,60,102)]"
           >
             {uploading ? 'Uploading...' : 'Upload Avatar'}
           </button>

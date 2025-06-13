@@ -27,10 +27,11 @@ export default function AccountSettings() {
             Username:
           </label>
           <input
-            id="username"
+            id="changeUsername"
             type="text"
             placeholder={username}
             onChange={(e) => setUsername(e.target.value)}
+            autoComplete='off'
             className="px-4 py-2 border rounded-lg focus:outline-none focus:ring"
           />
 
@@ -42,11 +43,27 @@ export default function AccountSettings() {
             Password:
           </label>
           <input
-            id="password"
+            id="changePassword"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
+            autoComplete='new-password'
+            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring"
+          />
+        </div>
+
+                <div className="flex justify-start items-center gap-8">
+          <label htmlFor="password" className="text-right font-semibold text-gray-800">
+            Old Password:
+          </label>
+          <input
+            id="changePassword"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            autoComplete='new-password'
             className="px-4 py-2 border rounded-lg focus:outline-none focus:ring"
           />
         </div>
@@ -61,6 +78,7 @@ export default function AccountSettings() {
             type="email"
             placeholder={email}
             onChange={(e) => setEmail(e.target.value)}
+            autoComplete='off'
             className="px-4 py-2 border rounded-lg focus:outline-none focus:ring"
           />
         </div>

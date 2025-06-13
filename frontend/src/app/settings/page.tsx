@@ -35,10 +35,10 @@ export default function AccountPage()
   return(
     <>
       
-      <div className="bg-[rgb(53,46,78)] h-screen flex flex-col items-center select-none">
+      <div className="bg-[rgb(33,31,48)] h-screen flex flex-col items-center select-none">
         <MainHeader />
         <div className="flex justify-center items-center h-full w-full">
-          <div className="flex flex-col items-center bg-[rgb(70,60,102)]
+          <div className="flex flex-col items-center bg-[rgb(14,8,29)]
           h-[550] w-[300] px-10 text-white">
 
             <label className="font-cedarville text-[45px] my-[60px]">Settings</label>
@@ -46,7 +46,7 @@ export default function AccountPage()
             <button className={`w-full  py-3 rounded-2xl font-semibold
             hover:text-[#d6d6d6] hover:underline
               ${activeTab === "profile"
-                ? "bg-[rgb(95,81,138)]"
+                ? "bg-[rgb(46,43,68)]"
                 : ""
               }`}
             onClick={() => setActiveTab("profile")}>
@@ -56,7 +56,7 @@ export default function AccountPage()
             <button className={`w-full  py-3 rounded-2xl font-semibold
             hover:text-[#d6d6d6] hover:underline
               ${activeTab === "account"
-                ? "bg-[rgb(95,81,138)]"
+                ? "bg-[rgb(46,43,68)]"
                 : ""
             }`}
             onClick={() => setActiveTab("account")}>
@@ -75,7 +75,7 @@ export default function AccountPage()
 
 
           </div>
-          <div className="flex flex-col justify-center items-center bg-gray-200 h-[550]
+          <div className="flex flex-col justify-center items-center bg-[rgb(208,202,216)] h-[550]
           w-[620] gap-12 px-10">
 
             {activeTab === "profile" && <PublicProfile />}
