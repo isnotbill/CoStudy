@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, ChangeEvent, FormEvent, useRef, useEffect } from "react";
+import { useState, ChangeEvent, useRef, useEffect } from "react";
 import Image from "next/image";
 import axios from "axios";
+import apiClient from "../../lib/apiClient";
 
 export default function PublicProfile() {
 
@@ -14,25 +15,19 @@ export default function PublicProfile() {
 
   const [src, setSrc] = useState('http://localhost:8080/default-avatar.png')
 
-
-  useEffect(()=> {
-      async function fetchProfile(){
-          try {
-              const res = await axios.get('http://localhost:8080/user',
-                    { withCredentials: true, timeout: 5000 }
-                  )
-                  const data = res.data
-              setProfile(data) 
-              if (data.image != null){setSrc(`http://localhost:8080/avatars/${data.image}`)}   
-
-          } catch (err: any){
-              const msg = err.message
-              setError(msg)
-          }
+    useEffect(() => {
+      async function fetchProfile() {
+      try {
+          const response = await apiClient.get('/user')
+          const data = response.data
+          setProfile(data)
+          if (data.image != null){setSrc(`http://localhost:8080/avatars/${data.image}`)}   
+        } catch (err: any) {
+          setError(err.message || 'Failed to fetch user profile')
+        }
       }
       fetchProfile()
-
-    }, [])
+  }, [])
 
   async function handleFileChange(e: ChangeEvent<HTMLInputElement>){
     const file = e.target.files?.[0]
@@ -48,7 +43,7 @@ export default function PublicProfile() {
     formData.append('file', file)
 
     try {
-      const res = await axios.post(
+      const res = await apiClient.post(
         `http://localhost:8080/${profile.id}/avatar`,
         formData,
         {
@@ -103,7 +98,7 @@ export default function PublicProfile() {
             type='button'
             disabled={uploading}
             onClick={() => fileInputRef.current?.click()}
-            className="block w-full px-4 py-2 bg-[rgb(106,91,155)] text-white rounded-lg hover:bg-[rgb(70,60,102)]"
+            className="block w-full px-4 py-2 bg-[rgb(84,78,143)] text-white rounded-lg hover:bg-[rgb(70,60,102)]"
           >
             {uploading ? 'Uploading...' : 'Upload Avatar'}
           </button>

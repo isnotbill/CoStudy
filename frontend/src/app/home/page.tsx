@@ -45,7 +45,7 @@ export default function HomePage(){
 
     return (
         <>
-        <main className='bg-[rgb(53,46,78)] w-screen h-screen flex flex-col items-center'>
+        <main className='bg-[rgb(33,31,48)] w-screen h-screen flex flex-col items-center'>
             <MainHeader/>
             <div className='flex flex-col gap-4 w-full h-full justify-center items-center p-4'>
                 <div className='relative flex items-center justify-start gap-4 rounded-3xl w-[1000px] h-[200px]'>
@@ -61,10 +61,10 @@ export default function HomePage(){
                     <h1 className="text-white text-3xl">{profile?.username}</h1>
                 </div>
                 <div className='w-[1000] h-full flex gap-4'>
-                    <div className='bg-[rgb(70,60,102)] w-[500] h-full rounded-3xl'>
+                    <div className='bg-[#2e2b42] w-[500] h-full rounded-3xl'>
 
                     </div>
-                    <div className='bg-[rgb(70,60,102)] w-[500] h-full rounded-3xl'>
+                    <div className='bg-[#2e2b42] w-[500] h-full rounded-3xl'>
 
                     </div>
                 </div>
