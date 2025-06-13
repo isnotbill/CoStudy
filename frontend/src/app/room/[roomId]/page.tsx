@@ -78,6 +78,28 @@ export default function Room() {
 
                         </div>
                     </div>
+                                        <div className="flex justify-end items-end gap-2">
+                        <div className="bg-[rgba(206,133,255,0.7)] rounded-3xl p-2 flex justify-end inline-block max-w-xs">
+                            yo wanna costudyyo wanna costudyyo wanna costudyyo wanna costudyyo wanna costudyyo wanna costudyyo wanna costudyyo wanna costudyyo wanna costudyyo wanna costudy
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-white">
+
+                        </div>
+                    </div>
+                                        <div className="flex justify-end items-end gap-2">
+                        <div className="bg-[rgba(206,133,255,0.7)] rounded-3xl p-2 flex justify-end inline-block max-w-xs">
+                            yo wanna costudyyo wanna costudyyo wanna costudyyo wanna costudyyo wanna costudyyo wanna costudyyo wanna costudyyo wanna costudyyo wanna costudyyo wanna costudy
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-white">
+
+                        </div>
+                    </div>
+                    <div className="flex gap-2">
+                        <input className="flex-auto border rounded px-1 py-2"/>
+                        <button
+                         className="bg-blue-600 text-white px-4 py-1 rounded">
+                            Send</button>
+                    </div>
                 </div>
             </div>
             
