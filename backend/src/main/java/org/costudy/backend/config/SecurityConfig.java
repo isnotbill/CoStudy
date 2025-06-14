@@ -44,7 +44,7 @@ public class SecurityConfig {
         http.csrf(customizer -> customizer.disable());
 
         http.authorizeHttpRequests(request -> request
-                .requestMatchers("/register","/login", "/refresh-token","/default-avatar.png", "/avatars/**","/logout")
+                .requestMatchers("/register","/login", "/refresh-token","/default-avatar.png", "/avatars/**","/logout", "/ws/**")
                 .permitAll()
                 .anyRequest().authenticated())
                 .logout(logout -> logout

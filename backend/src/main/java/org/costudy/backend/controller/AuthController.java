@@ -1,5 +1,6 @@
 package org.costudy.backend.controller;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -119,7 +120,15 @@ public class AuthController {
                     new ApiResponse<>(false, "Invalid refresh token"));
         }
 
-        String username = jwtService.extractUserName(refreshToken);
+        String username = null;
+        try {
+            username = jwtService.extractUserName(refreshToken);
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new ApiResponse<>(false, "Expired refresh token")
+            );
+        }
+
         String accessToken = jwtService.generateAccessToken(username);
         ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
                 .httpOnly(true)

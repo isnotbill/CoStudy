@@ -30,16 +30,7 @@ public class ChatController {
             @DestinationVariable int roomId,
             ChatMessageDto dto
     ) {
-        ChatMessage msg = new ChatMessage();
-        msg.setRoomId(roomId);
-        msg.setUserId(dto.userId);
-        msg.setContent(dto.content);
-        msg.setUsername(dto.username);
-        msg.setImageIcon(dto.imageIcon);
-
-        chatService.save(msg);
-
-        tpl.convertAndSend("/topic/room/" + roomId, msg);
+        chatService.save(dto, roomId);
     }
 
     @GetMapping("/rooms/{roomId}/messages")
@@ -47,6 +38,5 @@ public class ChatController {
 
         List<ChatMessage> messages = chatService.getRoomMessages(roomId);
         return ResponseEntity.ok(new ApiResponse<>(true, "Fetched chat room messages", messages));
-
     }
 }

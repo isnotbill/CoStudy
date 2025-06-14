@@ -5,6 +5,7 @@ import org.costudy.backend.model.StudyRoom;
 import org.costudy.backend.response.ApiResponse;
 import org.costudy.backend.service.StudyRoomService;
 import org.costudy.backend.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,18 +29,37 @@ public class StudyRoomController {
             return ResponseEntity.badRequest()
                     .body(new ApiResponse<>(false, "Invalid name"));
         }
-        roomService.createRoom(userService.getCurrentUser(userDetails.getUsername()), name);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Created Study Room"));
+        String code = roomService.createRoom(userService.getCurrentUser(userDetails.getUsername()), name);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Created Study Room", code));
     }
 
     @GetMapping("/{roomCode}")
     public ResponseEntity<ApiResponse<?>> getStudyRoom(@PathVariable String roomCode) {
         StudyRoom studyRoom = roomService.getStudyRoom(roomCode);
-
         if(studyRoom == null) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Invalid Room"));
         }
-
         return ResponseEntity.ok(new ApiResponse<>(true, "Fetched study room", studyRoom));
     }
+
+//    @DeleteMapping("/delete")
+//    public ResponseEntity<ApiResponse<?>> deleteStudyRoom(@AuthenticationPrincipal UserDetails userDetails, @RequestBody(required = true) int id) {
+//        try {
+//            boolean deleted = roomService.deleteRoomById(
+//                    id,
+//                    userService.getCurrentUser(userDetails.getUsername())); // your service method
+//            if (deleted) {
+//                return ResponseEntity.ok(new ApiResponse<>(true, "Room deleted successfully."));
+//            } else {
+//                // Room not found or not deleted
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                        .body(new ApiResponse<>(false, "Room not found or could not be deleted."));
+//            }
+//        } catch (Exception e) {
+//            // Log error if needed
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(new ApiResponse<>(false, "An error occurred while deleting the room."));
+//        }
+//
+//    }
 }
