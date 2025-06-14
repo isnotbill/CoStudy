@@ -34,9 +34,12 @@ public class ChatController {
         msg.setRoomId(roomId);
         msg.setUserId(dto.userId);
         msg.setContent(dto.content);
+        msg.setUsername(dto.username);
+        msg.setImageIcon(dto.imageIcon);
+
         chatService.save(msg);
 
-        tpl.convertAndSend("/topic/room" + roomId, msg);
+        tpl.convertAndSend("/topic/room/" + roomId, msg);
     }
 
     @GetMapping("/rooms/{roomId}/messages")

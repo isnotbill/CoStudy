@@ -21,5 +21,7 @@ public class ChatMessage {
     private int roomId;
     private int userId;
     private String content;
+    public String username;
+    public String imageIcon;
     private Instant sentAt = Instant.now();
 }

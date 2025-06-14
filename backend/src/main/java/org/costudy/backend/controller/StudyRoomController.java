@@ -35,6 +35,11 @@ public class StudyRoomController {
     @GetMapping("/{roomCode}")
     public ResponseEntity<ApiResponse<?>> getStudyRoom(@PathVariable String roomCode) {
         StudyRoom studyRoom = roomService.getStudyRoom(roomCode);
+
+        if(studyRoom == null) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Invalid Room"));
+        }
+
         return ResponseEntity.ok(new ApiResponse<>(true, "Fetched study room", studyRoom));
     }
 }

@@ -38,7 +38,7 @@ export default function AccountPage()
       <div className="bg-[rgb(33,31,48)] h-screen flex flex-col items-center select-none">
         <MainHeader />
         <div className="flex justify-center items-center h-full w-full">
-          <div className="flex flex-col items-center bg-[rgb(14,8,29)]
+          <div className="flex flex-col items-center bg-[#3b3755]
           h-[550] w-[300] px-10 text-white">
 
             <label className="font-cedarville text-[45px] my-[60px]">Settings</label>

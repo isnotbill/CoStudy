@@ -7,4 +7,6 @@ public class ChatMessageDto {
     public Long roomId;
     public int userId;
     public String content;
+    public String username;
+    public String imageIcon;
 }

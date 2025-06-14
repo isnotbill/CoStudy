@@ -61,10 +61,10 @@ export default function HomePage(){
                     <h1 className="text-white text-3xl">{profile?.username}</h1>
                 </div>
                 <div className='w-[1000] h-full flex gap-4'>
-                    <div className='bg-[#2e2b42] w-[500] h-full rounded-3xl'>
+                    <div className='bg-[#333044] w-[500] h-full rounded-3xl'>
 
                     </div>
-                    <div className='bg-[#2e2b42] w-[500] h-full rounded-3xl'>
+                    <div className='bg-[#333044] w-[500] h-full rounded-3xl'>
 
                     </div>
                 </div>
