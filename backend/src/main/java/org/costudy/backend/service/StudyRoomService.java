@@ -6,6 +6,7 @@ import org.costudy.backend.model.UserStudyRoom;
 import org.costudy.backend.model.UserStudyRoomId;
 import org.costudy.backend.repo.StudyRoomRepo;
 import org.costudy.backend.repo.UserStudyRoomRepo;
+import org.costudy.backend.response.ApiResponse;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -25,10 +26,12 @@ public class StudyRoomService {
     }
 
 
-    public void createRoom(User user, String name) {
+    public String createRoom(User user, String name) {
         StudyRoom room = new StudyRoom();
         room.setName(name);
-        room.setCode(generateJoinCode());
+
+        String code = generateJoinCode();
+        room.setCode(code);
 
         roomRepo.save(room);
 
@@ -40,6 +43,7 @@ public class StudyRoomService {
         relationship.setAdmin(true);
 
         userStudyRoomRepo.save(relationship);
+        return code;
     }
 
     public StudyRoom getStudyRoom(String roomCode) {
@@ -62,4 +66,12 @@ public class StudyRoomService {
         }
         return sb.toString();
     }
+
+//    public ApiResponse<?> deleteRoomById(int id, User user) {
+//        UserStudyRoom userStudyRoom = userStudyRoomRepo.findByIdUserIdAndRoomId(id, user.getId());
+//        if(!userStudyRoom.isAdmin()) {
+//            return new ApiResponse<>(false, "User is not an admin of this room");
+//        }
+//        StudyRoom studyRoom = userStudyRoom.getStudyRoom();
+//    }
 }

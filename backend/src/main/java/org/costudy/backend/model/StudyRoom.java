@@ -1,14 +1,12 @@
 package org.costudy.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,4 +23,8 @@ public class StudyRoom {
     @OneToMany(mappedBy = "studyRoom")
     @JsonIgnore
     private List<UserStudyRoom> userStudyRooms;
+
+    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatMessage> messages;
+
 }
