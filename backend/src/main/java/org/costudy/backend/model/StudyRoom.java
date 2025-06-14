@@ -15,16 +15,16 @@ import java.util.List;
 @NoArgsConstructor
 public class StudyRoom {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int roomId;
     private String name;
     private String code;
 
-    @OneToMany(mappedBy = "studyRoom")
+    @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<UserStudyRoom> userStudyRooms;
+    private List<UserStudyRoom> userStudyRooms = new ArrayList<>();
 
     @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChatMessage> messages;
+    private List<ChatMessage> messages = new ArrayList<>();
 
 }

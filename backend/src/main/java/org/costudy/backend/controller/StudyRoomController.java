@@ -1,12 +1,12 @@
 package org.costudy.backend.controller;
 
-import org.apache.coyote.Response;
 import org.costudy.backend.model.StudyRoom;
 import org.costudy.backend.response.ApiResponse;
 import org.costudy.backend.service.StudyRoomService;
 import org.costudy.backend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -42,24 +42,24 @@ public class StudyRoomController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Fetched study room", studyRoom));
     }
 
-//    @DeleteMapping("/delete")
-//    public ResponseEntity<ApiResponse<?>> deleteStudyRoom(@AuthenticationPrincipal UserDetails userDetails, @RequestBody(required = true) int id) {
-//        try {
-//            boolean deleted = roomService.deleteRoomById(
-//                    id,
-//                    userService.getCurrentUser(userDetails.getUsername())); // your service method
-//            if (deleted) {
-//                return ResponseEntity.ok(new ApiResponse<>(true, "Room deleted successfully."));
-//            } else {
-//                // Room not found or not deleted
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//                        .body(new ApiResponse<>(false, "Room not found or could not be deleted."));
-//            }
-//        } catch (Exception e) {
-//            // Log error if needed
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(new ApiResponse<>(false, "An error occurred while deleting the room."));
-//        }
-//
-//    }
+    @DeleteMapping("/delete/{roomId}")
+    public ResponseEntity<ApiResponse<?>> deleteStudyRoom(@AuthenticationPrincipal UserDetails userDetails, @PathVariable int roomId) {
+        try {
+            roomService.deleteRoomById(
+                    roomId,
+                    userService.getCurrentUser(userDetails.getUsername())
+            );
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Room successfully deleted"));
+        }
+        catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse<>(false, e.getMessage()));
+        } catch (Exception e) {
+            // Log error if needed
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "An error occurred while deleting the room."));
+        }
+
+    }
 }

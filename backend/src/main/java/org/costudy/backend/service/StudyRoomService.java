@@ -6,10 +6,11 @@ import org.costudy.backend.model.UserStudyRoom;
 import org.costudy.backend.model.UserStudyRoomId;
 import org.costudy.backend.repo.StudyRoomRepo;
 import org.costudy.backend.repo.UserStudyRoomRepo;
-import org.costudy.backend.response.ApiResponse;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.Optional;
 
 @Service
 public class StudyRoomService {
@@ -43,6 +44,7 @@ public class StudyRoomService {
         relationship.setAdmin(true);
 
         userStudyRoomRepo.save(relationship);
+
         return code;
     }
 
@@ -67,11 +69,17 @@ public class StudyRoomService {
         return sb.toString();
     }
 
-//    public ApiResponse<?> deleteRoomById(int id, User user) {
-//        UserStudyRoom userStudyRoom = userStudyRoomRepo.findByIdUserIdAndRoomId(id, user.getId());
-//        if(!userStudyRoom.isAdmin()) {
-//            return new ApiResponse<>(false, "User is not an admin of this room");
-//        }
-//        StudyRoom studyRoom = userStudyRoom.getStudyRoom();
-//    }
+    public void deleteRoomById(int roomId, User user){
+        Optional<UserStudyRoom> relationshipOpt = userStudyRoomRepo.findByIdUserIdAndIdRoomId(user.getId(), roomId);
+        if(relationshipOpt.isEmpty()) {
+            throw new AccessDeniedException("User is not a member or room does not exist");
+        }
+
+        UserStudyRoom rel = relationshipOpt.get();
+
+        if(!rel.isAdmin()) {
+            throw new AccessDeniedException("User is not an admin");
+        }
+        roomRepo.deleteById(roomId);
+    }
 }
