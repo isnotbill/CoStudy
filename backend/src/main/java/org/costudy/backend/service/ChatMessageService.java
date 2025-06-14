@@ -26,10 +26,12 @@ public class ChatMessageService {
     public void save(ChatMessageDto chatDto, int roomId) {
         ChatMessage msg = new ChatMessage();
         msg.setStudyRoom(roomRepo.findByRoomId(roomId));
-        msg.setUserId(chatDto.userId);
-        msg.setContent(chatDto.content);
+        msg.setUserId(chatDto.getUserId());
+        msg.setContent(chatDto.getContent());
+        msg.setUsername(chatDto.getUsername());
+        msg.setImageIcon(chatDto.getImageIcon());
         chatRepo.save(msg);
-        tpl.convertAndSend("/topic/room" + roomId, msg);
+        tpl.convertAndSend("/topic/room/" + roomId, msg);
     }
 
     public List<ChatMessage> getRoomMessages(int roomId) {
