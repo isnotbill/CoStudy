@@ -36,12 +36,12 @@ export default function ChatMessage(props: ChatInterface){
 
       : (<div className="flex items-start gap-2">
 
-          <div className="w-11 h-11 rounded-full bg-white overflow-hidden mt-[5px]">
+          <div className="relative w-12 h-12 overflow-hidden rounded-full bg-white mt-[5px] border-red border-[1px]">
             <Image
             src={`http://localhost:8080/avatars/${props.iconImage}`}
             alt="Profile icon"
-            width={48}
-            height={48}
+            fill
+            className="object-cover"
             />
           </div>
 

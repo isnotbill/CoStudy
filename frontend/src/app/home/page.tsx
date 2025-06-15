@@ -38,7 +38,8 @@ export default function HomePage(){
         }
     }, [error])
 
-    let src = 'http://localhost:8080/default-avatar.png'
+    let src = 'http://localhost:8080/avatars/default-avatar.png'
+    console.log(profile?.image)
     if (profile?.image) {
         src = `http://localhost:8080/avatars/${profile.image}`
     }
@@ -55,7 +56,7 @@ export default function HomePage(){
                             alt="Profile avatar"
                             width={150}
                             height={150}
-                            className="ml-[30px] flex-none relative w-[120px] h-[120px] rounded-full"
+                            className="ml-[30px] flex-none relative w-[120px] h-[120px] rounded-full bg-white"
                         />
 
                     <h1 className="text-white text-3xl">{profile?.username}</h1>

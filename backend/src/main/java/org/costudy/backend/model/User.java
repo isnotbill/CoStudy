@@ -23,7 +23,7 @@ public class User {
     private String username;
     private String password;
     private String email;
-    private String image;
+    private String image = "default-avatar.png";
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
