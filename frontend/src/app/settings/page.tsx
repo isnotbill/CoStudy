@@ -75,7 +75,7 @@ export default function AccountPage()
 
 
           </div>
-          <div className="flex flex-col justify-center items-center bg-[rgb(208,202,216)] h-[550]
+          <div className="flex flex-col justify-center items-center bg-[rgb(198,197,199)] h-[550]
           w-[620] gap-12 px-10">
 
             {activeTab === "profile" && <PublicProfile />}

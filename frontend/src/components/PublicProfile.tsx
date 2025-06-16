@@ -74,12 +74,13 @@ export default function PublicProfile() {
       
       <div className="flex items-center space-x-6">
         
-        <div className="relative w-[250px] h-[250px] rounded-full border-4 border-white overflow-hidden">
+        <div className="rounded-full border-4 border-[rgb(215,217,238)]">
           <Image
             src={src}
             alt="Profile avatar"
-            fill
-            className="object-cover"
+            width={250}
+            height={250}
+            className="flex-none w-[250px] h-[250px] rounded-full bg-white"
           />
         </div>
 
@@ -105,7 +106,7 @@ export default function PublicProfile() {
 
           <button
             
-            className="block w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
+            className="block w-full px-4 py-2 border border-gray-800 rounded-lg hover:bg-gray-200"
           >
             Change Default Icon
           </button>
