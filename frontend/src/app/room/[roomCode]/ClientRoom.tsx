@@ -158,8 +158,12 @@ export default function ClientRoom({ roomId }: ClientRoomProp) {
             <div className="w-[100vw] w-min-[1000px] h-full flex justify-center items-start flex-wrap gap-8 my-8">
                 <div className="flex flex-col gap-8 w-[500px] w-min-[100vw] h-full">
                     <div className=" bg-[#38354b] w-[500px] w-min-[100vw] h-[500px] rounded-md p-8 ">
-                        <div className="w-full h-[50%] rounded-md flex justify-center items-center">
-                            <h1 className="text-[rgb(255,255,255)] text-[150px] font-mono">25:00</h1>
+                        <div className="relative w-full h-[50%] rounded-md flex flex-col justify-center items-center">
+                            <button className="absolute top-4 right-4 settings-button">⚙️ Settings</button>
+                            <h1 className="text-[rgb(255,255,255)] text-[150px] font-mono mt-[180px]">25:00</h1>
+                            <button className="start-button">START</button>
+
+
                         </div>
                     </div>
                     <div className=" bg-[#38354b] overflow-auto rounded-md p-8  flex items-start flex-col gap-4 h-[269px]">
