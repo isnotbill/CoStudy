@@ -1,15 +1,19 @@
 package org.costudy.backend.service;
 
+import org.costudy.backend.dto.UserDto;
 import org.costudy.backend.model.StudyRoom;
 import org.costudy.backend.model.User;
 import org.costudy.backend.model.UserStudyRoom;
 import org.costudy.backend.model.UserStudyRoomId;
 import org.costudy.backend.repo.StudyRoomRepo;
 import org.costudy.backend.repo.UserStudyRoomRepo;
-import org.costudy.backend.response.ApiResponse;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StudyRoomService {
@@ -43,6 +47,7 @@ public class StudyRoomService {
         relationship.setAdmin(true);
 
         userStudyRoomRepo.save(relationship);
+
         return code;
     }
 
@@ -67,11 +72,69 @@ public class StudyRoomService {
         return sb.toString();
     }
 
-//    public ApiResponse<?> deleteRoomById(int id, User user) {
-//        UserStudyRoom userStudyRoom = userStudyRoomRepo.findByIdUserIdAndRoomId(id, user.getId());
-//        if(!userStudyRoom.isAdmin()) {
-//            return new ApiResponse<>(false, "User is not an admin of this room");
-//        }
-//        StudyRoom studyRoom = userStudyRoom.getStudyRoom();
-//    }
+    public void deleteRoomById(int roomId, User user){
+        Optional<UserStudyRoom> relationshipOpt = userStudyRoomRepo.findByIdUserIdAndIdRoomId(user.getId(), roomId);
+        if(relationshipOpt.isEmpty()) {
+            throw new AccessDeniedException("User is not a member or room does not exist");
+        }
+
+        UserStudyRoom rel = relationshipOpt.get();
+
+        if(!rel.isAdmin()) {
+            throw new AccessDeniedException("User is not an admin");
+        }
+        roomRepo.deleteById(roomId);
+    }
+
+    public boolean isInRoom(User user, StudyRoom room) {
+        Optional<UserStudyRoom> rel = userStudyRoomRepo.findByIdUserIdAndIdRoomId(user.getId(), room.getRoomId());
+        if(rel.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
+    public void joinRoom(User currentUser, String roomCode) {
+        StudyRoom room = getStudyRoom(roomCode);
+        if(room == null) {
+            throw new IllegalArgumentException("Room does not exist or invalid room code");
+        }
+
+        if(isInRoom(currentUser, room)) {
+            throw new AccessDeniedException("User is already in this room");
+        }
+
+        UserStudyRoom rel = new UserStudyRoom();
+        UserStudyRoomId id = new UserStudyRoomId(currentUser.getId(), room.getRoomId());
+        rel.setId(id);
+        rel.setStudyRoom(room);
+        rel.setUser(currentUser);
+        rel.setAdmin(false);
+
+        userStudyRoomRepo.save(rel);
+    }
+
+    public void leaveRoom(User currentUser, String roomCode) {
+        StudyRoom room = getStudyRoom(roomCode);
+        if(room == null) {
+            throw new IllegalArgumentException("Room does not exist or invalid room code");
+        }
+
+        if(!isInRoom(currentUser, room)) {
+            throw new AccessDeniedException("User is not in this room");
+        }
+
+        userStudyRoomRepo.delete(
+                userStudyRoomRepo.findByIdUserIdAndIdRoomId(currentUser.getId(), room.getRoomId())
+                        .get());
+    }
+
+    public List<UserDto> getUsersInRoom(String roomCode) {
+        StudyRoom room = getStudyRoom(roomCode);
+        List<UserStudyRoom> relationships = userStudyRoomRepo.findByStudyRoom(room);
+        return relationships
+                .stream()
+                .map(rel -> new UserDto(rel.getUser(), rel.isAdmin()))
+                .collect(Collectors.toList());
+    }
 }

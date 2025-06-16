@@ -3,9 +3,11 @@ package org.costudy.backend.service;
 import org.costudy.backend.dto.ChatMessageDto;
 import org.costudy.backend.model.ChatMessage;
 import org.costudy.backend.model.StudyRoom;
+import org.costudy.backend.model.User;
 import org.costudy.backend.repo.ChatMessageRepository;
 import org.costudy.backend.repo.StudyRoomRepo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,11 +18,16 @@ public class ChatMessageService {
     private final ChatMessageRepository chatRepo;
     private final StudyRoomRepo roomRepo;
     private final SimpMessagingTemplate tpl;
+    private final StudyRoomService studyRoomService;
     
-    public ChatMessageService(ChatMessageRepository chatRepo, StudyRoomRepo roomRepo, SimpMessagingTemplate tpl) {
+    public ChatMessageService(ChatMessageRepository chatRepo,
+                              StudyRoomRepo roomRepo,
+                              SimpMessagingTemplate tpl,
+                              StudyRoomService studyRoomService) {
         this.chatRepo = chatRepo;
         this.roomRepo = roomRepo;
         this.tpl = tpl;
+        this.studyRoomService = studyRoomService;
     }
     
     public void save(ChatMessageDto chatDto, int roomId) {
@@ -36,6 +43,9 @@ public class ChatMessageService {
 
     public List<ChatMessage> getRoomMessages(int roomId) {
         StudyRoom room = roomRepo.findByRoomId(roomId);
+        if(room == null) {
+            throw new IllegalArgumentException("Room does not exist");
+        }
         return chatRepo.getChatMessageByStudyRoom(room);
     }
 }
