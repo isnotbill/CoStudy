@@ -25,6 +25,7 @@ public class StudyRoom {
     private List<UserStudyRoom> userStudyRooms = new ArrayList<>();
 
     @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<ChatMessage> messages = new ArrayList<>();
 
 }

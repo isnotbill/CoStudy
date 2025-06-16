@@ -1,5 +1,6 @@
 package org.costudy.backend.controller;
 
+import org.costudy.backend.dto.UserDto;
 import org.costudy.backend.model.StudyRoom;
 import org.costudy.backend.response.ApiResponse;
 import org.costudy.backend.service.StudyRoomService;
@@ -10,6 +11,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/room")
@@ -33,6 +36,33 @@ public class StudyRoomController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Created Study Room", code));
     }
 
+    @PostMapping("/{roomCode}/join")
+    public ResponseEntity<ApiResponse<?>> joinStudyRoom(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable String roomCode
+            ) {
+        try {
+            roomService.joinRoom(userService.getCurrentUser(userDetails.getUsername()), roomCode);
+            return ResponseEntity.ok(new ApiResponse<>(true, "Successfully joined room"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                    new ApiResponse<>(false, e.getMessage())
+            );
+        }
+    }
+
+    @DeleteMapping("/{roomCode}/leave")
+    public ResponseEntity<ApiResponse<?>> leaveStudyRoom(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable String roomCode
+    ) {
+        roomService.leaveRoom(
+                userService.getCurrentUser(userDetails.getUsername()),
+                roomCode
+                );
+        return ResponseEntity.ok(new ApiResponse<>(true, "User left room"));
+    }
+
     @GetMapping("/{roomCode}")
     public ResponseEntity<ApiResponse<?>> getStudyRoom(@PathVariable String roomCode) {
         StudyRoom studyRoom = roomService.getStudyRoom(roomCode);
@@ -40,6 +70,12 @@ public class StudyRoomController {
             return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Invalid Room"));
         }
         return ResponseEntity.ok(new ApiResponse<>(true, "Fetched study room", studyRoom));
+    }
+
+    @GetMapping("/{roomCode}/users")
+    public ResponseEntity<ApiResponse<?>> getUsersInRoom(@PathVariable String roomCode) {
+        List<UserDto> users = roomService.getUsersInRoom(roomCode);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Fetched users in room: " + roomCode, users));
     }
 
     @DeleteMapping("/delete/{roomId}")
@@ -60,6 +96,7 @@ public class StudyRoomController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse<>(false, "An error occurred while deleting the room."));
         }
-
     }
+
+
 }
