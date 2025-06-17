@@ -78,7 +78,7 @@ public class StudyRoomController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Fetched users in room: " + roomCode, users));
     }
 
-    @DeleteMapping("/delete/{roomId}")
+    @DeleteMapping("/{roomId}/delete")
     public ResponseEntity<ApiResponse<?>> deleteStudyRoom(@AuthenticationPrincipal UserDetails userDetails, @PathVariable int roomId) {
         try {
             roomService.deleteRoomById(

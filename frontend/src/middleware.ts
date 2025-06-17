@@ -17,7 +17,7 @@ export function middleware(req: NextRequest){
     return NextResponse.next()
   }
 
-  console.log('[MW] middleware fired for:', req.nextUrl.pathname)
+  //console.log('[MW] middleware fired for:', req.nextUrl.pathname)
   
   if (['/login', '/'].includes(req.nextUrl.pathname)){
     return NextResponse.next()

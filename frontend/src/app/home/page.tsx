@@ -34,7 +34,7 @@ export default function HomePage(){
 
     useEffect(() => {
         if (error) {
-            window.location.href = '/login'
+            //window.location.href = '/login'
         }
     }, [error])
 
@@ -61,7 +61,7 @@ export default function HomePage(){
 
                     <h1 className="text-white text-3xl">{profile?.username}</h1>
                 </div>
-                <div className='w-[1000] h-full flex gap-4'>
+                <div className='w-[1000] h-full flex gap-4'> 
                     <div className='bg-[#333044] w-[500] h-full rounded-3xl'>
 
                     </div>
