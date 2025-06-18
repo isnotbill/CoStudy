@@ -4,15 +4,13 @@ import apiClient from "../../../../lib/apiClient";
 import { cookies } from "next/headers";
 
 async function buildSpringCookieHeader() {
-  const jar = await cookies();                       // server-side cookie store
+  const jar = await cookies();   
 
   const access  = jar.get('access_token')?.value;
   const refresh = jar.get('refresh_token')?.value;
 
-  // nothing to forward → return undefined so we don’t add the header at all
   if (!access && !refresh) return undefined;
 
-  // assemble exactly the two cookies Spring expects
   const parts: string[] = [];
   if (access)  parts.push(`access_token=${access}`);
   if (refresh) parts.push(`refresh_token=${refresh}`);
@@ -33,7 +31,7 @@ export default async function RoomPage({
       `http://localhost:8080/room/${roomCode}`, 
       {headers: cookieHeader ? {Cookie: cookieHeader} : undefined});
 
-    return <ClientRoom roomId={data.data.roomId} />;
+    return <ClientRoom roomId={data.data.roomId} roomCode={roomCode} />;
   } catch {
     notFound();                      
   }

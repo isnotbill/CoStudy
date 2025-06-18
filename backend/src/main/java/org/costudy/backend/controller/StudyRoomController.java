@@ -7,6 +7,7 @@ import org.costudy.backend.service.StudyRoomService;
 import org.costudy.backend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,10 +21,12 @@ public class StudyRoomController {
 
     private final StudyRoomService roomService;
     private final UserService userService;
+    private final SimpMessagingTemplate tpl;
 
-    public StudyRoomController(StudyRoomService studyRoomService, UserService userService) {
+    public StudyRoomController(StudyRoomService studyRoomService, UserService userService, SimpMessagingTemplate tpl) {
         this.roomService = studyRoomService;
         this.userService = userService;
+        this.tpl = tpl;
     }
 
     @PostMapping("/create")
@@ -42,7 +45,8 @@ public class StudyRoomController {
             @PathVariable String roomCode
             ) {
         try {
-            roomService.joinRoom(userService.getCurrentUser(userDetails.getUsername()), roomCode);
+            UserDto user = roomService.joinRoom(userService.getCurrentUser(userDetails.getUsername()), roomCode);
+            tpl.convertAndSend("/topic/room/" + roomCode + "/join", user);
             return ResponseEntity.ok(new ApiResponse<>(true, "Successfully joined room"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
