@@ -18,9 +18,13 @@ public class ChatMessage {
     private int chatMessageId;
     private int userId;
     private String content;
-    public String username;
-    public String imageIcon;
+    private String username;
+    private String imageIcon;
     private Instant sentAt = Instant.now();
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    private MessageType type; // USER | SERVER
 
     @ManyToOne
     @JoinColumn(name = "roomId", nullable = false)

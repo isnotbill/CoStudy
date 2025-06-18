@@ -1,6 +1,8 @@
 package org.costudy.backend.controller;
 
+import org.costudy.backend.dto.ChatMessageDto;
 import org.costudy.backend.dto.UserDto;
+import org.costudy.backend.model.ChatMessage;
 import org.costudy.backend.model.StudyRoom;
 import org.costudy.backend.response.ApiResponse;
 import org.costudy.backend.service.StudyRoomService;
@@ -45,7 +47,10 @@ public class StudyRoomController {
             @PathVariable String roomCode
             ) {
         try {
+            StudyRoom room = roomService.getStudyRoom(roomCode);
             UserDto user = roomService.joinRoom(userService.getCurrentUser(userDetails.getUsername()), roomCode);
+            ChatMessage chat = roomService.announceJoin(userService.getCurrentUser(userDetails.getUsername()), room);
+            tpl.convertAndSend("/topic/room/" + room.getRoomId(), chat);
             tpl.convertAndSend("/topic/room/" + roomCode + "/join", user);
             return ResponseEntity.ok(new ApiResponse<>(true, "Successfully joined room"));
         } catch (Exception e) {
@@ -94,6 +99,10 @@ public class StudyRoomController {
                 userService.getCurrentUser(userDetails.getUsername()),
                 userService.getCurrentUser(username)
                 );
+
+        StudyRoom room = roomService.getStudyRoom(roomCode);
+        ChatMessage kickAnnouncement = roomService.announceKick(userService.getCurrentUser(username), room);
+        tpl.convertAndSend("/topic/room/" + room.getRoomId(), kickAnnouncement);
 
         tpl.convertAndSend("/topic/room/" + roomCode + "/kick", username);
         return ResponseEntity.ok(new ApiResponse<>(true, "Kicked " + username));

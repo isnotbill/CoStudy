@@ -6,10 +6,30 @@ interface ChatInterface{
   isClient: boolean
   username: string
   iconImage: string
+  type: string
 }
 
 export default function ChatMessage(props: ChatInterface){
 
+  // SERVER message
+  if (props.type === "SERVER"){
+    return (
+      <p className="
+          relative my-1 flex items-center justify-center select-none
+          text-xs font-medium tracking-wide text-gray-400
+        ">
+        <span className="flex-1 h-px bg-gray-600/40" />
+
+        <span className="mx-3 whitespace-nowrap">
+          {props.content}
+        </span>
+
+        <span className="flex-1 h-px bg-gray-600/40" />
+      </p>
+    )
+  }
+
+  // USER message
   return (
     <>
 
