@@ -94,24 +94,27 @@ public class StudyRoomService {
         return true;
     }
 
-    public void joinRoom(User currentUser, String roomCode) {
+    public UserDto joinRoom(User currentUser, String roomCode) {
         StudyRoom room = getStudyRoom(roomCode);
         if(room == null) {
             throw new IllegalArgumentException("Room does not exist or invalid room code");
         }
 
         if(isInRoom(currentUser, room)) {
-            throw new AccessDeniedException("User is already in this room");
+            throw new AccessDeniedException("Duplicate");
         }
 
         UserStudyRoom rel = new UserStudyRoom();
+        UserDto user = new UserDto(currentUser, false);
         UserStudyRoomId id = new UserStudyRoomId(currentUser.getId(), room.getRoomId());
+
         rel.setId(id);
         rel.setStudyRoom(room);
         rel.setUser(currentUser);
         rel.setAdmin(false);
 
         userStudyRoomRepo.save(rel);
+        return user;
     }
 
     public void leaveRoom(User currentUser, String roomCode) {

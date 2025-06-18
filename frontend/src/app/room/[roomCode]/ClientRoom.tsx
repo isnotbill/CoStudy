@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import ChatMessage from "@/components/ChatMessage"
 import MainHeader from "@/components/MainHeader";
+import RoomUser from "@/components/RoomUser";
 
 import { Client } from '@stomp/stompjs'
 // import { useParams, useRouter, notFound } from "next/navigation";
@@ -28,8 +29,18 @@ interface Profile {
 
 interface ClientRoomProp{
     roomId: number
+    roomCode: string
 }
-export default function ClientRoom({ roomId }: ClientRoomProp) {
+
+interface RoomUser{
+    id: number
+    username: string
+    image: string
+    admin: boolean
+}
+
+// TODO: make ERROR a string[]
+export default function ClientRoom({ roomId, roomCode }: ClientRoomProp) {
 
     // const { roomCode } = useParams()
     // const router = useRouter()
@@ -37,10 +48,15 @@ export default function ClientRoom({ roomId }: ClientRoomProp) {
     // const [roomId, setRoomId] = useState<null|number>(null)
     const [inputMessage, setInputMessage] = useState("")
     const [roomMessages, setRoomMessages] = useState<ChatMessage[]>([])
+    const [roomUsers, setRoomUsers] = useState<RoomUser[]>([]);
+
+    const [loadJoinRoom, setLoadJoinRoom] = useState(true)
+
     const [loadingMessages, setLoadingMessages] = useState(true)
     const [loadingProfile, setLoadingProfile] = useState(true)
     const [error, setError] = useState<string|null>(null)
     const [profile, setProfile] = useState<Profile | null>(null)
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
 
     // Check if room code is valid
     // useEffect(() => {
@@ -79,6 +95,37 @@ export default function ClientRoom({ roomId }: ClientRoomProp) {
         fetchProfile()
     }, [])
 
+    // Loads all users
+    useEffect(() => {
+        if (loadJoinRoom){return}
+        async function fetchRoomUsers(){
+            try {
+                const resUsers = await apiClient.get(`/room/${roomCode}/users`)
+                const data = resUsers.data.data
+                setRoomUsers(data)
+            } catch {
+                setError("Failed to load")
+            }
+        }
+        fetchRoomUsers() 
+    }, [roomUsers, loadJoinRoom])
+
+    // Let the user join the room if haven't already
+    useEffect(() => {
+
+        async function joinRoom(){
+            try {
+                const resUsers = await apiClient.post(`/room/${roomCode}/join`)
+            } catch (err: any){
+                if (err.response.message = "Duplicate"){return}
+                setError("Failed to join room")
+            } finally {
+                setLoadJoinRoom(false)
+            }
+        }
+        joinRoom() 
+    }, [])
+
     // Loads all the room messages
     useEffect(() => {
         if (roomId == null){return}
@@ -112,6 +159,11 @@ export default function ClientRoom({ roomId }: ClientRoomProp) {
                 const chat: ChatMessage = JSON.parse(msg.body)
                 setRoomMessages(ms => [...ms, chat])
             })
+
+            client.subscribe(`/topic/room/${roomCode}/join`, msg => {
+                const newUser: RoomUser = JSON.parse(msg.body)
+                setRoomUsers(prev => [...prev, newUser])
+            })
         }
 
         client.onStompError = frame => {
@@ -122,7 +174,15 @@ export default function ClientRoom({ roomId }: ClientRoomProp) {
         stompRef.current = client
 
     }, [loadingMessages, roomId, loadingProfile])
+    
+    // Scroll to bottom for every new message
+    useEffect(() => {
+        const element = messagesContainerRef.current;
+        if (element){
+            element.scrollTop = element?.scrollHeight;
+        }
 
+    }, [roomMessages])
 
     function handleSend(e: React.FormEvent){
         e.preventDefault()
@@ -149,37 +209,41 @@ export default function ClientRoom({ roomId }: ClientRoomProp) {
         
     }
 
-    if (loadingMessages) return <p className="text-white">Loading room...</p>
+    if (loadingMessages) return <p className="text.purple">Loading room...</p>
     if (error){return <p className="text-red-500">{error}</p>}
     return (
         <>
-        <main className='bg-[rgb(33,31,48)] w-screen h-screen flex flex-col items-center'>
+        <main className='bg-[rgb(33,31,48)] w-screen min-h-screen flex flex-col items-center'>
             <MainHeader/>
-            <div className="w-[100vw] w-min-[1000px] h-full flex justify-center items-start flex-wrap gap-8 my-8">
-                <div className="flex flex-col gap-8 w-[500px] w-min-[100vw] h-full">
-                    <div className=" bg-[#38354b] w-[500px] w-min-[100vw] h-[500px] rounded-md p-8 ">
-                        <div className="w-full h-[50%] rounded-md flex justify-center items-center">
-                            <h1 className="text-[rgb(255,255,255)] text-[150px] font-mono">25:00</h1>
+            <div className="w-full flex justify-center items-start flex-wrap gap-8 my-8">
+                <div className="flex flex-col gap-8 w-[500px] h-full">
+                    <div className=" bg-[#38354b] w-[500px]  h-[500px] rounded-md p-8 ">
+                        <div className="relative w-full h-[50%] rounded-md flex flex-col justify-center items-center">
+                            <button className="absolute top-4 right-4 settings-button">⚙️ Settings</button>
+                            <h1 className="text-[rgb(255,255,255)] text-[150px] font-mono mt-[180px]">25:00</h1>
+                            <button className="start-button">START</button>
                         </div>
                     </div>
-                    <div className=" bg-[#38354b] overflow-auto rounded-md p-8  flex items-start flex-col gap-4 h-[269px]">
-                        <div className="flex justify-start items-center gap-2">
-                            <div className="w-12 h-12 rounded-full bg-white">
+                    <div className="chat-scroll bg-[#38354b] overflow-auto rounded-md p-8  flex items-start flex-col gap-4 h-[269px]">
 
-                            </div>
-                            <h1 className="text-white text-[16px]">Username</h1>
-                        </div>
-                        <div className="flex justify-start items-center gap-2">
-                            <div className="w-12 h-12 rounded-full bg-white">
 
-                            </div>
-                            <h1 className="text-white text-[16px]">Username</h1>
-                        </div>
+                        {roomUsers.map(user => (
+                            <RoomUser
+                            key={user.id}   
+                            isClient={user.id == profile?.id}
+                            isAdmin={user.admin}
+                            username= {user.username}
+                            iconImage= {user.image}
+                            isAdminClient={roomUsers.find(u => u.id === profile?.id)?.admin || false}
+                            />
+                        ))}
                     </div>
                 </div>
                 
                 <div className=" bg-[#38354b] w-[500px]  h-[800px] flex flex-col gap-1">
-                    <div className="px-3 py-8 flex flex-col gap-4 overflow-y-auto rounded-md chat-scroll">
+                    <div 
+                    ref={messagesContainerRef}
+                    className="flex-1 px-3 py-8 flex flex-col gap-4 overflow-y-auto rounded-md chat-scroll">
 
 
                         {roomMessages.map(m => (
