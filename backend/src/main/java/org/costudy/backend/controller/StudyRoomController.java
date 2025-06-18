@@ -78,6 +78,21 @@ public class StudyRoomController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Fetched users in room: " + roomCode, users));
     }
 
+    @DeleteMapping("/{roomCode}/kick")
+    public ResponseEntity<ApiResponse<?>> kickUserInRoom(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String roomCode, @RequestBody String username) {
+        if(userDetails.getUsername().equals(username)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                    new ApiResponse<>(false, "Admin cannot kick themself")
+            );
+        }
+        roomService.kickUser(
+                roomCode,
+                userService.getCurrentUser(userDetails.getUsername()),
+                userService.getCurrentUser(username)
+                );
+        return ResponseEntity.ok(new ApiResponse<>(true, "Kicked " + username));
+    }
+
     @DeleteMapping("/{roomId}/delete")
     public ResponseEntity<ApiResponse<?>> deleteStudyRoom(@AuthenticationPrincipal UserDetails userDetails, @PathVariable int roomId) {
         try {

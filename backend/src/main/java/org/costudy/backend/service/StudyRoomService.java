@@ -137,4 +137,29 @@ public class StudyRoomService {
                 .map(rel -> new UserDto(rel.getUser(), rel.isAdmin()))
                 .collect(Collectors.toList());
     }
+
+    public void kickUser(String roomCode, User admin, User user) {
+        StudyRoom room = roomRepo.findByCode(roomCode);
+        if(room == null) {
+            throw new IllegalArgumentException("Room does not exist or this code is invalid");
+        }
+
+        if(!isInRoom(admin, room) || !isInRoom(user, room)) {
+            throw new AccessDeniedException("This user does not belong to this room");
+        }
+
+        Optional<UserStudyRoom> relationship = userStudyRoomRepo.findByIdUserIdAndIdRoomId(admin.getId(), room.getRoomId());
+        if(relationship.isEmpty()) {
+            throw new AccessDeniedException("This admin is not in this room");
+        }
+
+        UserStudyRoom rel = relationship.get();
+        if(!rel.isAdmin()) {
+            throw new AccessDeniedException("This user is not an admin");
+        }
+
+        userStudyRoomRepo.delete(
+                userStudyRoomRepo.findByIdUserIdAndIdRoomId(user.getId(), room.getRoomId()).get()
+        );
+    }
 }
