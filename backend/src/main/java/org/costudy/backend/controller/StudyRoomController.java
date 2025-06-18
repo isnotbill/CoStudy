@@ -94,6 +94,8 @@ public class StudyRoomController {
                 userService.getCurrentUser(userDetails.getUsername()),
                 userService.getCurrentUser(username)
                 );
+
+        tpl.convertAndSend("/topic/room/" + roomCode + "/kick", username);
         return ResponseEntity.ok(new ApiResponse<>(true, "Kicked " + username));
     }
 

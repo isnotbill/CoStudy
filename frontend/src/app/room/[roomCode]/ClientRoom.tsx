@@ -6,7 +6,7 @@ import MainHeader from "@/components/MainHeader";
 import RoomUser from "@/components/RoomUser";
 
 import { Client } from '@stomp/stompjs'
-// import { useParams, useRouter, notFound } from "next/navigation";
+import { useRouter } from "next/navigation";
 import  SockJS  from 'sockjs-client';
 import apiClient from "../../../../lib/apiClient";
 
@@ -43,15 +43,13 @@ interface RoomUser{
 export default function ClientRoom({ roomId, roomCode }: ClientRoomProp) {
 
     // const { roomCode } = useParams()
-    // const router = useRouter()
+    const router = useRouter()
     const stompRef = useRef<Client | null>(null)
     // const [roomId, setRoomId] = useState<null|number>(null)
     const [inputMessage, setInputMessage] = useState("")
     const [roomMessages, setRoomMessages] = useState<ChatMessage[]>([])
     const [roomUsers, setRoomUsers] = useState<RoomUser[]>([]);
-
     const [loadJoinRoom, setLoadJoinRoom] = useState(true)
-
     const [loadingMessages, setLoadingMessages] = useState(true)
     const [loadingProfile, setLoadingProfile] = useState(true)
     const [error, setError] = useState<string|null>(null)
@@ -164,6 +162,16 @@ export default function ClientRoom({ roomId, roomCode }: ClientRoomProp) {
                 const newUser: RoomUser = JSON.parse(msg.body)
                 setRoomUsers(prev => [...prev, newUser])
             })
+
+            client.subscribe(`/topic/room/${roomCode}/kick`, msg => {
+                const kickedUsername: string = msg.body
+                setRoomUsers(u => u.filter(user => user.username !== kickedUsername))
+
+                if (kickedUsername == profile?.username){
+                    client.deactivate()
+                    router.replace("/home")
+                }
+            })
         }
 
         client.onStompError = frame => {
@@ -209,6 +217,22 @@ export default function ClientRoom({ roomId, roomCode }: ClientRoomProp) {
         
     }
 
+    async function kickUser(username: string){
+        try {
+            const res = await apiClient.delete(
+                `/room/${roomCode}/kick`,
+                {
+                    data: username,
+                    headers: {"Content-Type": "text/plain"}
+                }
+            )
+            setRoomUsers(u => u.filter(user => user.username !== username))
+
+        } catch (err: any ){
+            console.error("Error to kick user: ", err)
+        }
+    }
+
     if (loadingMessages) return <p className="text.purple">Loading room...</p>
     if (error){return <p className="text-red-500">{error}</p>}
     return (
@@ -234,6 +258,7 @@ export default function ClientRoom({ roomId, roomCode }: ClientRoomProp) {
                             isAdmin={user.admin}
                             username= {user.username}
                             iconImage= {user.image}
+                            onKick={() => {kickUser(user.username)}}
                             isAdminClient={roomUsers.find(u => u.id === profile?.id)?.admin || false}
                             />
                         ))}
