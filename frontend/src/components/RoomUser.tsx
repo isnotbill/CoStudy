@@ -6,7 +6,7 @@ interface RoomUserInterface {
     username: string
     iconImage: string
     isAdminClient: boolean
-    onKick: (userId: number) => void
+    onKick: (username: string) => void
 }
 export default function RoomUser(props: RoomUserInterface){
 
@@ -30,7 +30,7 @@ export default function RoomUser(props: RoomUserInterface){
 
                 {props.isAdminClient && !props.isClient && (
                     <button
-                    // onClick={} 
+                    onClick={() => props.onKick(props.username)} 
                     className=" ml-2 text-red-500 text-xs border border-red-500 px-2 py-1 rounded hover:bg-red-500 hover:text-white">
                         KICK
                     </button>
