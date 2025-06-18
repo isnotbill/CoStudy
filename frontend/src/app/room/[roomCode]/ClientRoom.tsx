@@ -108,7 +108,7 @@ export default function ClientRoom({ roomId, roomCode }: ClientRoomProp) {
             }
         }
         fetchRoomUsers() 
-    }, [roomUsers, loadJoinRoom])
+    }, [loadJoinRoom])
 
     // Let the user join the room if haven't already
     useEffect(() => {
