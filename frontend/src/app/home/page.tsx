@@ -5,6 +5,8 @@ import MainHeader from '@/components/MainHeader'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import apiClient from '../../../lib/apiClient' 
+import UserRooms from '@/components/UserRooms'
+import JoinCreateRoom from '@/components/JoinCreateRoom'
 
 interface Profile {
   username: string
@@ -34,7 +36,7 @@ export default function HomePage(){
 
     useEffect(() => {
         if (error) {
-            //window.location.href = '/login'
+            window.location.href = '/login'
         }
     }, [error])
 
@@ -46,10 +48,10 @@ export default function HomePage(){
 
     return (
         <>
-        <main className='bg-[rgb(33,31,48)] w-screen h-screen flex flex-col items-center'>
+        <main className='bg-[rgb(33,31,48)] w-full min-h-screen flex flex-col items-center'>
             <MainHeader/>
-            <div className='flex flex-col gap-4 w-full h-full justify-center items-center p-4'>
-                <div className='relative flex items-center justify-start gap-4 rounded-3xl w-[1000px] h-[200px]'>
+            <div className='flex flex-col gap-4 w-full max-w-[1000px] justify-center items-center'>
+                <div className='relative flex items-center justify-start gap-4 rounded-3xl w-full h-[200px]'>
 
                         <Image
                             src={src}
@@ -61,17 +63,12 @@ export default function HomePage(){
 
                     <h1 className="text-white text-3xl">{profile?.username}</h1>
                 </div>
-                <div className='w-[1000] h-full flex gap-4'> 
-                    <div className='bg-[#333044] w-[500] h-full rounded-3xl'>
-
-                    </div>
-                    <div className='bg-[#333044] w-[500] h-full rounded-3xl'>
-
-                    </div>
+                <div className='w-full flex flex-wrap gap-4 justify-center'> 
+                    
+                    <JoinCreateRoom/>
+                    <UserRooms/>
                 </div>
             </div>
-            
-            
         </main>
         </>
     );
