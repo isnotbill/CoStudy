@@ -29,7 +29,6 @@ apiClient.interceptors.response.use(
 
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
-    console.log(error.response?.status)
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         // Wait for ongoing refresh to finish
@@ -45,7 +44,9 @@ apiClient.interceptors.response.use(
 
       try {
         // Call refresh endpoint; expects new tokens as HttpOnly cookies from backend
-        await apiClient.get('/refresh-token', { withCredentials: true });
+        console.log('refreshing')
+        await axios.get(`${apiClient.defaults.baseURL}/refresh-token`, { withCredentials: true });
+        console.log('continue')
         processQueue(null);
         return apiClient(originalRequest); // Retry original request with new cookies sent automatically
       } catch (refreshError) {
