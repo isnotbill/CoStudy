@@ -61,13 +61,13 @@ export default function ClientRoom() {
         .then(res => {
             if (!res.data.success)
             {
-                return (<h1 className="text-red-500">INVALID ROOM</h1>)
+                router.replace("/room/not-found")
             } else {
                 setRoomId(res.data.data.roomId)
             }
         })
         .catch(() => {
-            return (<h1 className="text-red-500">INVALID ROOM</h1>)
+            router.replace("/room/not-found")
         })
     }, [roomCode, router])
 
