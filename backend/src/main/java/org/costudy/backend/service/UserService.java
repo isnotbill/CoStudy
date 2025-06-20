@@ -1,5 +1,6 @@
 package org.costudy.backend.service;
 
+import org.costudy.backend.dto.UserRoomDto;
 import org.costudy.backend.model.StudyRoom;
 import org.costudy.backend.model.User;
 import org.costudy.backend.model.UserStudyRoom;
@@ -34,12 +35,11 @@ public class UserService {
         repo.save(user);
     }
 
-    public List<StudyRoom> getUserRooms(String username) {
+    public List<UserRoomDto> getUserRooms(String username) {
         User user = getCurrentUser(username);
         List<UserStudyRoom> relationships = userStudyRoomRepo.findByUser(user);
-
         return relationships.stream()
-                .map(UserStudyRoom::getStudyRoom)
+                .map(rel -> new UserRoomDto(rel.getStudyRoom(), rel.isAdmin()))
                 .collect(Collectors.toList());
     }
 }

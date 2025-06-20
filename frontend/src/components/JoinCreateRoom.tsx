@@ -46,23 +46,28 @@ export default function JoinCreateRoom() {
             </div>
             <div className='h-full w-full'>
                 {activeTab === 'join' && 
-                <div className='h-full w-full'>
+                <div className='h-full w-full flex flex-col'>
                     <div className='w-full h-[60px]'>
-                        <input type="text" value={inputVal} className="bg-[rgba(255,255,255,0.1)] w-full h-full text-white p-1 flex-1 rounded-lg"
+                        <div className='text-center text-white'>Enter Room Code</div>
+                        <input type="text" value={inputVal} className="bg-[rgba(255,255,255,0.1)] w-full h-full text-white p-1 flex-1 rounded-lg text-center font-bold text-xl"
                         onChange={(e) => {
                             setInputVal(e.target.value)
+                            setErrorMsg('')
                         }}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter') joinRoom(inputVal); // optionally handle Enter key
+                            if (e.key === 'Enter') {
+                                joinRoom(inputVal); // optionally handle Enter key
                             }}
+                        }
                          />
                          
                     </div>
                     {errorMsg && (
-                                <div className="text-red-400 mt-2 text-center">
-                                    {errorMsg}
-                                </div>
-                        )}
+                            <div className="text-red-400 mt-8 text-center">
+                                {errorMsg}
+                            </div>
+                    )}
+                    
                         
                 </div>
                 }
