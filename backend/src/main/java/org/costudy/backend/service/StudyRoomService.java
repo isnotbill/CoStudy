@@ -1,10 +1,8 @@
 package org.costudy.backend.service;
 
 import org.costudy.backend.dto.UserDto;
-import org.costudy.backend.model.StudyRoom;
-import org.costudy.backend.model.User;
-import org.costudy.backend.model.UserStudyRoom;
-import org.costudy.backend.model.UserStudyRoomId;
+import org.costudy.backend.model.*;
+import org.costudy.backend.repo.ChatMessageRepository;
 import org.costudy.backend.repo.StudyRoomRepo;
 import org.costudy.backend.repo.UserStudyRoomRepo;
 import org.springframework.security.access.AccessDeniedException;
@@ -23,10 +21,12 @@ public class StudyRoomService {
 
     private final UserStudyRoomRepo userStudyRoomRepo;
     private final StudyRoomRepo roomRepo;
+    private final ChatMessageRepository chatRepo;
 
-    public StudyRoomService(UserStudyRoomRepo userStudyRoomRepo, StudyRoomRepo studyRoomRepo) {
+    public StudyRoomService(UserStudyRoomRepo userStudyRoomRepo, StudyRoomRepo studyRoomRepo, ChatMessageRepository chatRepo) {
         this.userStudyRoomRepo = userStudyRoomRepo;
         this.roomRepo = studyRoomRepo;
+        this.chatRepo = chatRepo;
     }
 
 
@@ -54,6 +54,7 @@ public class StudyRoomService {
     public StudyRoom getStudyRoom(String roomCode) {
         return roomRepo.findByCode(roomCode);
     }
+
 
     private String generateJoinCode() {
         String joinCode = null;
@@ -165,5 +166,23 @@ public class StudyRoomService {
         userStudyRoomRepo.delete(
                 userStudyRoomRepo.findByIdUserIdAndIdRoomId(user.getId(), room.getRoomId()).get()
         );
+    }
+
+    public ChatMessage announceJoin(User user, StudyRoom room) {
+        ChatMessage chat = new ChatMessage();
+        chat.setType(MessageType.SERVER);
+        chat.setContent("\uD83E\uDC72 " + user.getUsername() + " joined the room!");
+        chat.setStudyRoom(room);
+        chatRepo.save(chat);
+        return chat;
+    }
+
+    public ChatMessage announceKick(User user, StudyRoom room) {
+        ChatMessage chat = new ChatMessage();
+        chat.setType(MessageType.SERVER);
+        chat.setContent("\uD83E\uDC70 " + user.getUsername() + " was shown the exit! \uD83D\uDC4B");
+        chat.setStudyRoom(room);
+        chatRepo.save(chat);
+        return chat;
     }
 }

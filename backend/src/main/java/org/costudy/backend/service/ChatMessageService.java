@@ -37,6 +37,7 @@ public class ChatMessageService {
         msg.setContent(chatDto.getContent());
         msg.setUsername(chatDto.getUsername());
         msg.setImageIcon(chatDto.getImageIcon());
+        msg.setType(chatDto.getType());
         chatRepo.save(msg);
         tpl.convertAndSend("/topic/room/" + roomId, msg);
     }
@@ -47,5 +48,6 @@ public class ChatMessageService {
             throw new IllegalArgumentException("Room does not exist");
         }
         return chatRepo.getChatMessageByStudyRoom(room);
+
     }
 }

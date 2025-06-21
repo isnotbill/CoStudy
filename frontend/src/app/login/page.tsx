@@ -4,9 +4,12 @@ import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 export default function Login() {
     const [error, setError] = useState<null | string[]>(null)
+    const params = useSearchParams()
+    const reason = params.get("reason")
 
     async function handleSubmit(e: React.FormEvent){
         e.preventDefault()
@@ -97,7 +100,7 @@ export default function Login() {
                     </button>
 
                     {error && <p className="text-red-500 text-sm mt-[-30px]">{error}</p>}
-
+                    {reason === "expired_token" && <p className="text-red-500 text-sm mt-[-30px]">Token expired, please log in again.</p>}
                     <div className="flex items-center space-x-1 mt-[-35px] text-xs text-gray-500">
                     <span>Don't have an account?</span>
                     <Link href="/" className="text-indigo-600 hover:underline">
