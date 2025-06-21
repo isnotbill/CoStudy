@@ -7,7 +7,8 @@ import { useRouter } from 'next/navigation';
 export default function JoinCreateRoom() {
     const [activeTab, setActiveTab] = useState<'create' | 'join'>('join')
 
-    const [inputVal, setInputVal] = useState('');
+    const [joinInputVal, setJoinInputVal] = useState('');
+    const [createInputVal, setCreateInputVal] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
     const router = useRouter();
 
@@ -17,6 +18,19 @@ export default function JoinCreateRoom() {
             
             router.push(`/room/${roomCode}`);
 
+        } catch (err : any) {
+            if(err.response && err.response.status === 409) {
+                setErrorMsg(err.response.data.message);
+            } else {
+                setErrorMsg(err.response.data.message);
+            }
+        }
+    }
+
+    const createRoom = async (roomName : string) => {
+        try {
+            const res = await apiClient.post(`/room/create`, roomName);
+            router.push(`/room/${res.data.data}`);
         } catch (err : any) {
             if(err.response && err.response.status === 409) {
                 setErrorMsg(err.response.data.message);
@@ -49,14 +63,14 @@ export default function JoinCreateRoom() {
                 <div className='h-full w-full flex flex-col'>
                     <div className='w-full h-[60px]'>
                         <div className='text-center text-white'>Enter Room Code</div>
-                        <input type="text" value={inputVal} className="bg-[rgba(255,255,255,0.1)] w-full h-full text-white p-1 flex-1 rounded-lg text-center font-bold text-xl"
+                        <input type="text" value={joinInputVal} className="bg-[rgba(255,255,255,0.1)] w-full h-full text-white p-1 flex-1 rounded-lg text-center font-bold text-xl"
                         onChange={(e) => {
-                            setInputVal(e.target.value)
+                            setJoinInputVal(e.target.value)
                             setErrorMsg('')
                         }}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') {
-                                joinRoom(inputVal); // optionally handle Enter key
+                                joinRoom(joinInputVal); // optionally handle Enter key
                             }}
                         }
                          />
@@ -70,6 +84,26 @@ export default function JoinCreateRoom() {
                     
                         
                 </div>
+                }
+                {activeTab === 'create' &&
+                <div>
+                    <div className='w-full h-[60px]'>
+                        <div className='text-center text-white'>Enter room name</div>
+                        <input type="text" value={createInputVal} className="bg-[rgba(255,255,255,0.1)] w-full h-full text-white p-1 flex-1 rounded-lg text-center font-bold text-xl"
+                        onChange={(e) => {
+                            setCreateInputVal(e.target.value)
+                            setErrorMsg('')
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                createRoom(createInputVal); // optionally handle Enter key
+                            }}
+                        }
+                         />
+                         
+                    </div>
+                </div>
+
                 }
 
             </div>

@@ -39,7 +39,10 @@ public class UserService {
         User user = getCurrentUser(username);
         List<UserStudyRoom> relationships = userStudyRoomRepo.findByUser(user);
         return relationships.stream()
-                .map(rel -> new UserRoomDto(rel.getStudyRoom(), rel.isAdmin()))
+                .map(rel -> {
+                    StudyRoom room = rel.getStudyRoom();
+                    return new UserRoomDto(room, rel.isAdmin(), userStudyRoomRepo.countByStudyRoom(room));
+                })
                 .collect(Collectors.toList());
     }
 }

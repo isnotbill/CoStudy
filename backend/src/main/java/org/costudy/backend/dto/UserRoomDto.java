@@ -13,12 +13,13 @@ public class UserRoomDto {
     private String name;
     private String code;
     private boolean admin;
-    // private int members; TODO: implement into study room
+    private int members;
 
-    public UserRoomDto(StudyRoom room, boolean isAdmin) {
+    public UserRoomDto(StudyRoom room, boolean isAdmin, int members) {
         this.roomId = room.getRoomId();
         this.name = room.getName();
         this.code = room.getCode();
         this.admin = isAdmin;
+        this.members = members;
     }
 }
