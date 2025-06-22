@@ -4,9 +4,9 @@ import Image from "next/image"
 
 export default function NotFound(){
   return(
-    <div className="h-screen w-screen flex flex-col">
+    <div className="h-screen w-screen bg-[rgb(141,144,184)] flex flex-col">
       <MainHeader />
-      <div className="flex h-full w-full items-center justify-center bg-[rgb(141,144,184)] text-black">
+      <div className="flex h-full w-full items-center justify-center text-black">
         <Image 
           src="/images/404blob.png"
           alt="img"

@@ -17,5 +17,12 @@ export default {
       }
     },
   },
+
+  safelist: [
+    'main-bg',
+    'work-phase',
+    'short-break-phase',
+    'long-break-phase',
+  ],
   plugins: [],
 } satisfies Config;

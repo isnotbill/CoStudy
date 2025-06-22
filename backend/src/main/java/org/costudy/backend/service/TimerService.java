@@ -105,6 +105,7 @@ public class TimerService {
 
         t.setStartedAt(Instant.now());
         t.setStatus(TimerStatus.RUNNING);
+        t.setDurationMs(remaining(t));
         timerRepo.save(t);
 
         schedule(roomId, t.getDurationMs());
@@ -115,6 +116,36 @@ public class TimerService {
     public TimerDto status(int roomId){
         return TimerDto.from(must(roomId));
 
+    }
+
+    public TimerDto skipTo(Integer roomId, TimerPhase skipToPhase) {
+        RoomTimer t = must(roomId);
+        if (t.getPhase() == skipToPhase){return TimerDto.from(t);}
+
+        cancel(roomId);
+        t.setStatus(TimerStatus.PAUSED);
+        t.setPhase(skipToPhase);
+
+        switch(skipToPhase){
+            case WORK:
+                t.setDurationMs(WORK_MS);
+                break;
+            case SHORT_BREAK:
+                t.setDurationMs(SHORT_BREAK_MS);
+                t.setWorkCyclesDone(t.getWorkCyclesDone() + 1); // TODO
+                break;
+            case LONG_BREAK:
+                t.setDurationMs(LONG_BREAK_MS);
+                t.setWorkCyclesDone(4);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown skipToPhase: " + skipToPhase);
+        } // TODO: CHANGE WHEN SETTINGS
+
+        timerRepo.save(t);
+        broadcast(roomId, t);
+
+        return TimerDto.from(t);
     }
 
     // Internal

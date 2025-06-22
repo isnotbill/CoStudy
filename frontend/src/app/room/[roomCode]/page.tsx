@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import ChatMessage from "@/components/ChatMessage"
 import MainHeader from "@/components/MainHeader";
 import RoomUser from "@/components/RoomUser";
@@ -135,7 +135,7 @@ export default function ClientRoom() {
             try {
                 const resUsers = await apiClient.post(`/room/${roomCode}/join`)
             } catch (err: any){
-                if (err.response.message = "Duplicate"){return}
+                if (err.response?.data?.message === "Duplicate"){return} // TODO DO NOT USE .message to check
                 setError("Failed to join room")
             } finally {
                 setLoadJoinRoom(false)
@@ -218,6 +218,10 @@ export default function ClientRoom() {
         client.activate()
         stompRef.current = client
 
+        return () => {
+            client.deactivate()
+        }
+
     }, [loadingMessages, roomId, loadingProfile])
 
     // Local clock ticking for timer
@@ -232,7 +236,7 @@ export default function ClientRoom() {
         if (roomId == null){return}
         async function createTimer(){
             try {
-                const res = apiClient.post(`/timer/create/${roomId}`)
+                const res = await apiClient.post(`/timer/create/${roomId}`)
             } catch (err : any) {
                 setError(err);
             }
@@ -257,6 +261,16 @@ export default function ClientRoom() {
         })
     }
 
+    const skipTimer = (dest: string, body: {roomId : number | null, skipToPhase: TimerPhase}) => {
+        if (body.roomId == null){return}
+        stompRef.current?.publish({
+            destination: dest,
+            body: typeof body === "string" ? body : JSON.stringify(body)
+        })
+
+    }
+
+    // Handle sending chat messages to backend
     function handleSend(e: React.FormEvent){
         e.preventDefault()
         if (!inputMessage.trim()){return}
@@ -283,6 +297,7 @@ export default function ClientRoom() {
         
     }
 
+    // Handle kicking user
     async function kickUser(username: string){
         try {
             const res = await apiClient.delete(
@@ -299,6 +314,28 @@ export default function ClientRoom() {
         }
     }
 
+    // Change background className depending on the phase
+    const bgClass = useMemo(() => {
+        if (!timer || timer.status !== "RUNNING") return "";
+
+        switch (timer.phase) {
+            case "WORK": return "work-phase"
+            case "SHORT_BREAK": return "short-break-phase"
+            case "LONG_BREAK": return "long-break-phase"
+            default: return ""
+        }
+    }, [timer])
+
+    // To display the current phase of the timer
+    const currentWorkCycles = useMemo(() => {
+        if (!timer) return ""
+
+        return timer.workCyclesDone + 1
+    }, [timer])
+
+
+    
+
     const mm = String(Math.floor(ms / 60000)).padStart(2,"0")
     const ss = String(Math.floor(ms / 1000) % 60).padStart(2,"0")
 
@@ -306,16 +343,41 @@ export default function ClientRoom() {
     if (error){return <p className="text-red-500">{error}</p>}
     return (
         <>
-        <main className='bg-[rgb(33,31,48)] w-screen min-h-screen flex flex-col items-center'>
+        <main className={`main-bg w-screen min-h-screen flex flex-col items-center
+        ${bgClass}`}
+        >
             <MainHeader/>
             <div className="w-full flex justify-center items-start flex-wrap gap-8 my-8">
                 <div className="flex flex-col gap-8 w-[500px] h-full">
-                    <div className=" bg-[#38354b] w-[500px]  h-[500px] rounded-md p-8 ">
-                        <div className="relative w-full h-[50%] rounded-md flex flex-col justify-center items-center">
+                    <div className=" card-pane w-[500px]  h-[500px] rounded-md p-8 ">
+                        <div className="relative w-full h-[50%] rounded-md flex flex-col justify-center items-center gap-10">
                             <button className="absolute top-4 right-4 settings-button">⚙️ Settings</button>
+                            <div className="text-white flex  gap-2 mt-[260px] mb-[-20px] text-lg">
+                                <button className={`hover:text-[#d6d6d6] hover:underline p-2 rounded-lg ${
+                                    timer?.phase === "WORK" ? "bg-[rgba(23,21,36,0.49)]" : ""
+                                }`}
+                                onClick={() => {skipTimer("/app/timer/skipTo", {
+                                    roomId: roomId,
+                                    skipToPhase: "WORK"
+                                })}}
+                                >Work Cycle #{currentWorkCycles}</button>
+                                <button className={`hover:text-[#d6d6d6] hover:underline p-2 rounded-lg ${
+                                    timer?.phase === "SHORT_BREAK" ? "bg-[rgba(23,21,36,0.49)]" : ""
+                                }`}
+                                onClick={() => {skipTimer("/app/timer/skipTo", {
+                                    roomId: roomId,
+                                    skipToPhase: "SHORT_BREAK"
+                                })}}>Short Break</button>
+                                <button className={`hover:text-[#d6d6d6] hover:underline p-2 rounded-lg ${
+                                    timer?.phase === "LONG_BREAK" ? "bg-[rgba(23,21,36,0.49)]" : ""
+                                }`}
+                                onClick={() => {skipTimer("/app/timer/skipTo", {
+                                    roomId: roomId,
+                                    skipToPhase: "LONG_BREAK"
+                                })}}>Long Break</button>
+                            </div>
+                            <h1 className="text-[rgb(255,255,255)] text-9xl font-mono ">{mm}:{ss}</h1>
                             
-                            <h1 className="text-[rgb(255,255,255)] text-[150px] font-mono mt-[180px]">{mm}:{ss}</h1>
-                            <p className="text-white">{timer?.phase ?? "ERROR"}</p>
                             <button className="start-button"
                                     onClick={() => {
                                         if (!timer){
@@ -331,7 +393,7 @@ export default function ClientRoom() {
 
                         </div>
                     </div>
-                    <div className="chat-scroll bg-[#38354b] overflow-auto rounded-md p-8  flex items-start flex-col gap-4 h-[269px]">
+                    <div className="chat-scroll card-pane overflow-auto rounded-md p-8  flex items-start flex-col gap-4 h-[269px]">
 
                         {roomUsers.map(user => (
                             <RoomUser
@@ -347,7 +409,7 @@ export default function ClientRoom() {
                     </div>
                 </div>
                 
-                <div className=" bg-[#38354b] w-[500px]  h-[800px] flex flex-col gap-1">
+                <div className=" card-pane w-[500px]  h-[800px] flex flex-col gap-1">
                     <div 
                     ref={messagesContainerRef}
                     className="flex-1 px-3 py-8 flex flex-col gap-4 overflow-y-auto rounded-md chat-scroll">
