@@ -24,12 +24,13 @@ public class TimerController {
 
     @MessageMapping("/timer/pause")
     public void pause(@Payload int roomId){
-        timerService.pause(roomId);
+        //timerService.pause(roomId);
     }
 
     @MessageMapping("/timer/resume")
     public void resume(@Payload int roomId){
-        timerService.resume(roomId);
+        //timerService.resume(roomId);
+
     }
 
 

@@ -5,7 +5,7 @@ import { join } from 'path';
 import { useRouter } from 'next/navigation';
 
 export default function JoinCreateRoom() {
-    const [activeTab, setActiveTab] = useState<'create' | 'join'>('join')
+    const [activeTab, setActiveTab] = useState<'create' | 'join'>('create')
 
     const [joinInputVal, setJoinInputVal] = useState('');
     const [createInputVal, setCreateInputVal] = useState('');
@@ -29,7 +29,10 @@ export default function JoinCreateRoom() {
 
     const createRoom = async (roomName : string) => {
         try {
-            const res = await apiClient.post(`/room/create`, roomName);
+            const res = await apiClient.post(`/room/create`, roomName, {
+                headers: {
+                    'Content-Type': 'text/plain',
+                },});
             router.push(`/room/${res.data.data}`);
         } catch (err : any) {
             if(err.response && err.response.status === 409) {
