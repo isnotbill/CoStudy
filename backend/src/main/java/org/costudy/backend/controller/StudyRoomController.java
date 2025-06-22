@@ -1,6 +1,7 @@
 package org.costudy.backend.controller;
 
 import org.costudy.backend.dto.ChatMessageDto;
+import org.costudy.backend.dto.CreateRoomDto;
 import org.costudy.backend.dto.UserDto;
 import org.costudy.backend.model.ChatMessage;
 import org.costudy.backend.model.StudyRoom;
@@ -32,12 +33,9 @@ public class StudyRoomController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<?>> createStudyRoom(@AuthenticationPrincipal UserDetails userDetails, @RequestBody(required = false) String name) {
-        if(name == null || name.isEmpty()) {
-            return ResponseEntity.badRequest()
-                    .body(new ApiResponse<>(false, "Invalid name"));
-        }
-        String code = roomService.createRoom(userService.getCurrentUser(userDetails.getUsername()), name);
+    public ResponseEntity<ApiResponse<?>> createStudyRoom(@AuthenticationPrincipal UserDetails userDetails, @RequestBody CreateRoomDto createRoomDto) {
+
+        String code = roomService.createRoom(userService.getCurrentUser(userDetails.getUsername()), createRoomDto);
         return ResponseEntity.ok(new ApiResponse<>(true, "Created Study Room", code));
     }
 

@@ -4,6 +4,15 @@ import apiClient from '../../lib/apiClient';
 import { join } from 'path';
 import { useRouter } from 'next/navigation';
 
+interface SettingsDto {
+    name: string,
+    isPublic: boolean,
+    studyTimeMs: number,
+    shortBreakTimeMs: number,
+    longBreakTimeMs: number,
+    cyclesTillLongBreak: number,
+}
+
 export default function JoinCreateRoom() {
     const [activeTab, setActiveTab] = useState<'create' | 'join'>('create')
 
@@ -29,10 +38,15 @@ export default function JoinCreateRoom() {
 
     const createRoom = async (roomName : string) => {
         try {
-            const res = await apiClient.post(`/room/create`, roomName, {
-                headers: {
-                    'Content-Type': 'text/plain',
-                },});
+            const settings: SettingsDto = {
+                name: roomName,
+                isPublic: false,
+                studyTimeMs: 1000 * 60 * 25,
+                shortBreakTimeMs: 1000 * 60 * 5,
+                longBreakTimeMs: 1000 * 60 * 15,
+                cyclesTillLongBreak: 3,
+            }
+            const res = await apiClient.post(`/room/create`, settings);
             router.push(`/room/${res.data.data}`);
         } catch (err : any) {
             if(err.response && err.response.status === 409) {
