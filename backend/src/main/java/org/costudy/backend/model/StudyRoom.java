@@ -33,4 +33,8 @@ public class StudyRoom {
     @JsonIgnore
     private RoomTimer timer;
 
+    @OneToOne(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Settings settings;
+
 }

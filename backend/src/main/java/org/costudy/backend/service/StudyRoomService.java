@@ -1,9 +1,11 @@
 package org.costudy.backend.service;
 
+import org.costudy.backend.dto.CreateRoomDto;
 import org.costudy.backend.dto.UserDto;
 import org.costudy.backend.model.*;
 import org.costudy.backend.model.MessageType;
 import org.costudy.backend.repo.ChatMessageRepository;
+import org.costudy.backend.repo.SettingsRepo;
 import org.costudy.backend.repo.StudyRoomRepo;
 import org.costudy.backend.repo.UserStudyRoomRepo;
 import org.springframework.security.access.AccessDeniedException;
@@ -23,17 +25,19 @@ public class StudyRoomService {
     private final UserStudyRoomRepo userStudyRoomRepo;
     private final StudyRoomRepo roomRepo;
     private final ChatMessageRepository chatRepo;
+    private final SettingsService settingsService;
 
-    public StudyRoomService(UserStudyRoomRepo userStudyRoomRepo, StudyRoomRepo studyRoomRepo, ChatMessageRepository chatRepo) {
+    public StudyRoomService(UserStudyRoomRepo userStudyRoomRepo, StudyRoomRepo studyRoomRepo, ChatMessageRepository chatRepo, SettingsService settingsService) {
         this.userStudyRoomRepo = userStudyRoomRepo;
         this.roomRepo = studyRoomRepo;
         this.chatRepo = chatRepo;
+        this.settingsService = settingsService;
     }
 
 
-    public String createRoom(User user, String name) {
+    public String createRoom(User user, CreateRoomDto createRoomDto) {
         StudyRoom room = new StudyRoom();
-        room.setName(name);
+        room.setName(createRoomDto.getName());
 
         String code = generateJoinCode();
         room.setCode(code);
@@ -48,6 +52,8 @@ public class StudyRoomService {
         relationship.setAdmin(true);
 
         userStudyRoomRepo.save(relationship);
+
+        settingsService.createSettings(room, createRoomDto);
 
         return code;
     }
