@@ -2,6 +2,7 @@ package org.costudy.backend.service;
 
 import org.costudy.backend.dto.UserDto;
 import org.costudy.backend.model.*;
+import org.costudy.backend.model.MessageType;
 import org.costudy.backend.repo.ChatMessageRepository;
 import org.costudy.backend.repo.StudyRoomRepo;
 import org.costudy.backend.repo.UserStudyRoomRepo;

@@ -35,6 +35,26 @@ interface RoomUser{
     admin: boolean
 }
 
+type TimerPhase = "WORK" | "SHORT_BREAK" | "LONG_BREAK"
+type TimerStatus = "RUNNING" | "PAUSED"
+
+interface TimerDto {
+    phase: TimerPhase
+    status: TimerStatus
+    startedAt: string | null
+    durationMs: number
+    workCyclesDone: number
+}
+
+const remaining = (t: TimerDto) => {
+    if (t.status !== "RUNNING" || !t.startedAt) {
+        return t.durationMs
+    }
+    return Math.max(0,
+        t.durationMs - (Date.now() - new Date(t.startedAt).getTime())
+    )
+}
+
 // TODO: make ERROR a string[]
 export default function ClientRoom() {
 
@@ -51,6 +71,12 @@ export default function ClientRoom() {
     const [error, setError] = useState<string|null>(null)
     const [profile, setProfile] = useState<Profile | null>(null)
     const messagesContainerRef = useRef<HTMLDivElement>(null);
+    
+    const [timer, setTimer] = useState<TimerDto | null>(null)
+    const [ms, setMs] = useState(0);
+
+    // const [timerStatus, setTimerStatus] = useState<TimerStatus | null>(null)
+
 
     // Check if room code is valid
     useEffect(() => {
@@ -166,6 +192,23 @@ export default function ClientRoom() {
                     router.replace("/home")
                 }
             })
+
+            client.subscribe(`/topic/room/${roomId}/timer`, msg => {
+                const dto: TimerDto = JSON.parse(msg.body)
+                setTimer(dto)
+                setMs(remaining(dto))
+            })
+
+            client.subscribe('/user/queue/timer', msg => {
+                const dto: TimerDto = JSON.parse(msg.body)
+                setTimer(dto)
+                setMs(remaining(dto))
+            })
+
+            client.publish({
+            destination: "/app/timer/status",
+            body: String(roomId)})
+
         }
 
         client.onStompError = frame => {
@@ -176,7 +219,28 @@ export default function ClientRoom() {
         stompRef.current = client
 
     }, [loadingMessages, roomId, loadingProfile])
+
+    // Local clock ticking for timer
+    useEffect(() => {
+        if (!timer || timer.status !== "RUNNING"){return}
+        const id = setInterval(() => setMs(remaining(timer)), 1000)
+        return () => clearInterval(id);
+    }, [timer])
     
+    // Create Timer if doesn't exist already
+    useEffect(() => {
+        if (roomId == null){return}
+        async function createTimer(){
+            try {
+                const res = apiClient.post(`/timer/create/${roomId}`)
+            } catch (err : any) {
+                setError(err);
+            }
+        }
+        createTimer()
+
+    }, [roomId])
+
     // Scroll to bottom for every new message
     useEffect(() => {
         const element = messagesContainerRef.current;
@@ -185,6 +249,13 @@ export default function ClientRoom() {
         }
 
     }, [roomMessages])
+
+    const sendTimer = (dest: string, body: any) => {
+        stompRef.current?.publish({
+            destination: dest,
+            body: typeof body === "string" ? body : JSON.stringify(body)
+        })
+    }
 
     function handleSend(e: React.FormEvent){
         e.preventDefault()
@@ -228,6 +299,9 @@ export default function ClientRoom() {
         }
     }
 
+    const mm = String(Math.floor(ms / 60000)).padStart(2,"0")
+    const ss = String(Math.floor(ms / 1000) % 60).padStart(2,"0")
+
     if (loadingMessages) return <p className="text.purple">Loading room...</p>
     if (error){return <p className="text-red-500">{error}</p>}
     return (
@@ -239,12 +313,25 @@ export default function ClientRoom() {
                     <div className=" bg-[#38354b] w-[500px]  h-[500px] rounded-md p-8 ">
                         <div className="relative w-full h-[50%] rounded-md flex flex-col justify-center items-center">
                             <button className="absolute top-4 right-4 settings-button">⚙️ Settings</button>
-                            <h1 className="text-[rgb(255,255,255)] text-[150px] font-mono mt-[180px]">25:00</h1>
-                            <button className="start-button">START</button>
+                            
+                            <h1 className="text-[rgb(255,255,255)] text-[150px] font-mono mt-[180px]">{mm}:{ss}</h1>
+                            <p className="text-white">{timer?.phase ?? "ERROR"}</p>
+                            <button className="start-button"
+                                    onClick={() => {
+                                        if (!timer){
+                                            sendTimer("/app/timer/start", { roomId })
+                                        } else if (timer.status === 'PAUSED') {
+                                            sendTimer("/app/timer/resume", roomId)
+                                        } else {
+                                            sendTimer("/app/timer/pause", roomId)
+                                        }
+                                        }}>
+                            {!timer || timer.status === 'PAUSED' ? 'START' : 'PAUSE'}
+                            </button>
+
                         </div>
                     </div>
                     <div className="chat-scroll bg-[#38354b] overflow-auto rounded-md p-8  flex items-start flex-col gap-4 h-[269px]">
-
 
                         {roomUsers.map(user => (
                             <RoomUser

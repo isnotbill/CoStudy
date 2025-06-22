@@ -1,4 +1,4 @@
-package org.costudy.backend.model;
+package org.costudy.backend.model.timer;
 
 public enum TimerStatus {
     RUNNING,

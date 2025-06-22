@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.costudy.backend.model.timer.RoomTimer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,5 +28,9 @@ public class StudyRoom {
     @OneToMany(mappedBy = "studyRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<ChatMessage> messages = new ArrayList<>();
+
+    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private RoomTimer timer;
 
 }
