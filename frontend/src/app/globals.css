@@ -56,6 +56,8 @@
   box-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
+/* HOME PAGE */
+
 .home-buttons {
   border: 2px solid #ff4081;                   
   border-radius: 0.5rem;       
@@ -71,7 +73,87 @@
   background-color: #d81b60;
   transform: translateY(0px);
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  
 }
+
+.roomlist-button {
+  transition:
+    background-color 0.1s ease,
+    height 0.3s ease,
+    transform 0.2s ease;
+  background-color: rgba(255,255,255,0.05);
+  transform: translateY(0px);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.roomlist-button:hover {
+  background-color: rgba(250,250,250,0.1);
+  transform: translateY(-1px);
+  
+}
+
+.roomlist-select {
+  transition:
+    height 0.15s ease-out;
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+.roomlist-button:hover .roomlist-select  {
+  height: 100%;
+  width: 0.5rem;
+}
+
+.roomlist-select-delete {
+  transition:
+    width 0.2s ease,
+    height 0.2s ease;
+  height: 0px;
+  width: 0px;
+}
+
+.roomlist-button:hover .roomlist-select-delete {
+  height: 25px;
+  width: 45px;
+}
+
+.delete-text {
+  transition:
+    font-size 0.3s ease;
+  opacity: 0;
+  font-size: 0px;
+}
+
+.roomlist-button:hover .delete-text {
+  opacity: 1;
+  font-size: 12px;
+}
+
+/* POPUP */
+
+.popup-button {
+  display: inline-block;         
+  font-size: 1rem;               
+  font-weight: 600;              
+  color: #fff;                  
+    
+  border: 2px solid #ff4081;                   
+  border-radius: 0.5rem;         
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  transition:
+    background-color 0.2s ease,
+    transform        0.1s ease,
+    box-shadow       0.1s ease;
+}
+
+.popup-button:hover {
+  background-color: #e91e63;     
+  transform: translateY(-3px);  
+  box-shadow: 0 4px 6px rgba(0,0,0,0.35);
+}
+
+/* SETTINGS */
 
 .settings-button {
 

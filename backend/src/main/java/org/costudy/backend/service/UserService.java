@@ -1,5 +1,6 @@
 package org.costudy.backend.service;
 
+import org.costudy.backend.dto.UserRoomDto;
 import org.costudy.backend.model.StudyRoom;
 import org.costudy.backend.model.User;
 import org.costudy.backend.model.UserStudyRoom;
@@ -8,7 +9,6 @@ import org.costudy.backend.repo.UserStudyRoomRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,12 +34,14 @@ public class UserService {
         repo.save(user);
     }
 
-    public List<StudyRoom> getUserRooms(String username) {
+    public List<UserRoomDto> getUserRooms(String username) {
         User user = getCurrentUser(username);
         List<UserStudyRoom> relationships = userStudyRoomRepo.findByUser(user);
-
         return relationships.stream()
-                .map(UserStudyRoom::getStudyRoom)
+                .map(rel -> {
+                    StudyRoom room = rel.getStudyRoom();
+                    return new UserRoomDto(room, rel.isAdmin(), userStudyRoomRepo.countByStudyRoom(room));
+                })
                 .collect(Collectors.toList());
     }
 }

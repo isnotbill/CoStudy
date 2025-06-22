@@ -116,6 +116,7 @@ public class StudyRoomService {
         rel.setAdmin(false);
 
         userStudyRoomRepo.save(rel);
+
         return user;
     }
 

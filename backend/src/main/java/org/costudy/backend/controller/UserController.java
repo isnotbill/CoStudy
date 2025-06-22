@@ -52,11 +52,14 @@ public class UserController {
     }
 
     @GetMapping("/rooms")
-    public ResponseEntity<ApiResponse<?>> getUserRooms(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<ApiResponse<?>> getUserRooms(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
         return ResponseEntity.ok().body(
                 new ApiResponse<>(true, "Rooms fetched", userService.getUserRooms(userDetails.getUsername()))
         );
     }
+
 
 
 }

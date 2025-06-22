@@ -50,7 +50,7 @@ export default function HomePage(){
         <>
         <main className='bg-[rgb(33,31,48)] w-full min-h-screen flex flex-col items-center'>
             <MainHeader/>
-            <div className='flex flex-col gap-4 w-full max-w-[1000px] justify-center items-center'>
+            <div className='flex flex-col w-full max-w-[1000px] justify-center items-center'>
                 <div className='relative flex items-center justify-start gap-4 rounded-3xl w-full h-[200px]'>
 
                         <Image
