@@ -75,7 +75,7 @@ export default function ClientRoom() {
     const [timer, setTimer] = useState<TimerDto | null>(null)
     const [ms, setMs] = useState(0);
 
-    // const [timerStatus, setTimerStatus] = useState<TimerStatus | null>(null)
+    const [lastRunningPhase, setLastRunningPhase] = useState<TimerPhase | null>(null)
 
 
     // Check if room code is valid
@@ -314,28 +314,45 @@ export default function ClientRoom() {
         }
     }
 
-    // Change background className depending on the phase
-    const bgClass = useMemo(() => {
-        if (!timer || timer.status !== "RUNNING") return "";
-
-        switch (timer.phase) {
-            case "WORK": return "work-phase"
-            case "SHORT_BREAK": return "short-break-phase"
-            case "LONG_BREAK": return "long-break-phase"
-            default: return ""
+    // Update the state whenever the timer is RUNNING.
+    // This is needed for bgClass, otherwise background incorrectly fades out
+    useEffect(() => {
+        if (timer?.status === "RUNNING"){
+            setLastRunningPhase(timer.phase)
         }
     }, [timer])
 
+    // Change background className depending on the phase
+    const bgClass = useMemo(() => {
+        if (!timer) return "";
+
+        const phaseKey = timer.status === "RUNNING"
+            ? timer.phase
+            : lastRunningPhase
+
+        const phase = (() => {
+            switch (phaseKey) {
+                case "WORK": return "work-phase"
+                case "SHORT_BREAK": return "short-break-phase"
+                case "LONG_BREAK": return "long-break-phase"
+                default: return ""
+            }
+        })()
+
+        return timer.status === "RUNNING"
+        ? `${phase} phase-active`
+        : phase;
+
+    }, [timer, lastRunningPhase])
+
     // To display the current phase of the timer
     const currentWorkCycles = useMemo(() => {
-        if (!timer) return ""
+        if (!timer || timer.phase !== "WORK") return ""
 
-        return timer.workCyclesDone + 1
+        return "#" + (timer.workCyclesDone + 1)
     }, [timer])
 
-
     
-
     const mm = String(Math.floor(ms / 60000)).padStart(2,"0")
     const ss = String(Math.floor(ms / 1000) % 60).padStart(2,"0")
 
@@ -353,22 +370,22 @@ export default function ClientRoom() {
                         <div className="relative w-full h-[50%] rounded-md flex flex-col justify-center items-center gap-10">
                             <button className="absolute top-4 right-4 settings-button">⚙️ Settings</button>
                             <div className="text-white flex  gap-2 mt-[260px] mb-[-20px] text-lg">
-                                <button className={`hover:text-[#d6d6d6] hover:underline p-2 rounded-lg ${
+                                <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
                                     timer?.phase === "WORK" ? "bg-[rgba(23,21,36,0.49)]" : ""
                                 }`}
                                 onClick={() => {skipTimer("/app/timer/skipTo", {
                                     roomId: roomId,
                                     skipToPhase: "WORK"
                                 })}}
-                                >Work Cycle #{currentWorkCycles}</button>
-                                <button className={`hover:text-[#d6d6d6] hover:underline p-2 rounded-lg ${
+                                >Work Cycle {currentWorkCycles}</button>
+                                <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
                                     timer?.phase === "SHORT_BREAK" ? "bg-[rgba(23,21,36,0.49)]" : ""
                                 }`}
                                 onClick={() => {skipTimer("/app/timer/skipTo", {
                                     roomId: roomId,
                                     skipToPhase: "SHORT_BREAK"
                                 })}}>Short Break</button>
-                                <button className={`hover:text-[#d6d6d6] hover:underline p-2 rounded-lg ${
+                                <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
                                     timer?.phase === "LONG_BREAK" ? "bg-[rgba(23,21,36,0.49)]" : ""
                                 }`}
                                 onClick={() => {skipTimer("/app/timer/skipTo", {

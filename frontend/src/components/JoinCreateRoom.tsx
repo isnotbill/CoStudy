@@ -41,10 +41,13 @@ export default function JoinCreateRoom() {
             const settings: SettingsDto = {
                 name: roomName,
                 isPublic: false,
-                studyTimeMs: 1000 * 60 * 25,
-                shortBreakTimeMs: 1000 * 60 * 5,
-                longBreakTimeMs: 1000 * 60 * 15,
-                cyclesTillLongBreak: 3,
+                // studyTimeMs: 1000 * 60 * 25,
+                // shortBreakTimeMs: 1000 * 60 * 5,
+                // longBreakTimeMs: 1000 * 60 * 15,
+                studyTimeMs: 1000 * 1 * 1,
+                shortBreakTimeMs: 1000 * 2 * 1,
+                longBreakTimeMs: 1000 * 3 * 1,
+                cyclesTillLongBreak: 6,
             }
             const res = await apiClient.post(`/room/create`, settings);
             router.push(`/room/${res.data.data}`);

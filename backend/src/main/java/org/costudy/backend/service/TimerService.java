@@ -1,11 +1,13 @@
 package org.costudy.backend.service;
 
 import org.costudy.backend.dto.TimerDto;
+import org.costudy.backend.model.Settings;
 import org.costudy.backend.model.StudyRoom;
 import org.costudy.backend.model.timer.RoomTimer;
 import org.costudy.backend.model.timer.TimerPhase;
 import org.costudy.backend.model.timer.TimerStatus;
 import org.costudy.backend.repo.RoomTimerRepo;
+import org.costudy.backend.repo.SettingsRepo;
 import org.costudy.backend.repo.StudyRoomRepo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -23,25 +25,24 @@ public class TimerService {
     private final RoomTimerRepo timerRepo;
     private final SimpMessagingTemplate tpl;
     private final StudyRoomRepo studyRoomRepo;
-
-    private static final int WORK_MS = 1 * 10000; // 25
-    private static final int SHORT_BREAK_MS = 1 * 30000; // 5
-    private static final int LONG_BREAK_MS = 1 * 50000; // 20
+    private final SettingsRepo settingsRepo;
 
     private final ScheduledExecutorService exec =
             Executors.newScheduledThreadPool(4);
 
     private final Map<Integer, ScheduledFuture<?>> tasks = new ConcurrentHashMap<>();
 
-    public TimerService(RoomTimerRepo timerRepo, SimpMessagingTemplate tpl, StudyRoomRepo studyRoomRepo) {
+    public TimerService(RoomTimerRepo timerRepo, SimpMessagingTemplate tpl, StudyRoomRepo studyRoomRepo, SettingsRepo settingsRepo) {
         this.timerRepo = timerRepo;
         this.tpl = tpl;
         this.studyRoomRepo = studyRoomRepo;
+        this.settingsRepo = settingsRepo;
     }
 
 
     public TimerDto start(Integer roomId) {
         Optional<RoomTimer> tCheck = timerRepo.findByRoomRoomId(roomId);
+        Settings roomSettings = settingsRepo.findByStudyRoomRoomId(roomId);
         if (tCheck.isEmpty()) {throw new RuntimeException("No timer created yet");}
 
         RoomTimer t = tCheck.get();
@@ -49,12 +50,12 @@ public class TimerService {
 
         t.setPhase(TimerPhase.WORK);
         t.setStatus(TimerStatus.RUNNING);
-        t.setDurationMs(WORK_MS);
+        t.setDurationMs(roomSettings.getStudyTimeMs());
         t.setStartedAt(Instant.now());
         t.setWorkCyclesDone(0);
         timerRepo.save(t);
 
-        schedule(roomId, WORK_MS);
+        schedule(roomId, roomSettings.getStudyTimeMs());
         broadcast(roomId, t);
 
         return TimerDto.from(t);
@@ -63,6 +64,7 @@ public class TimerService {
 
     public RoomTimer create(int roomId){
         Optional<RoomTimer> checkTimer = timerRepo.findByRoomRoomId(roomId);
+        Settings roomSettings = settingsRepo.findByStudyRoomRoomId(roomId);
         if(checkTimer.isPresent()){
             return checkTimer.get();
         }
@@ -73,7 +75,7 @@ public class TimerService {
         t.setRoom(room);
         t.setPhase(TimerPhase.WORK);
         t.setStatus(TimerStatus.PAUSED);
-        t.setDurationMs(WORK_MS);
+        t.setDurationMs(roomSettings.getStudyTimeMs());
         t.setWorkCyclesDone(0);
         return timerRepo.save(t);
 
@@ -81,6 +83,7 @@ public class TimerService {
 
     public TimerDto pause(int roomId) {
         RoomTimer t = must(roomId);
+
         if (t.getStatus() == TimerStatus.PAUSED) {
             return TimerDto.from(t);
         }
@@ -119,6 +122,7 @@ public class TimerService {
     }
 
     public TimerDto skipTo(Integer roomId, TimerPhase skipToPhase) {
+        Settings roomSettings = settingsRepo.findByStudyRoomRoomId(roomId);
         RoomTimer t = must(roomId);
         if (t.getPhase() == skipToPhase){return TimerDto.from(t);}
 
@@ -128,20 +132,30 @@ public class TimerService {
 
         switch(skipToPhase){
             case WORK:
-                t.setDurationMs(WORK_MS);
+                if (t.getWorkCyclesDone() + 1 > roomSettings.getCyclesTillLongBreak())
+                {
+                    t.setWorkCyclesDone(0);
+                }
+                t.setDurationMs(roomSettings.getStudyTimeMs());
                 break;
             case SHORT_BREAK:
-                t.setDurationMs(SHORT_BREAK_MS);
-                t.setWorkCyclesDone(t.getWorkCyclesDone() + 1); // TODO
+                t.setDurationMs(roomSettings.getShortBreakTimeMs());
+                if (t.getWorkCyclesDone() + 1 > roomSettings.getCyclesTillLongBreak())
+                {
+                    t.setPhase(TimerPhase.LONG_BREAK);
+                    t.setDurationMs(roomSettings.getLongBreakTimeMs());
+                    t.setWorkCyclesDone(roomSettings.getCyclesTillLongBreak());
+                    break;
+                }
+                t.setWorkCyclesDone(t.getWorkCyclesDone() + 1);
                 break;
             case LONG_BREAK:
-                t.setDurationMs(LONG_BREAK_MS);
-                t.setWorkCyclesDone(4);
+                t.setDurationMs(roomSettings.getLongBreakTimeMs());
+                t.setWorkCyclesDone(0);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown skipToPhase: " + skipToPhase);
-        } // TODO: CHANGE WHEN SETTINGS
-
+        }
         timerRepo.save(t);
         broadcast(roomId, t);
 
@@ -170,20 +184,21 @@ public class TimerService {
 
     private void autoAdvance(int roomId){
         RoomTimer t = must(roomId);
+        Settings roomSettings = settingsRepo.findByStudyRoomRoomId(roomId);
 
         if (t.getPhase() == TimerPhase.WORK) {
             t.setWorkCyclesDone(t.getWorkCyclesDone() + 1);
-            if (t.getWorkCyclesDone() == 4){
+            if (t.getWorkCyclesDone() == roomSettings.getCyclesTillLongBreak()){
                 t.setPhase(TimerPhase.LONG_BREAK);
-                t.setDurationMs(LONG_BREAK_MS);
+                t.setDurationMs(roomSettings.getLongBreakTimeMs());
                 t.setWorkCyclesDone(0);
             } else {
                 t.setPhase(TimerPhase.SHORT_BREAK);
-                t.setDurationMs(SHORT_BREAK_MS);
+                t.setDurationMs(roomSettings.getShortBreakTimeMs());
             }
         } else {
             t.setPhase(TimerPhase.WORK);
-            t.setDurationMs(WORK_MS);
+            t.setDurationMs(roomSettings.getStudyTimeMs());
         }
 
         t.setStartedAt(null);

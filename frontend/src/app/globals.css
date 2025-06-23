@@ -223,19 +223,22 @@
 
 .work-phase::before {
   background-image: linear-gradient(-45deg,#4c2539,#9a404c,#d37081,#973e4a,#4c2539);
-  opacity:.75;                 
+  opacity:0;                 
 }
 
 .short-break-phase::before {
   background-image: linear-gradient(-45deg,#22394b,#326983,#3e8fa6,#346d87,#22394b);
-  opacity:.75;
+  opacity:0;
 }
 
 .long-break-phase::before {
   background-image: linear-gradient(-45deg,#1b3931,#347d65,#51ae95,#367d65,#1b3931);
-  opacity:.75;
+  opacity:0;
 }
 
+.phase-active::before {
+  opacity:.75;
+}
 
 .card-pane {                   
   background: rgba(62, 59, 80, 0.452);
