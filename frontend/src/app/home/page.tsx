@@ -65,7 +65,7 @@ export default function HomePage(){
                 </div>
                 <div className='w-full flex flex-wrap gap-4 justify-center'> 
                     
-                    <JoinCreateRoom/>
+                    <JoinCreateRoom username={profile?.username}/>
                     <UserRooms/>
                 </div>
             </div>

@@ -18,7 +18,7 @@ public class SettingsService {
     public void createSettings(StudyRoom room, CreateRoomDto createRoomDto) {
         Settings roomSettings = new Settings();
         roomSettings.setStudyRoom(room);
-        roomSettings.setPublic(createRoomDto.isPublic());
+        roomSettings.setPublic(createRoomDto.isPublicRoom());
         roomSettings.setStudyTimeMs(createRoomDto.getStudyTimeMs());
         roomSettings.setShortBreakTimeMs(createRoomDto.getShortBreakTimeMs());
         roomSettings.setLongBreakTimeMs(createRoomDto.getLongBreakTimeMs());
