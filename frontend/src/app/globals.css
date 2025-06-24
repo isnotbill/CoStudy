@@ -59,21 +59,44 @@
 /* HOME PAGE */
 
 .home-buttons {
-  border: 2px solid #ff4081;                   
-  border-radius: 0.5rem;       
-  box-shadow: 0 4px 6px rgba(0,0,0,0.35);  
-  transform: translateY(-3px);  
+  background-color: rgba(87, 87, 87, 0.281);                 
+  border-radius: 0.3rem;       
+  transform: translateY(-1.5px);
+  box-shadow: 0 3px 3px rgba(0,0,0,0.3);
+  outline: none;
   transition:
-    background-color 0.2s ease,
+    background-color 0.5s ease,
     transform        0.1s ease,
-    box-shadow       0.1s ease;
+    box-shadow       0.1s ease,
 }
 
 .home-button-active {
-  background-color: #d81b60;
+  background-color: rgba(91, 89, 192, 0.753);
+  border: 2.5px solid rgba(54, 53, 148, 0);
   transform: translateY(0px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  
+  box-shadow: 0 1px 1px rgba(0,0,0,0.3);
+}
+
+.create-settings {
+  transition:
+    transform 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.03);
+  transform: translateY(-2.5px);
+  box-shadow: 1px 2px 0 0 rgba(0,0,0,0.1);
+}
+
+.create-settings-active {
+ background-color: rgba(255,255,255,0.07);
+ transform: translateY(0px);
+}
+
+.settings-input {
+  background-color: rgba(255,255,255,0.05);
+  height: 45px;
+  width: 100%;
+  border-radius: 0.25em;
+  padding: 10px;
+  outline: none;
 }
 
 .roomlist-button {

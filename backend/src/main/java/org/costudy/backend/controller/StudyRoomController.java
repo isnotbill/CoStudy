@@ -1,5 +1,6 @@
 package org.costudy.backend.controller;
 
+import jakarta.validation.Valid;
 import org.costudy.backend.dto.ChatMessageDto;
 import org.costudy.backend.dto.CreateRoomDto;
 import org.costudy.backend.dto.UserDto;
@@ -14,9 +15,15 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/room")
@@ -33,8 +40,20 @@ public class StudyRoomController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<?>> createStudyRoom(@AuthenticationPrincipal UserDetails userDetails, @RequestBody CreateRoomDto createRoomDto) {
-
+    public ResponseEntity<ApiResponse<?>> createStudyRoom(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody CreateRoomDto createRoomDto,
+            BindingResult result
+    ) {
+        if(result.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for(FieldError error : result.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+            return ResponseEntity.badRequest().body(
+                    new ApiResponse<>(false, "Unable to create study room", errors)
+            );
+        }
         String code = roomService.createRoom(userService.getCurrentUser(userDetails.getUsername()), createRoomDto);
         return ResponseEntity.ok(new ApiResponse<>(true, "Created Study Room", code));
     }
