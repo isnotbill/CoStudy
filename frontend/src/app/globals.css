@@ -237,7 +237,7 @@
 }
 
 .phase-active::before {
-  opacity:.75;
+  opacity:.80;
 }
 
 .card-pane {                   

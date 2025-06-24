@@ -10,11 +10,11 @@ interface RoomUserInterface {
 }
 export default function RoomUser(props: RoomUserInterface){
 
-
+    // const clientColor = props.isClient ? "text-green-400" : "text-white"
 
     return (
         <> 
-            <div className="flex items-center gap-2">
+            <div className="ml-8 mt-3 flex items-center gap-2">
 
                 <div className="relative w-12 h-12 rounded-full overflow-hidden bg-white">
                     <Image 
@@ -23,7 +23,7 @@ export default function RoomUser(props: RoomUserInterface){
                     fill
                     />
                 </div>
-                <h1 className="text-white text-[18px]">{props.username}</h1>
+                <h1 className={`text-white text-[18px]`}>{props.username}</h1>
                 {props.isAdmin 
                 && (
                 <div className="text-[rgba(255,206,45,0.87)] text-[10px]"> [ ADMIN ] </div>)}

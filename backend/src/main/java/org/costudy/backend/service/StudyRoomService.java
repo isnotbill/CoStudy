@@ -192,4 +192,15 @@ public class StudyRoomService {
         chatRepo.save(chat);
         return chat;
     }
+
+    public ChatMessage announceLeave(User currentUser, StudyRoom room) {
+        ChatMessage chat = new ChatMessage();
+        chat.setType(MessageType.SERVER);
+        chat.setContent("\uD83E\uDC70 " + currentUser.getUsername() + " left the room!");
+        chat.setStudyRoom(room);
+        chatRepo.save(chat);
+        return chat;
+    }
+
+
 }
