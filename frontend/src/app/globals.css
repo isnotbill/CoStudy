@@ -30,7 +30,7 @@
 
 .start-button {
   display: inline-block;
-  padding: 1.2em 10.8em;          
+  padding: 1.2em 9.2em;          
   font-size: 1rem;               
   font-weight: 600;              
   color: #fff;                  
@@ -206,4 +206,64 @@
   transform: translateY(0);
   background-color: rgb(48, 48, 48);
   box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+
+/* Pomodoro timer */
+
+:root {
+  --base-bg: #2b2939;           
+  --pomodoro-anim-duration: 30s; 
+  --pomodoro-fade-duration: 0.5s;
+}
+
+
+@keyframes gradientShift {
+  0%   { background-position:   0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position:   0% 50%; }
+}
+
+
+.main-bg {
+  position: relative;
+  background: var(--base-bg);
+  isolation: isolate;     
+}
+
+
+.main-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;                          
+  background-size: 400% 400%;
+  animation: gradientShift var(--pomodoro-anim-duration) ease-in-out infinite;
+  transition: opacity var(--pomodoro-fade-duration) ease-in-out;
+}
+
+
+.work-phase::before {
+  background-image: linear-gradient(-45deg,#4c2539,#9a404c,#d37081,#973e4a,#4c2539);
+  opacity:0;                 
+}
+
+.short-break-phase::before {
+  background-image: linear-gradient(-45deg,#22394b,#326983,#3e8fa6,#346d87,#22394b);
+  opacity:0;
+}
+
+.long-break-phase::before {
+  background-image: linear-gradient(-45deg,#1b3931,#347d65,#51ae95,#367d65,#1b3931);
+  opacity:0;
+}
+
+.phase-active::before {
+  opacity:.80;
+}
+
+.card-pane {                   
+  background: rgba(62, 59, 80, 0.452);
+
 }

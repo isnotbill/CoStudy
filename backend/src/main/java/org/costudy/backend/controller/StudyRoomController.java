@@ -86,6 +86,10 @@ public class StudyRoomController {
                 userService.getCurrentUser(userDetails.getUsername()),
                 roomCode
                 );
+        StudyRoom room = roomService.getStudyRoom(roomCode);
+        ChatMessage kickAnnouncement = roomService.announceLeave(userService.getCurrentUser(userDetails.getUsername()), room);
+        tpl.convertAndSend("/topic/room/" + room.getRoomId(), kickAnnouncement);
+        tpl.convertAndSend("/topic/room/" + roomCode + "/kick", userDetails.getUsername());
         return ResponseEntity.ok(new ApiResponse<>(true, "User left room"));
     }
 

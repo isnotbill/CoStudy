@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SettingsRepo extends JpaRepository<Settings, Integer> {
+
+    Settings findByStudyRoomRoomId(Integer roomId);
 }

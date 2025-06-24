@@ -1,5 +1,6 @@
 package org.costudy.backend.controller;
 
+import org.costudy.backend.dto.SkipDto;
 import org.costudy.backend.dto.TimerDto;
 import org.costudy.backend.model.StudyRoom;
 import org.costudy.backend.model.timer.RoomTimer;
@@ -48,10 +49,17 @@ public class TimerController {
         return timerService.status(roomId);
     }
 
+    @MessageMapping("/timer/skipTo")
+    public TimerDto skipToWork(@Payload SkipDto skipDto){
+        return timerService.skipTo(skipDto.getRoomId(), skipDto.getSkipToPhase());
+    }
+
     @PostMapping("/timer/create/{roomId}")
     public TimerDto create(@PathVariable Integer roomId){
         return TimerDto.from(timerService.create(roomId));
     }
+
+
 
 
 

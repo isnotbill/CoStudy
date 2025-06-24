@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import ChatMessage from "@/components/ChatMessage"
 import MainHeader from "@/components/MainHeader";
 import RoomUser from "@/components/RoomUser";
@@ -9,7 +9,7 @@ import { Client } from '@stomp/stompjs'
 import { useParams, useRouter } from "next/navigation";
 import  SockJS  from 'sockjs-client';
 import apiClient from "../../../../lib/apiClient";
-
+import Popup from "@/components/Popup";
 
 interface ChatMessage{
     chatMessageId: number,
@@ -75,8 +75,9 @@ export default function ClientRoom() {
     const [timer, setTimer] = useState<TimerDto | null>(null)
     const [ms, setMs] = useState(0);
 
-    // const [timerStatus, setTimerStatus] = useState<TimerStatus | null>(null)
+    const [lastRunningPhase, setLastRunningPhase] = useState<TimerPhase | null>(null)
 
+    const [showPopUp, setShowPopUp] = useState(false)
 
     // Check if room code is valid
     useEffect(() => {
@@ -135,7 +136,7 @@ export default function ClientRoom() {
             try {
                 const resUsers = await apiClient.post(`/room/${roomCode}/join`)
             } catch (err: any){
-                if (err.response.message = "Duplicate"){return}
+                if (err.response?.data?.message === "Duplicate"){return} // TODO DO NOT USE .message to check
                 setError("Failed to join room")
             } finally {
                 setLoadJoinRoom(false)
@@ -218,6 +219,10 @@ export default function ClientRoom() {
         client.activate()
         stompRef.current = client
 
+        return () => {
+            client.deactivate()
+        }
+
     }, [loadingMessages, roomId, loadingProfile])
 
     // Local clock ticking for timer
@@ -232,7 +237,7 @@ export default function ClientRoom() {
         if (roomId == null){return}
         async function createTimer(){
             try {
-                const res = apiClient.post(`/timer/create/${roomId}`)
+                const res = await apiClient.post(`/timer/create/${roomId}`)
             } catch (err : any) {
                 setError(err);
             }
@@ -257,6 +262,16 @@ export default function ClientRoom() {
         })
     }
 
+    const skipTimer = (dest: string, body: {roomId : number | null, skipToPhase: TimerPhase}) => {
+        if (body.roomId == null){return}
+        stompRef.current?.publish({
+            destination: dest,
+            body: typeof body === "string" ? body : JSON.stringify(body)
+        })
+
+    }
+
+    // Handle sending chat messages to backend
     function handleSend(e: React.FormEvent){
         e.preventDefault()
         if (!inputMessage.trim()){return}
@@ -283,6 +298,7 @@ export default function ClientRoom() {
         
     }
 
+    // Handle kicking user
     async function kickUser(username: string){
         try {
             const res = await apiClient.delete(
@@ -299,6 +315,64 @@ export default function ClientRoom() {
         }
     }
 
+    // Handle admin deleting room
+    const deleteRoom = (roomId : number | null) => {
+        if (roomId == null) return
+
+        apiClient.delete(`/room/${roomId}/delete`)
+            .then(res => {
+                router.replace("/home")
+            })
+            .catch(err => console.error(err));
+    }
+
+    // Handle user leaving room
+    const leaveRoom = (roomCode : string) => {
+            apiClient.delete(`/room/${roomCode}/leave`)
+                .catch(err => console.error(err))
+                
+        }
+
+
+    // Update the state whenever the timer is RUNNING.
+    // This is needed for bgClass, otherwise background incorrectly fades out
+    useEffect(() => {
+        if (timer?.status === "RUNNING"){
+            setLastRunningPhase(timer.phase)
+        }
+    }, [timer])
+
+    // Change background className depending on the phase
+    const bgClass = useMemo(() => {
+        if (!timer) return "";
+
+        const phaseKey = timer.status === "RUNNING"
+            ? timer.phase
+            : lastRunningPhase
+
+        const phase = (() => {
+            switch (phaseKey) {
+                case "WORK": return "work-phase"
+                case "SHORT_BREAK": return "short-break-phase"
+                case "LONG_BREAK": return "long-break-phase"
+                default: return ""
+            }
+        })()
+
+        return timer.status === "RUNNING"
+        ? `${phase} phase-active`
+        : phase;
+
+    }, [timer, lastRunningPhase])
+
+    // To display the current phase of the timer
+    const currentWorkCycles = useMemo(() => {
+        if (!timer || timer.phase !== "WORK") return ""
+
+        return "#" + (timer.workCyclesDone + 1)
+    }, [timer])
+
+    // Minutes and seconds for timer
     const mm = String(Math.floor(ms / 60000)).padStart(2,"0")
     const ss = String(Math.floor(ms / 1000) % 60).padStart(2,"0")
 
@@ -306,16 +380,41 @@ export default function ClientRoom() {
     if (error){return <p className="text-red-500">{error}</p>}
     return (
         <>
-        <main className='bg-[rgb(33,31,48)] w-screen min-h-screen flex flex-col items-center'>
+        <main className={`main-bg w-screen min-h-screen flex flex-col items-center
+        ${bgClass}`}
+        >
             <MainHeader/>
             <div className="w-full flex justify-center items-start flex-wrap gap-8 my-8">
                 <div className="flex flex-col gap-8 w-[500px] h-full">
-                    <div className=" bg-[#38354b] w-[500px]  h-[500px] rounded-md p-8 ">
-                        <div className="relative w-full h-[50%] rounded-md flex flex-col justify-center items-center">
+                    <div className=" card-pane w-[500px]  h-[500px] rounded-md p-8 ">
+                        <div className="relative w-full h-[50%] rounded-md flex flex-col justify-center items-center gap-10">
                             <button className="absolute top-4 right-4 settings-button">⚙️ Settings</button>
+                            <div className="text-white flex  gap-2 mt-[260px] mb-[-20px] text-lg">
+                                <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
+                                    timer?.phase === "WORK" ? "bg-[rgba(23,21,36,0.49)]" : ""
+                                }`}
+                                onClick={() => {skipTimer("/app/timer/skipTo", {
+                                    roomId: roomId,
+                                    skipToPhase: "WORK"
+                                })}}
+                                >Work Cycle {currentWorkCycles}</button>
+                                <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
+                                    timer?.phase === "SHORT_BREAK" ? "bg-[rgba(23,21,36,0.49)]" : ""
+                                }`}
+                                onClick={() => {skipTimer("/app/timer/skipTo", {
+                                    roomId: roomId,
+                                    skipToPhase: "SHORT_BREAK"
+                                })}}>Short Break</button>
+                                <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
+                                    timer?.phase === "LONG_BREAK" ? "bg-[rgba(23,21,36,0.49)]" : ""
+                                }`}
+                                onClick={() => {skipTimer("/app/timer/skipTo", {
+                                    roomId: roomId,
+                                    skipToPhase: "LONG_BREAK"
+                                })}}>Long Break</button>
+                            </div>
+                            <h1 className="text-[rgb(255,255,255)] text-9xl font-mono ">{mm}:{ss}</h1>
                             
-                            <h1 className="text-[rgb(255,255,255)] text-[150px] font-mono mt-[180px]">{mm}:{ss}</h1>
-                            <p className="text-white">{timer?.phase ?? "ERROR"}</p>
                             <button className="start-button"
                                     onClick={() => {
                                         if (!timer){
@@ -331,23 +430,52 @@ export default function ClientRoom() {
 
                         </div>
                     </div>
-                    <div className="chat-scroll bg-[#38354b] overflow-auto rounded-md p-8  flex items-start flex-col gap-4 h-[269px]">
-
-                        {roomUsers.map(user => (
-                            <RoomUser
-                            key={user.id}   
-                            isClient={user.id == profile?.id}
-                            isAdmin={user.admin}
-                            username= {user.username}
-                            iconImage= {user.image}
-                            onKick={() => {kickUser(user.username)}}
-                            isAdminClient={roomUsers.find(u => u.id === profile?.id)?.admin || false}
-                            />
-                        ))}
+                    <div className="card-pane rounded-md  flex items-start flex-col h-[269px]">
+                        <div className="chat-scroll mt-4 flex flex-1 flex-col overflow-y-auto w-full">
+                            {roomUsers.map(user => (
+                                <RoomUser
+                                key={user.id}   
+                                isClient={user.id == profile?.id}
+                                isAdmin={user.admin}
+                                username= {user.username}
+                                iconImage= {user.image}
+                                onKick={() => {kickUser(user.username)}}
+                                isAdminClient={roomUsers.find(u => u.id === profile?.id)?.admin || false}
+                                />
+                            ))}
+                        </div>
+                        <button
+                        className=" text-red-600 text-xs p-1 self-end m-4 mb-5 border-red-600 border-2 hover:bg-red-600 hover:text-white"
+                        onClick={() => {
+                            setShowPopUp(true)
+                        }}
+                        >LEAVE ROOM</button>
                     </div>
                 </div>
                 
-                <div className=" bg-[#38354b] w-[500px]  h-[800px] flex flex-col gap-1">
+                <Popup isOpen={showPopUp} onClose={() => setShowPopUp(false)}>
+
+                    <div className="flex flex-col justify-center items-center">
+                        <h1 className="text-white m-3 mt-8">Are you sure you want to leave this room?</h1>
+
+                        {roomUsers.find(u => u.id === profile?.id)?.admin &&
+                            <div className="text-red-500 m-3 text-center">WARNING: As an ADMIN, the room will be permanently deleted if you leave the room.</div> }
+
+                        <button className="popup-button w-full h-[45px] mt-5"
+                        onClick={(e) => {
+                            if(showPopUp == false) return
+                            roomUsers.find(u => u.id === profile?.id)?.admin  ? deleteRoom(roomId) : leaveRoom(String(roomCode))
+                            setShowPopUp(false);
+                        }}>
+                        
+                            Confirm
+                        </button>
+                    </div>
+
+                </Popup>
+
+
+                <div className=" card-pane w-[500px]  h-[800px] flex flex-col gap-1">
                     <div 
                     ref={messagesContainerRef}
                     className="flex-1 px-3 py-8 flex flex-col gap-4 overflow-y-auto rounded-md chat-scroll">

@@ -120,16 +120,15 @@ export default function Login() {
                 <Image
                     src="/images/loginblob.png"
                     alt="main blob"
-                    width={540}
-                    height={490}
-                    className="absolute h-auto max-w-none mt-[230px] object-contain drop-shadow-2xl"
+                    width={520}
+                    height={520}
+                    className="absolute h-auto max-w-none mt-[235px] object-contain drop-shadow-2xl"
                 />
                 <div 
                     className=" 
                     overflow-hidden
                     "
                 >
-
                 </div>
             </div>
         </div>
