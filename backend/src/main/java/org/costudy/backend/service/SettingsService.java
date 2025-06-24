@@ -19,9 +19,9 @@ public class SettingsService {
         Settings roomSettings = new Settings();
         roomSettings.setStudyRoom(room);
         roomSettings.setPublic(createRoomDto.isPublicRoom());
-        roomSettings.setStudyTimeMs(createRoomDto.getStudyTimeMs());
-        roomSettings.setShortBreakTimeMs(createRoomDto.getShortBreakTimeMs());
-        roomSettings.setLongBreakTimeMs(createRoomDto.getLongBreakTimeMs());
+        roomSettings.setStudyTimeMs(createRoomDto.getStudyTimeMs() * 60000);
+        roomSettings.setShortBreakTimeMs(createRoomDto.getShortBreakTimeMs() * 60000);
+        roomSettings.setLongBreakTimeMs(createRoomDto.getLongBreakTimeMs() * 60000);
         roomSettings.setCyclesTillLongBreak(createRoomDto.getCyclesTillLongBreak());
 
         settingsRepo.save(roomSettings);

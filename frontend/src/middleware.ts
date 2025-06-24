@@ -1,29 +1,39 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server"
 
+// Make sure to add ALL valid paths
 export const config = {
-  matcher: '/:path*',  
+  matcher: [
+    '/',
+    '/login',
+    '/about',
+    '/home',
+    '/settings',
+    '/room/:slug'
+
+
+  ]  
 }
 
 export function middleware(req: NextRequest){
 
   const { pathname } = req.nextUrl
 
-    if (
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/favicon.ico') ||
-    pathname.startsWith('/images') 
-  ) {
-    return NextResponse.next()
-  }
-
   //console.log('[MW] middleware fired for:', req.nextUrl.pathname)
-  
-  if (['/login', '/'].includes(req.nextUrl.pathname)){
+  const token = req.cookies.get('access_token')?.value
+
+  // If already contains a JWT token, then auto log in, otherwise let them access the preregistration pages
+  if (['/login', '/', '/about'].includes(req.nextUrl.pathname)){
+    if (token)
+    {
+      const url = req.nextUrl.clone()
+      url.pathname = '/home'
+      return NextResponse.redirect(url)
+    }
     return NextResponse.next()
   }
 
-  const token = req.cookies.get('access_token')?.value
+  
   
   if (!token){
     const url = req.nextUrl.clone()

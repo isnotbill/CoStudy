@@ -25,7 +25,7 @@ export default function AccountPage()
 
     try {
       await apiClient.post("/logout")
-      router.push('/login')
+      router.replace('/login')
     } catch (err: any) {
       setLogoutError(err.message)
     } finally {
