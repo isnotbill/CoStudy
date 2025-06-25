@@ -63,12 +63,12 @@ export default function UserRooms() {
 
                 </div>
             </div>
-            <div className="flex-1 w-full overflow-y-auto flex flex-col gap-1 chat-scroll">
+            <div className="w-full overflow-y-auto flex flex-col gap-1 chat-scroll">
                 { filteredRooms.map((room) => (
                     <div key={room.roomId} className="w-full">
                         <div 
                             onClick={async () => {
-                                await apiClient("/refresh-token");
+                                await apiClient.get("/refresh-token");
                                 router.push(`/room/${room.code}`);
                             }}
                             className="roomlist-button relative w-full h-[70px] group rounded-lg shadow-xl justify-between text-white border-[rgba(255,255,255,0.2)] flex items-center p-2 gap-2">

@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PublicRoomDto {
+    private int id;
+    private String code;
     private String roomName;
     private String hostName;
     private int members;

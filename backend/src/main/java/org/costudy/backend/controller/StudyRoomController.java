@@ -162,11 +162,12 @@ public class StudyRoomController {
 
     @GetMapping("/public")
     public ResponseEntity<PagedModel<EntityModel<PublicRoomDto>>> getPublicRooms(
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "") String keyword
     ) {
-        Page<PublicRoomDto> pageRes = roomService.getPublicRooms(page, limit, keyword);
+        Page<PublicRoomDto> pageRes = roomService.getPublicRooms(page, limit, keyword, userDetails.getUsername());
 
         PagedModel<EntityModel<PublicRoomDto>> pagedModel
                 = pagedResourcesAssembler.toModel(pageRes);

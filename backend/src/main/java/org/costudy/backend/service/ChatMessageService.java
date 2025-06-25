@@ -18,16 +18,14 @@ public class ChatMessageService {
     private final ChatMessageRepository chatRepo;
     private final StudyRoomRepo roomRepo;
     private final SimpMessagingTemplate tpl;
-    private final StudyRoomService studyRoomService;
     
     public ChatMessageService(ChatMessageRepository chatRepo,
                               StudyRoomRepo roomRepo,
-                              SimpMessagingTemplate tpl,
-                              StudyRoomService studyRoomService) {
+                              SimpMessagingTemplate tpl
+    ) {
         this.chatRepo = chatRepo;
         this.roomRepo = roomRepo;
         this.tpl = tpl;
-        this.studyRoomService = studyRoomService;
     }
     
     public void save(ChatMessageDto chatDto, int roomId) {

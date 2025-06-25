@@ -24,4 +24,22 @@ public interface StudyRoomRepo extends JpaRepository<StudyRoom, Integer> {
             AND LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
     """)
     Page<StudyRoom> findPublicRooms(@Param("keyword") String keyword, Pageable pageable);
+
+
+    @Query("""
+    SELECT r FROM StudyRoom r
+    JOIN r.settings s
+    WHERE s.isPublic = true
+      AND LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+      AND NOT EXISTS (
+          SELECT 1 FROM UserStudyRoom usr
+          WHERE usr.studyRoom = r
+            AND usr.user.username = :username
+      )
+""")
+    Page<StudyRoom> findPublicRoomsExcludingUser(
+            @Param("keyword") String keyword,
+            @Param("username") String username,
+            Pageable pageable
+    );
 }

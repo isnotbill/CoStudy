@@ -208,20 +208,20 @@ public class StudyRoomService {
     }
 
 
-    public Page<PublicRoomDto> getPublicRooms(int page, int limit, String keyword) {
+    public Page<PublicRoomDto> getPublicRooms(int page, int limit, String keyword, String username) {
         Pageable pageable = PageRequest.of(page, limit, Sort.by("name").ascending());
-        Page<StudyRoom> studyRooms = roomRepo.findPublicRooms(keyword, pageable);
+        Page<StudyRoom> studyRooms = roomRepo.findPublicRoomsExcludingUser(keyword, username, pageable);
         return studyRooms
                 .map(room -> {
                     List<UserStudyRoom> rels = userStudyRoomRepo.findByStudyRoom(room);
-                    String username = null;
+                    String hostName = null;
                     for(UserStudyRoom r : rels) {
+
                         if(r.isAdmin()) {
-                            username = r.getUser().getUsername();
-                            break;
+                            hostName = r.getUser().getUsername();
                         }
                     }
-                    return new PublicRoomDto(room.getName(), username, userStudyRoomRepo.countByStudyRoom(room));
+                    return new PublicRoomDto(room.getRoomId(), room.getCode(), room.getName(), hostName, userStudyRoomRepo.countByStudyRoom(room));
                 });
     }
 }
