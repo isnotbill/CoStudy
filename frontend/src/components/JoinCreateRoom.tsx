@@ -125,7 +125,7 @@ export default function JoinCreateRoom({ username }: JoinCreateRoomProps) {
                 <div className='h-full w-full flex flex-col'>
                     <div className='w-full h-[60px]'>
                         <div className='text-center text-white'>Enter Room Code</div>
-                        <input type="text" value={joinInputVal} className="bg-[rgba(255,255,255,0.1)] w-full h-full text-white p-1 flex-1 rounded-lg text-center font-bold text-xl"
+                        <input type="text" value={joinInputVal} className="bg-[rgba(255,255,255,0.1)] w-full h-full text-white p-1 flex-1 rounded-md text-center font-bold text-xl"
                         onChange={(e) => {
                             setJoinInputVal(e.target.value)
                             setJoinErrorMsg('')
@@ -148,10 +148,10 @@ export default function JoinCreateRoom({ username }: JoinCreateRoomProps) {
                 </div>
                 }
                 {activeTab === 'create' &&
-                <div className='w-full h-full flex flex-col gap-6'>
-                    <div>
+                <div className='w-full h-full flex flex-col gap-6 justify-center'>
+                    <div className='flex flex-col justify-center items-center'>
                         <h1 className='text-center text-white'>Room Title</h1>
-                        <input type="text" value={createInputVal.name} className="bg-[rgba(255,255,255,0.1)] w-full h-[60px] text-white p-1 rounded-lg text-center font-bold text-xl"
+                        <input type="text" value={createInputVal.name} className="bg-[rgba(255,255,255,0.1)] w-full h-[60px] text-white p-1 rounded-md shadow-md text-center font-semibold text-2xl"
                         onChange={(e) => {
                             setCreateInputVal({...createInputVal, name: e.target.value})
                             setCreateErrors({...createErrors, name: ''})

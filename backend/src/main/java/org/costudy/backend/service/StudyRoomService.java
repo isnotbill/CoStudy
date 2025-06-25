@@ -1,6 +1,7 @@
 package org.costudy.backend.service;
 
 import org.costudy.backend.dto.CreateRoomDto;
+import org.costudy.backend.dto.PublicRoomDto;
 import org.costudy.backend.dto.UserDto;
 import org.costudy.backend.model.*;
 import org.costudy.backend.model.MessageType;
@@ -8,6 +9,10 @@ import org.costudy.backend.repo.ChatMessageRepository;
 import org.costudy.backend.repo.SettingsRepo;
 import org.costudy.backend.repo.StudyRoomRepo;
 import org.costudy.backend.repo.UserStudyRoomRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -203,4 +208,20 @@ public class StudyRoomService {
     }
 
 
+    public Page<PublicRoomDto> getPublicRooms(int page, int limit, String keyword) {
+        Pageable pageable = PageRequest.of(page, limit, Sort.by("name").ascending());
+        Page<StudyRoom> studyRooms = roomRepo.findPublicRooms(keyword, pageable);
+        return studyRooms
+                .map(room -> {
+                    List<UserStudyRoom> rels = userStudyRoomRepo.findByStudyRoom(room);
+                    String username = null;
+                    for(UserStudyRoom r : rels) {
+                        if(r.isAdmin()) {
+                            username = r.getUser().getUsername();
+                            break;
+                        }
+                    }
+                    return new PublicRoomDto(room.getName(), username, userStudyRoomRepo.countByStudyRoom(room));
+                });
+    }
 }

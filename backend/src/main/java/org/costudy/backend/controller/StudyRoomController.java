@@ -3,12 +3,17 @@ package org.costudy.backend.controller;
 import jakarta.validation.Valid;
 import org.costudy.backend.dto.ChatMessageDto;
 import org.costudy.backend.dto.CreateRoomDto;
+import org.costudy.backend.dto.PublicRoomDto;
 import org.costudy.backend.dto.UserDto;
 import org.costudy.backend.model.ChatMessage;
 import org.costudy.backend.model.StudyRoom;
 import org.costudy.backend.response.ApiResponse;
 import org.costudy.backend.service.StudyRoomService;
 import org.costudy.backend.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -32,11 +37,17 @@ public class StudyRoomController {
     private final StudyRoomService roomService;
     private final UserService userService;
     private final SimpMessagingTemplate tpl;
+    private final PagedResourcesAssembler<PublicRoomDto> pagedResourcesAssembler;
 
-    public StudyRoomController(StudyRoomService studyRoomService, UserService userService, SimpMessagingTemplate tpl) {
+    public StudyRoomController(StudyRoomService studyRoomService,
+                               UserService userService,
+                               SimpMessagingTemplate tpl,
+                               PagedResourcesAssembler<PublicRoomDto> pagedResourcesAssembler
+    ) {
         this.roomService = studyRoomService;
         this.userService = userService;
         this.tpl = tpl;
+        this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
 
     @PostMapping("/create")
@@ -149,5 +160,17 @@ public class StudyRoomController {
         }
     }
 
+    @GetMapping("/public")
+    public ResponseEntity<PagedModel<EntityModel<PublicRoomDto>>> getPublicRooms(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "") String keyword
+    ) {
+        Page<PublicRoomDto> pageRes = roomService.getPublicRooms(page, limit, keyword);
 
+        PagedModel<EntityModel<PublicRoomDto>> pagedModel
+                = pagedResourcesAssembler.toModel(pageRes);
+
+        return ResponseEntity.ok(pagedModel);
+    }
 }
