@@ -213,7 +213,7 @@
 
 :root {
   --base-bg: #2b2939;           
-  --pomodoro-anim-duration: 30s; 
+  --pomodoro-anim-duration: 40s; 
   --pomodoro-fade-duration: 0.5s;
 }
 
@@ -245,7 +245,7 @@
 
 
 .work-phase::before {
-  background-image: linear-gradient(-45deg,#4c2539,#9a404c,#d37081,#973e4a,#4c2539);
+  background-image: linear-gradient(-45deg,#4c2539,#91414c,#ae4957,#df7485,#ae4957,#91414c,#4c2539);
   opacity:0;                 
 }
 
