@@ -2,11 +2,11 @@
 
 import Image from 'next/image'
 import MainHeader from '@/components/MainHeader'
-import axios from 'axios'
 import { useEffect, useState } from 'react'
 import apiClient from '../../../lib/apiClient' 
 import UserRooms from '@/components/UserRooms'
 import JoinCreateRoom from '@/components/JoinCreateRoom'
+import { useSearchParams } from 'next/navigation'
 
 interface Profile {
   username: string
@@ -18,6 +18,10 @@ export default function HomePage(){
     const [profile, setProfile] = useState<Profile | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
+
+    const searchParams = useSearchParams()
+    const paramsReason = searchParams.get("reason")
+    const paramsCode = searchParams.get("code")
 
     useEffect(() => {
         async function fetchProfile() {
@@ -48,6 +52,7 @@ export default function HomePage(){
 
     return (
         <>
+
         <main className='bg-[rgb(33,31,48)] w-full min-h-screen flex flex-col items-center'>
             <MainHeader/>
             <div className='flex flex-col w-full max-w-[1000px] justify-center items-center'>
@@ -63,10 +68,17 @@ export default function HomePage(){
 
                     <h1 className="text-white text-3xl">{profile?.username}</h1>
                 </div>
-                <div className='w-full flex flex-wrap gap-4 justify-center'> 
-                    
-                    <JoinCreateRoom username={profile?.username}/>
-                    <UserRooms/>
+                <div className='w-full flex flex-col gap-4 justify-center '> 
+
+
+                        {paramsReason === "invalid_room_code" && (
+                            <h1 className='text-red-500 self-center'>No room code matches "{paramsCode}". Please double-check and try again.</h1>
+                        )}
+                    <div className='flex flex-wrap gap-4 justify-center'>
+                        <JoinCreateRoom username={profile?.username}/>
+                        <UserRooms/>
+                    </div>
+
                 </div>
             </div>
         </main>

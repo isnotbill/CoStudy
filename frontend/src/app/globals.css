@@ -180,11 +180,10 @@
 
 .settings-button {
 
-  padding: .5em .5em;       
-  font-size: 0.875rem;        
+  padding: .4em .4em;       
+  font-size: 0.8rem;        
   font-weight: 500;
   color: white;              
-  background-color: rgb(48, 48, 48);
   border: 2px solid #202020;     
   border-radius: 0.375rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -212,7 +211,7 @@
 /* Pomodoro timer */
 
 :root {
-  --base-bg: #2b2939;           
+  --base-bg: rgb(33,31,48);           
   --pomodoro-anim-duration: 40s; 
   --pomodoro-fade-duration: 0.5s;
 }

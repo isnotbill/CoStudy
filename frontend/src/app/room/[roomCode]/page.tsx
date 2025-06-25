@@ -62,6 +62,8 @@ export default function ClientRoom() {
     const router = useRouter()
     const stompRef = useRef<Client | null>(null)
     const [roomId, setRoomId] = useState<null|number>(null)
+    const [roomName, setRoomName] = useState("")
+
     const [inputMessage, setInputMessage] = useState("")
     const [roomMessages, setRoomMessages] = useState<ChatMessage[]>([])
     const [roomUsers, setRoomUsers] = useState<RoomUser[]>([]);
@@ -70,10 +72,11 @@ export default function ClientRoom() {
     const [loadingProfile, setLoadingProfile] = useState(true)
     const [error, setError] = useState<string|null>(null)
     const [profile, setProfile] = useState<Profile | null>(null)
-    const messagesContainerRef = useRef<HTMLDivElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null)
     
     const [timer, setTimer] = useState<TimerDto | null>(null)
-    const [ms, setMs] = useState(0);
+    const [ms, setMs] = useState(0)
+
 
     const [lastRunningPhase, setLastRunningPhase] = useState<TimerPhase | null>(null)
 
@@ -88,13 +91,14 @@ export default function ClientRoom() {
         .then(res => {
             if (!res.data.success)
             {
-                router.replace("/room/not-found")
+                router.replace(`/home?reason=invalid_room_code&code=${roomCode}`)
             } else {
                 setRoomId(res.data.data.roomId)
+                setRoomName(res.data.data.name)
             }
         })
         .catch(() => {
-            router.replace("/room/not-found")
+            router.replace(`/home?reason=invalid_room_code&code=${roomCode}`)
         })
     }, [roomCode, router])
 
@@ -372,14 +376,52 @@ export default function ClientRoom() {
         return "#" + (timer.workCyclesDone + 1)
     }, [timer])
 
+    // To handle notifications when timer ends
+    useEffect(() => {
+        if ('Notification' in window){
+            Notification.requestPermission().then(permission => {
+
+            console.log('Notification permission:', permission)
+            })
+        }
+    }, [])
+
+    const prevPhaseRef = useRef<TimerPhase | null>(null) // To detect when timer ends for push notification
+
+    // Push notifications when timer finishes
+    useEffect(() => {
+        if (timer == null) return
+        if (prevPhaseRef.current && prevPhaseRef.current !== timer.phase)
+        {
+            let body = "Your session has ended"
+            if (prevPhaseRef.current === "WORK" && timer.phase === "SHORT_BREAK") {body = "✅ Work done! Time for a quick break."}
+            if (prevPhaseRef.current === "LONG_BREAK" && timer.phase === "WORK" ) {body = "📚 Long break's over! Time to focus again."}
+            if (prevPhaseRef.current === "WORK" && timer.phase === "LONG_BREAK" ) {body = "🎉 Well done! Enjoy an extended break."}
+            if (prevPhaseRef.current === "SHORT_BREAK" && timer.phase === "WORK" ) {body = "📝 Break over, let's resume work."}
+
+
+            new Notification("Time's up!", {
+                body: body,
+                icon: '/favicon.ico'
+            })
+        }
+        prevPhaseRef.current = timer.phase
+    },[timer])
+
     // Minutes and seconds for timer
     const mm = String(Math.floor(ms / 60000)).padStart(2,"0")
     const ss = String(Math.floor(ms / 1000) % 60).padStart(2,"0")
 
-    if (loadingMessages) return <p className="text.purple">Loading room...</p>
+    // Display timer details on the header title
+    useEffect(() => {
+        document.title = `${mm}:${ss} - CoStudy`
+    }, [mm,ss])
+
+
+    // if (loadingMessages) return <p className="text.purple">Loading room...</p>
     if (error){return <p className="text-red-500">{error}</p>}
     return (
-        <>
+        <>        
         <main className={`main-bg w-screen min-h-screen flex flex-col items-center
         ${bgClass}`}
         >
@@ -387,9 +429,14 @@ export default function ClientRoom() {
             <div className="w-full flex justify-center items-start flex-wrap gap-8 my-8">
                 <div className="flex flex-col gap-8 w-[500px] h-full">
                     <div className=" card-pane w-[500px]  h-[500px] rounded-md p-8 ">
-                        <div className="relative w-full h-[50%] rounded-md flex flex-col justify-center items-center gap-10">
-                            <button className="absolute top-4 right-4 settings-button">⚙️ Settings</button>
-                            <div className="text-white flex  gap-2 mt-[260px] mb-[-20px] text-lg">
+                        <div className="relative w-full h-full rounded-md flex flex-col justify-center items-center gap-4">
+                            <button className="absolute top-[-20px] right-[-20px] settings-button">⚙️</button>
+                            <div className="flex flex-col items-center pb-2">
+                                <h1 className="text-white text-xl font-medium">{roomName}</h1>
+                                <h1 className="text-gray-400 text-md">Code: {roomCode}</h1>
+                            </div>
+
+                            <div className="text-white flex gap-2 mb-[-20px] text-lg">
                                 <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
                                     timer?.phase === "WORK" ? "bg-[rgba(23,21,36,0.49)]" : ""
                                 }`}
@@ -413,7 +460,7 @@ export default function ClientRoom() {
                                     skipToPhase: "LONG_BREAK"
                                 })}}>Long Break</button>
                             </div>
-                            <h1 className="text-[rgb(255,255,255)] text-9xl font-mono ">{mm}:{ss}</h1>
+                            <h1 className="text-[rgb(255,255,255)] text-9xl font-mono py-4">{mm}:{ss}</h1>
                             
                             <button className="start-button"
                                     onClick={() => {
@@ -475,7 +522,7 @@ export default function ClientRoom() {
                 </Popup>
 
 
-                <div className=" card-pane w-[500px]  h-[800px] flex flex-col gap-1">
+                <div className=" card-pane rounded-md w-[500px]  h-[800px] flex flex-col gap-1">
                     <div 
                     ref={messagesContainerRef}
                     className="flex-1 px-3 py-8 flex flex-col gap-4 overflow-y-auto rounded-md chat-scroll">
@@ -493,16 +540,16 @@ export default function ClientRoom() {
                         ))}
                     </div>
 
-                    <form onSubmit={handleSend} className="flex gap-2">
+                    <form onSubmit={handleSend} className="flex p-2">
                         <input
                             value={inputMessage}
                             placeholder="Enter your message"
                             onChange={(e) => setInputMessage(e.target.value)}
-                            className="flex-auto border border-gray-600 bg-transparent text-white px-1 py-2 focus:outline-none"/>
+                            className="flex-1 rounded-l-md bg-[rgba(33,28,36,0.6)] text-white px-2 py-3 focus:outline-none"/>
                             
                         <button
                             type="submit"
-                            className="border border-gray-600 bg-transparent text-white px-4 py-1 rounded hover:bg-gray-700">
+                            className=" rounded-r-md bg-[rgba(33,28,36,0.6)] text-white px-4 py-3 hover:bg-gray-700">
                             Send</button>
                     </form>
                 </div>

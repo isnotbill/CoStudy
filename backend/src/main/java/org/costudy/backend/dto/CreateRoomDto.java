@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateRoomDto {
     @NotBlank(message = "Room title is required")
-    @Size(max = 16, message = "Title must be less than 16 characters")
+    @Size(max = 25, message = "Title must be less than 25 characters")
     private String name;
 
     @NotNull(message = "Room visibility error")
