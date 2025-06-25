@@ -62,6 +62,8 @@ export default function ClientRoom() {
     const router = useRouter()
     const stompRef = useRef<Client | null>(null)
     const [roomId, setRoomId] = useState<null|number>(null)
+    const [roomName, setRoomName] = useState("")
+
     const [inputMessage, setInputMessage] = useState("")
     const [roomMessages, setRoomMessages] = useState<ChatMessage[]>([])
     const [roomUsers, setRoomUsers] = useState<RoomUser[]>([]);
@@ -92,6 +94,7 @@ export default function ClientRoom() {
                 router.replace(`/home?reason=invalid_room_code&code=${roomCode}`)
             } else {
                 setRoomId(res.data.data.roomId)
+                setRoomName(res.data.data.name)
             }
         })
         .catch(() => {
@@ -426,9 +429,14 @@ export default function ClientRoom() {
             <div className="w-full flex justify-center items-start flex-wrap gap-8 my-8">
                 <div className="flex flex-col gap-8 w-[500px] h-full">
                     <div className=" card-pane w-[500px]  h-[500px] rounded-md p-8 ">
-                        <div className="relative w-full h-[50%] rounded-md flex flex-col justify-center items-center gap-10">
-                            <button className="absolute top-4 right-4 settings-button">⚙️ Settings</button>
-                            <div className="text-white flex  gap-2 mt-[260px] mb-[-20px] text-lg">
+                        <div className="relative w-full h-full rounded-md flex flex-col justify-center items-center gap-4">
+                            <button className="absolute top-[-20px] right-[-20px] settings-button">⚙️</button>
+                            <div className="flex flex-col items-center pb-2">
+                                <h1 className="text-white text-xl font-medium">{roomName}</h1>
+                                <h1 className="text-gray-400 text-md">Code: {roomCode}</h1>
+                            </div>
+
+                            <div className="text-white flex gap-2 mb-[-20px] text-lg">
                                 <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
                                     timer?.phase === "WORK" ? "bg-[rgba(23,21,36,0.49)]" : ""
                                 }`}
@@ -452,7 +460,7 @@ export default function ClientRoom() {
                                     skipToPhase: "LONG_BREAK"
                                 })}}>Long Break</button>
                             </div>
-                            <h1 className="text-[rgb(255,255,255)] text-9xl font-mono ">{mm}:{ss}</h1>
+                            <h1 className="text-[rgb(255,255,255)] text-9xl font-mono py-4">{mm}:{ss}</h1>
                             
                             <button className="start-button"
                                     onClick={() => {
@@ -537,11 +545,11 @@ export default function ClientRoom() {
                             value={inputMessage}
                             placeholder="Enter your message"
                             onChange={(e) => setInputMessage(e.target.value)}
-                            className="flex-1 rounded-md bg-[rgb(25,21,27)] text-white px-2 py-3 focus:outline-none"/>
+                            className="flex-1 rounded-l-md bg-[rgba(33,28,36,0.6)] text-white px-2 py-3 focus:outline-none"/>
                             
                         <button
                             type="submit"
-                            className=" rounded-md bg-[rgb(25,21,27)] text-white px-4 py-3 ml-[-10px] hover:bg-gray-700">
+                            className=" rounded-r-md bg-[rgba(33,28,36,0.6)] text-white px-4 py-3 hover:bg-gray-700">
                             Send</button>
                     </form>
                 </div>
