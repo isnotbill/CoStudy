@@ -34,7 +34,10 @@ export default function AccountPage()
   }
   return(
     <>
-      
+      <header>
+        <title>Settings - CoStudy</title>
+      </header>
+
       <div className="bg-[rgb(33,31,48)] h-screen flex flex-col items-center select-none">
         <MainHeader />
         <div className="flex justify-center items-center h-full w-full">

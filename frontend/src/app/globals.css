@@ -212,7 +212,7 @@
 /* Pomodoro timer */
 
 :root {
-  --base-bg: #2b2939;           
+  --base-bg: rgb(33,31,48);           
   --pomodoro-anim-duration: 40s; 
   --pomodoro-fade-duration: 0.5s;
 }
