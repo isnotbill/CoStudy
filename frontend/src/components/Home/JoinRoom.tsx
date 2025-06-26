@@ -78,7 +78,7 @@ export default function JoinRoom({ username } : { username: string}) {
                         {joinErrorMsg}
                     </div>
             )}
-            <h1 className='text-white text-center h-[20px]'>
+            <h1 className='text-white text-center h-[20px] mt-6'>
                 Public Rooms
             </h1>
             <input 
@@ -94,7 +94,7 @@ export default function JoinRoom({ username } : { username: string}) {
                 }
             }}
             />
-            <div className='flex flex-col h-[390] overflow-y-auto chat-scroll bg-[rgba(0,0,0,0.08)] rounded-md'>
+            <div className='flex flex-col h-[350px] overflow-y-auto chat-scroll mt-4 bg-[rgb(33,31,48)] rounded-md'>
                 {publicRooms
                 .filter((room) => room.hostName !== username)
                 .map(((room) => (
@@ -111,17 +111,6 @@ export default function JoinRoom({ username } : { username: string}) {
                             </div>
                             
                             <h1 className="absolute right-1/3 top-1/2 -translate-y-1/2 text-gray-300">{room.members + "👤"}</h1>
-                            <button className="roomlist-select-delete bg-[#fd4a4a] rounded-full flex items-center justify-center"
-                            onClick={async (e) => {
-                                e.stopPropagation();
-                            }}>
-                                <Image
-                                src={"/images/leaveRoom.png"}
-                                alt={"Leave"}
-                                height={50}
-                                width={50}
-                                />
-                            </button>
                         </div>
                     </div>
                 )))
