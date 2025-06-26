@@ -78,8 +78,15 @@ export default function JoinRoom({ username } : { username: string}) {
                         {joinErrorMsg}
                     </div>
             )}
-            <h1 className='text-white text-center h-[20px] mt-6'>
-                Public Rooms
+            <div className='relative flex items-center justify-center select-none
+                text-xs font-medium text-gray-400 my-1'>
+                <span className="flex-1 h-px bg-gray-600/60" />
+                <span className='text-center text-gray-300 p-5 font-bold text-xl'>OR</span>
+                <span className="flex-1 h-px bg-gray-600/60" />
+            </div>
+
+            <h1 className='text-white text-center h-[20px]'>
+                Browse Public Rooms
             </h1>
             <input 
             type="text" 
@@ -94,7 +101,7 @@ export default function JoinRoom({ username } : { username: string}) {
                 }
             }}
             />
-            <div className='flex flex-col h-[350px] overflow-y-auto chat-scroll mt-4 bg-[rgb(33,31,48)] rounded-md'>
+            <div className='flex flex-col h-[290px] overflow-y-auto chat-scroll mt-4 bg-[rgb(33,31,48)] rounded-md'>
                 {publicRooms
                 .filter((room) => room.hostName !== username)
                 .map(((room) => (

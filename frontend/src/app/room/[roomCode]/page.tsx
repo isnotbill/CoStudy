@@ -10,6 +10,7 @@ import { useParams, useRouter } from "next/navigation";
 import  SockJS  from 'sockjs-client';
 import apiClient from "../../../../lib/apiClient";
 import Popup from "@/components/Popup";
+import UpdateRoom from "@/components/UpdateRoom"
 
 interface ChatMessage{
     chatMessageId: number,
@@ -77,7 +78,10 @@ export default function ClientRoom() {
     const [timer, setTimer] = useState<TimerDto | null>(null)
     const [ms, setMs] = useState(0)
 
+    // True: show timer | False: show settings
+    const [toggleSettings, setToggleSettings] = useState(true)
 
+    // For notification detection
     const [lastRunningPhase, setLastRunningPhase] = useState<TimerPhase | null>(null)
 
     const [showPopUp, setShowPopUp] = useState(false)
@@ -430,50 +434,60 @@ export default function ClientRoom() {
                 <div className="flex flex-col gap-8 w-[500px] h-full">
                     <div className=" card-pane w-[500px]  h-[500px] rounded-md p-8 ">
                         <div className="relative w-full h-full rounded-md flex flex-col justify-center items-center gap-4">
-                            <button className="absolute top-[-20px] right-[-20px] settings-button">⚙️</button>
-                            <div className="flex flex-col items-center pb-2">
-                                <h1 className="text-white text-xl font-medium">{roomName}</h1>
-                                <h1 className="text-gray-400 text-md">Code: {roomCode}</h1>
-                            </div>
-
-                            <div className="text-white flex gap-2 mb-[-20px] text-lg">
-                                <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
-                                    timer?.phase === "WORK" ? "bg-[rgba(23,21,36,0.49)]" : ""
-                                }`}
-                                onClick={() => {skipTimer("/app/timer/skipTo", {
-                                    roomId: roomId,
-                                    skipToPhase: "WORK"
-                                })}}
-                                >Work Cycle {currentWorkCycles}</button>
-                                <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
-                                    timer?.phase === "SHORT_BREAK" ? "bg-[rgba(23,21,36,0.49)]" : ""
-                                }`}
-                                onClick={() => {skipTimer("/app/timer/skipTo", {
-                                    roomId: roomId,
-                                    skipToPhase: "SHORT_BREAK"
-                                })}}>Short Break</button>
-                                <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
-                                    timer?.phase === "LONG_BREAK" ? "bg-[rgba(23,21,36,0.49)]" : ""
-                                }`}
-                                onClick={() => {skipTimer("/app/timer/skipTo", {
-                                    roomId: roomId,
-                                    skipToPhase: "LONG_BREAK"
-                                })}}>Long Break</button>
-                            </div>
-                            <h1 className="text-[rgb(255,255,255)] text-9xl font-mono py-4">{mm}:{ss}</h1>
-                            
-                            <button className="start-button"
+                            <button className="absolute top-[-20px] right-[-20px] settings-button"
                                     onClick={() => {
-                                        if (!timer){
-                                            sendTimer("/app/timer/start", { roomId })
-                                        } else if (timer.status === 'PAUSED') {
-                                            sendTimer("/app/timer/resume", roomId)
-                                        } else {
-                                            sendTimer("/app/timer/pause", roomId)
-                                        }
-                                        }}>
-                            {!timer || timer.status === 'PAUSED' ? 'START' : 'PAUSE'}
-                            </button>
+                                        setToggleSettings(prev => !prev)
+                                    }}>⚙️</button>
+                            {toggleSettings ? (
+                                <>
+                                    
+                                    <div className="flex flex-col items-center pb-2">
+                                        <h1 className="text-white text-xl font-medium">{roomName}</h1>
+                                        <h1 className="text-gray-400 text-md">Code: {roomCode}</h1>
+                                    </div>
+
+                                    <div className="text-white flex gap-2 mb-[-20px] text-lg">
+                                        <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
+                                            timer?.phase === "WORK" ? "bg-[rgba(23,21,36,0.49)]" : ""
+                                        }`}
+                                        onClick={() => {skipTimer("/app/timer/skipTo", {
+                                            roomId: roomId,
+                                            skipToPhase: "WORK"
+                                        })}}
+                                        >Work Cycle {currentWorkCycles}</button>
+                                        <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
+                                            timer?.phase === "SHORT_BREAK" ? "bg-[rgba(23,21,36,0.49)]" : ""
+                                        }`}
+                                        onClick={() => {skipTimer("/app/timer/skipTo", {
+                                            roomId: roomId,
+                                            skipToPhase: "SHORT_BREAK"
+                                        })}}>Short Break</button>
+                                        <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
+                                            timer?.phase === "LONG_BREAK" ? "bg-[rgba(23,21,36,0.49)]" : ""
+                                        }`}
+                                        onClick={() => {skipTimer("/app/timer/skipTo", {
+                                            roomId: roomId,
+                                            skipToPhase: "LONG_BREAK"
+                                        })}}>Long Break</button>
+                                    </div>
+                                    <h1 className="text-[rgb(255,255,255)] text-9xl font-mono py-4">{mm}:{ss}</h1>
+                                    
+                                    <button className="start-button"
+                                            onClick={() => {
+                                                if (!timer){
+                                                    sendTimer("/app/timer/start", { roomId })
+                                                } else if (timer.status === 'PAUSED') {
+                                                    sendTimer("/app/timer/resume", roomId)
+                                                } else {
+                                                    sendTimer("/app/timer/pause", roomId)
+                                                }
+                                                }}>
+                                    {!timer || timer.status === 'PAUSED' ? 'START' : 'PAUSE'}
+                                    </button>
+                                </>
+                            ) : (
+                                <UpdateRoom username="bill"/>
+                            )}
 
                         </div>
                     </div>
