@@ -26,4 +26,18 @@ public class SettingsService {
 
         settingsRepo.save(roomSettings);
     }
+
+    public CreateRoomDto getSettings(int roomId) {
+        Settings roomSettings = settingsRepo.getSettingsByStudyRoomRoomId(roomId);
+        StudyRoom studyRoom = roomSettings.getStudyRoom();
+        CreateRoomDto createRoomDto = new CreateRoomDto();
+        createRoomDto.setPublicRoom(roomSettings.isPublic());
+        createRoomDto.setStudyTimeMs(roomSettings.getStudyTimeMs());
+        createRoomDto.setShortBreakTimeMs(roomSettings.getShortBreakTimeMs());
+        createRoomDto.setLongBreakTimeMs(roomSettings.getLongBreakTimeMs());
+        createRoomDto.setCyclesTillLongBreak(roomSettings.getCyclesTillLongBreak());
+        createRoomDto.setName(studyRoom.getName());
+
+        return createRoomDto;
+    }
 }

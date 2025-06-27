@@ -47,6 +47,15 @@ interface TimerDto {
     workCyclesDone: number
 }
 
+interface Settings {
+    name: string
+    publicRoom: boolean
+    studyTimeMs: number
+    shortBreakTimeMs: number
+    longBreakTimeMs: number
+    cyclesTillLongBreak: number
+}
+
 const remaining = (t: TimerDto) => {
     if (t.status !== "RUNNING" || !t.startedAt) {
         return t.durationMs
@@ -73,6 +82,7 @@ export default function ClientRoom() {
     const [loadingProfile, setLoadingProfile] = useState(true)
     const [error, setError] = useState<string|null>(null)
     const [profile, setProfile] = useState<Profile | null>(null)
+    const [settings, setSettings] = useState<Settings | null>(null)
     const messagesContainerRef = useRef<HTMLDivElement>(null)
     
     const [timer, setTimer] = useState<TimerDto | null>(null)
@@ -390,6 +400,22 @@ export default function ClientRoom() {
         }
     }, [])
 
+    // To initialize settings information
+
+    useEffect(() => {
+        async function fetchSettings(){
+            if (!roomId) return
+            try {
+                const res = await apiClient.get(`/settings/${roomId}`)
+                setSettings(res.data.data)
+            } catch (err: any) {
+                console.log(err);
+            }
+        }
+        fetchSettings()
+
+    }, [roomId])
+
     const prevPhaseRef = useRef<TimerPhase | null>(null) // To detect when timer ends for push notification
 
     // Push notifications when timer finishes
@@ -486,7 +512,8 @@ export default function ClientRoom() {
                                     </button>
                                 </>
                             ) : (
-                                <UpdateRoom username="bill"/>
+                                
+                                <UpdateRoom settings={settings}/>
                             )}
 
                         </div>

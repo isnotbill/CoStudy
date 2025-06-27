@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface SettingsRepo extends JpaRepository<Settings, Integer> {
 
     Settings findByStudyRoomRoomId(Integer roomId);
+
+    Settings getSettingsByStudyRoomRoomId(int roomId);
 }

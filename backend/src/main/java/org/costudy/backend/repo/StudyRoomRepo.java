@@ -42,4 +42,6 @@ public interface StudyRoomRepo extends JpaRepository<StudyRoom, Integer> {
             @Param("username") String username,
             Pageable pageable
     );
+
+    StudyRoom getStudyRoomByRoomId(int roomId);
 }
