@@ -12,6 +12,7 @@ interface SettingsDto {
     cyclesTillLongBreak: number,
 }
 
+
 const presetSettings: Record<string, SettingsDto> = {
   "pomodoroClassic": {
     name: "",
@@ -40,20 +41,15 @@ const presetSettings: Record<string, SettingsDto> = {
 };
 
 
-export default function CreateRoom({ username } : { username: string }) {
+export default function CreateRoom({ settings } : { settings: SettingsDto | null}) {
+    if (settings == null){return <div className='text-xl text-white text-center'>LOADING ...</div>}
 
-    const [createInputVal, setCreateInputVal] = useState<SettingsDto>(presetSettings['pomodoroClassic']);
-    const [activeSetting, setActiveSetting] = useState<'Pomodoro' | '52/17' | 'Ultradian' | 'Custom'>('Pomodoro')
+    const [createInputVal, setCreateInputVal] = useState<SettingsDto>(settings);
+    const [activeSetting, setActiveSetting] = useState<'Pomodoro' | '52/17' | 'Ultradian' | 'Custom'>('Custom')
     const [roomPrivacy, setRoomPrivacy] = useState<'public' | 'private'>('private');
 
     const [createErrors, setCreateErrors] = useState<Record<string, string>>({});
     const router = useRouter();
-
-    useEffect(() => {
-        if (username && createInputVal.name === '') {
-            setCreateInputVal(prev => ({ ...prev, name: `${username}'s room` }));
-        }
-    }, [username]);
 
 
     const createRoom = async (roomSettings : SettingsDto) => {
