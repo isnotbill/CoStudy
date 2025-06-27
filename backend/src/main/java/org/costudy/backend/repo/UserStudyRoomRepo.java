@@ -16,4 +16,5 @@ public interface UserStudyRoomRepo extends JpaRepository<UserStudyRoom, Integer>
     Optional<UserStudyRoom> findByIdUserIdAndIdRoomId(int userId, int roomId);
 
     int countByStudyRoom(StudyRoom room);
+    int countByUser(User user);
 }

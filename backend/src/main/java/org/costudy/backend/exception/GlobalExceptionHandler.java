@@ -18,4 +18,9 @@ public class GlobalExceptionHandler {
         response.put("error", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiResponse<?>> handleRoomLimitExceeded(RoomLimitExceededException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse<>(false, e.getMessage()));
+    }
 }
