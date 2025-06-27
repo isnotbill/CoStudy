@@ -7,11 +7,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.costudy.backend.service.JwtService;
-import org.costudy.backend.service.MyUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.costudy.backend.service.CustomUserDetailsService;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -70,7 +67,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
             if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                UserDetails userDetails = context.getBean(MyUserDetailsService.class).loadUserByUsername(userName);
+                UserDetails userDetails = context.getBean(CustomUserDetailsService.class).loadUserByUsername(userName);
                 if (jwtService.validateToken(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

@@ -55,26 +55,35 @@ export default function CreateRoom({ username } : { username: string }) {
         }
     }, [username]);
 
-
     const createRoom = async (roomSettings : SettingsDto) => {
         try {
             const res = await apiClient.post(`/room/create`, roomSettings);
             router.push(`/room/${res.data.data}`);
         } catch (err : any) {
-            if(err.response.status === 400) {
-                setCreateErrors(err.response.data.data)
-            }
-            if(err.response && err.response.status === 409) {
-                setCreateErrors(err.response.data);
+            const errorData = err?.response?.data;
+
+            if (err.response?.status === 400) {
+                const fieldErrors = errorData?.data;
+
+                if (fieldErrors && typeof fieldErrors === 'object' && !Array.isArray(fieldErrors)) {
+                    setCreateErrors(fieldErrors);
+                } else {
+                    setCreateErrors({ general: "Invalid input" });
+                }
+            } else if (err.response?.status === 409) {
+                setCreateErrors({ name: errorData?.message || "Room conflict" });
             } else {
-                setCreateErrors(err.response?.data?.message || "Something went wrong");
+                setCreateErrors({ general: errorData?.message || "Something went wrong" });
             }
         }
     }
 
+
+
     const isInvalidChar = (key: string): boolean => {
         return ['e', 'E', '+', '-', '.'].includes(key);
     }
+
     return (
         <div className='w-full h-full flex flex-col gap-6 justify-between'>
                     <div className='flex flex-col justify-center items-center'>

@@ -3,6 +3,7 @@ package org.costudy.backend.service;
 import org.costudy.backend.dto.CreateRoomDto;
 import org.costudy.backend.dto.PublicRoomDto;
 import org.costudy.backend.dto.UserDto;
+import org.costudy.backend.exception.RoomLimitExceededException;
 import org.costudy.backend.model.*;
 import org.costudy.backend.model.MessageType;
 import org.costudy.backend.repo.ChatMessageRepository;
@@ -26,6 +27,7 @@ public class StudyRoomService {
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int CODE_LENGTH = 6;
     private static final SecureRandom random = new SecureRandom();
+    private static final int maxRooms = 15;
 
     private final UserStudyRoomRepo userStudyRoomRepo;
     private final StudyRoomRepo roomRepo;
@@ -41,6 +43,10 @@ public class StudyRoomService {
 
 
     public String createRoom(User user, CreateRoomDto createRoomDto) {
+        if(userStudyRoomRepo.countByUser(user) >= maxRooms) {
+            throw new RoomLimitExceededException("Room limit exceeded (15)");
+        }
+
         StudyRoom room = new StudyRoom();
         room.setName(createRoomDto.getName());
 
@@ -115,6 +121,10 @@ public class StudyRoomService {
 
         if(isInRoom(currentUser, room)) {
             throw new AccessDeniedException("Duplicate");
+        }
+
+        if(userStudyRoomRepo.countByUser(currentUser) >= maxRooms) {
+            throw new RoomLimitExceededException("Room limit exceeded (15)");
         }
 
         UserStudyRoom rel = new UserStudyRoom();

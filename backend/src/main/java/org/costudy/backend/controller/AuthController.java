@@ -20,6 +20,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,15 +60,25 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<?>> login(@Valid @RequestBody LoginDto loginDto){
+    public ResponseEntity<ApiResponse<?>> login(@Valid @RequestBody LoginDto loginDto, BindingResult bindingResult){
+        if(bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getFieldErrors()
+                    .stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .toList();
+
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Login failed", errors));
+        }
 
         try {
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword())
             );
 
-            String accessToken = jwtService.generateAccessToken(loginDto.getUsername());
-            String refreshToken = jwtService.generateRefreshToken(loginDto.getUsername());
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+            String accessToken = jwtService.generateAccessToken(userDetails.getUsername());
+            String refreshToken = jwtService.generateRefreshToken(userDetails.getUsername());
 
             ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
                     .httpOnly(true)
