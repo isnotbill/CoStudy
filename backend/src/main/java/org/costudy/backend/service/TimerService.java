@@ -49,7 +49,7 @@ public class TimerService {
 
 
         t.setPhase(TimerPhase.WORK);
-        t.setStatus(TimerStatus.RUNNING);
+        t.setStatus(TimerStatus.PAUSED);
         t.setDurationMs(roomSettings.getStudyTimeMs());
         t.setStartedAt(Instant.now());
         t.setWorkCyclesDone(0);

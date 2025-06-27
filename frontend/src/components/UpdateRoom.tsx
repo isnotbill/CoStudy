@@ -41,21 +41,20 @@ const presetSettings: Record<string, SettingsDto> = {
 };
 
 
-export default function CreateRoom({ settings } : { settings: SettingsDto | null}) {
-    if (settings == null){return <div className='text-xl text-white text-center'>LOADING ...</div>}
+export default function CreateRoom({ settings, roomId, isClientAdmin } : { settings: SettingsDto | null, roomId: number | null, isClientAdmin: boolean | null}) {
+    if (settings == null || roomId == null){return <div className='text-xl text-white text-center'>LOADING ...</div>}
 
     const [createInputVal, setCreateInputVal] = useState<SettingsDto>(settings);
     const [activeSetting, setActiveSetting] = useState<'Pomodoro' | '52/17' | 'Ultradian' | 'Custom'>('Custom')
-    const [roomPrivacy, setRoomPrivacy] = useState<'public' | 'private'>('private');
+    const [roomPrivacy, setRoomPrivacy] = useState<'public' | 'private'>(settings.publicRoom ? "public" : "private");
 
     const [createErrors, setCreateErrors] = useState<Record<string, string>>({});
     const router = useRouter();
 
 
-    const createRoom = async (roomSettings : SettingsDto) => {
+    const updateRoom = async (roomSettings : SettingsDto) => {
         try {
-            const res = await apiClient.post(`/room/create`, roomSettings);
-            router.push(`/room/${res.data.data}`);
+            const res = await apiClient.post(`/settings/update/${roomId}`, roomSettings);
         } catch (err : any) {
             const errorData = err?.response?.data;
 
@@ -86,43 +85,52 @@ export default function CreateRoom({ settings } : { settings: SettingsDto | null
                         onChange={(e) => {
                             setCreateInputVal({...createInputVal, name: e.target.value})
                             setCreateErrors({...createErrors, name: ''})
-                        }}/>
+                        }}
+                        disabled={!isClientAdmin}
+                        />
                         <h1 className='text-red-400 text-[12px] h-[10px]'>
                             {createErrors.name && <p>{createErrors.name}</p>}
                         </h1>
                         
                     </div>
-                    
-                    <div className='h-[60px] flex text-white'>
-                        <button className={(activeSetting === 'Pomodoro' ? 'create-settings-active' : '') + ' create-settings flex-1'}
-                        onClick={(e) => {
-                            setActiveSetting('Pomodoro');
-                            setCreateInputVal({...presetSettings['pomodoroClassic'], name: createInputVal.name});
-                        }}>
-                            Pomodoro
-                        </button>
-                        <button className={(activeSetting === '52/17' ? 'create-settings-active' : '') + ' create-settings flex-1'}
-                        onClick={(e) => {
-                            setActiveSetting('52/17');
-                            setCreateInputVal({...presetSettings['52/17'], name: createInputVal.name});
-                        }}>
-                            52/17
-                        </button>
-                        <button className={(activeSetting === 'Ultradian' ? 'create-settings-active' : '') + ' create-settings flex-1'}
-                        onClick={(e) => {
-                            setActiveSetting('Ultradian');
-                            setCreateInputVal({...presetSettings['Ultradian'], name: createInputVal.name});
-                        }}>
-                            Ultradian
-                        </button>
-                        <button className={(activeSetting === 'Custom' ? 'create-settings-active' : '') + ' create-settings flex-1'}
-                        onClick={(e) => {
-                            setActiveSetting('Custom');
-                            setCreateInputVal(createInputVal);
-                        }}>
-                            Custom
-                        </button>
-                    </div>
+                    {isClientAdmin && (
+                        <div className='h-[60px] flex text-white'>
+                            <button className={(activeSetting === 'Pomodoro' ? 'create-settings-active' : '') + ' create-settings flex-1'}
+                            onClick={(e) => {
+                                setActiveSetting('Pomodoro');
+                                setCreateInputVal({...presetSettings['pomodoroClassic'], name: createInputVal.name});
+                            }}
+                            disabled={!isClientAdmin}>
+                                
+                                Pomodoro
+                            </button>
+                            <button className={(activeSetting === '52/17' ? 'create-settings-active' : '') + ' create-settings flex-1'}
+                            onClick={(e) => {
+                                setActiveSetting('52/17');
+                                setCreateInputVal({...presetSettings['52/17'], name: createInputVal.name});
+                            }}
+                            disabled={!isClientAdmin}>
+                                52/17
+                            </button>
+                            <button className={(activeSetting === 'Ultradian' ? 'create-settings-active' : '') + ' create-settings flex-1'}
+                            onClick={(e) => {
+                                setActiveSetting('Ultradian');
+                                setCreateInputVal({...presetSettings['Ultradian'], name: createInputVal.name});
+                            }}
+                            disabled={!isClientAdmin}>
+                                Ultradian
+                            </button>
+                            <button className={(activeSetting === 'Custom' ? 'create-settings-active' : '') + ' create-settings flex-1'}
+                            onClick={(e) => {
+                                setActiveSetting('Custom');
+                                setCreateInputVal(createInputVal);
+                            }}
+                            disabled={!isClientAdmin}>
+                                Custom
+                            </button>
+                        </div>
+
+                    )}
                     <div className='flex gap-2 justify-between'>
                         <div className='flex flex-col gap-1 flex-1'>
                             <h1 className='text-white'>Study length</h1>
@@ -139,6 +147,7 @@ export default function CreateRoom({ settings } : { settings: SettingsDto | null
                                     e.preventDefault();
                                 }
                             }}
+                            disabled={!isClientAdmin}
                             />
                             <h1 className='text-red-400 text-[12px] h-[10px]'>
                                 {createErrors.studyTimeMs && <p>{createErrors.studyTimeMs}</p>}
@@ -158,7 +167,8 @@ export default function CreateRoom({ settings } : { settings: SettingsDto | null
                                 if(isInvalidChar(e.key)) {
                                     e.preventDefault();
                                 }
-                            }}/>
+                            }}
+                            disabled={!isClientAdmin}/>
                             <h1 className='text-red-400 text-[12px] h-[10px]'>
                                 {createErrors.shortBreakTimeMs && <p>{createErrors.shortBreakTimeMs}</p>}
                             </h1>  
@@ -180,7 +190,8 @@ export default function CreateRoom({ settings } : { settings: SettingsDto | null
                                 if(isInvalidChar(e.key)) {
                                     e.preventDefault();
                                 }
-                            }}/>
+                            }}
+                            disabled={!isClientAdmin}/>
                             <h1 className='text-red-400 text-[12px] h-[10px]'>
                                 {createErrors.cyclesTillLongBreak && <p>{createErrors.cyclesTillLongBreak}</p>}
                             </h1>  
@@ -199,7 +210,8 @@ export default function CreateRoom({ settings } : { settings: SettingsDto | null
                                 if(isInvalidChar(e.key)) {
                                     e.preventDefault();
                                 }
-                            }}/>
+                            }}
+                            disabled={!isClientAdmin}/>
                             <h1 className='text-red-400 text-[12px] h-[10px]'>
                                 {createErrors.longBreakTimeMs && <p>{createErrors.longBreakTimeMs}</p>}
                             </h1>  
@@ -212,7 +224,8 @@ export default function CreateRoom({ settings } : { settings: SettingsDto | null
                             onChange={() => {
                                 setRoomPrivacy('private');
                                 setCreateInputVal({...createInputVal, publicRoom: false})
-                            }}/>
+                            }}
+                            disabled={!isClientAdmin}/>
                             <h1 className='text-white'>Private</h1>
                         </div>
                         <div className='flex gap-2 items-center'>
@@ -221,14 +234,21 @@ export default function CreateRoom({ settings } : { settings: SettingsDto | null
                             onChange={() => {
                                 setRoomPrivacy('public');
                                 setCreateInputVal({...createInputVal, publicRoom: true})
-                            }}/>
+                            }}
+                            disabled={!isClientAdmin}/>
                             <h1 className='text-white'>Public</h1>
                         </div>
                     </div>
-                    <button className='start-button '
-                    onClick={() => createRoom(createInputVal)}>
-                        Update Room
-                    </button>
+                    { isClientAdmin && (
+                        <button className='start-button '
+                        onClick={(e: any) => {
+                            e.stopPropagation()
+                            updateRoom(createInputVal)}}
+                            disabled={!isClientAdmin}>
+                            Update Room
+                        </button>
+                    )}
+
                 </div>
     )
 }

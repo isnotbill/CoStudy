@@ -224,6 +224,12 @@ export default function ClientRoom() {
                 setMs(remaining(dto))
             })
 
+            client.subscribe('/topic/settings/update', msg => {
+                const dto: Settings = JSON.parse(msg.body)
+                setRoomName(dto.name)
+                setSettings(dto)
+            })
+
             client.publish({
             destination: "/app/timer/status",
             body: String(roomId)})
@@ -513,7 +519,9 @@ export default function ClientRoom() {
                                 </>
                             ) : (
                                 
-                                <UpdateRoom settings={settings}/>
+                                <UpdateRoom 
+                                settings={settings} roomId={roomId}
+                                isClientAdmin={roomUsers.find(u => u.id === profile?.id)?.admin || false}/>
                             )}
 
                         </div>

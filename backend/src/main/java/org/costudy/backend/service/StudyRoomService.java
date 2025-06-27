@@ -1,5 +1,6 @@
 package org.costudy.backend.service;
 
+import jakarta.validation.Valid;
 import org.costudy.backend.dto.CreateRoomDto;
 import org.costudy.backend.dto.PublicRoomDto;
 import org.costudy.backend.dto.UserDto;
@@ -234,4 +235,6 @@ public class StudyRoomService {
                     return new PublicRoomDto(room.getRoomId(), room.getCode(), room.getName(), hostName, userStudyRoomRepo.countByStudyRoom(room));
                 });
     }
+
+
 }

@@ -68,7 +68,7 @@ export default function Login() {
                     <div className='w-full'>
                         <div className="flex flex-col">
                             <label htmlFor="username" className="text-[rgba(49,32,77,0.8)] font-medium">
-                                Username
+                                Username/Email
                             </label>
                             <input
                                 name="username"
