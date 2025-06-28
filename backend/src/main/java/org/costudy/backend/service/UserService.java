@@ -4,6 +4,7 @@ import org.costudy.backend.dto.UserRoomDto;
 import org.costudy.backend.model.StudyRoom;
 import org.costudy.backend.model.User;
 import org.costudy.backend.model.UserStudyRoom;
+import org.costudy.backend.repo.StudyRoomRepo;
 import org.costudy.backend.repo.UserRepo;
 import org.costudy.backend.repo.UserStudyRoomRepo;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,12 @@ public class UserService {
 
     private final UserRepo repo;
     private final UserStudyRoomRepo userStudyRoomRepo;
+    private final StudyRoomRepo studyRoomRepo;
 
-    public UserService(UserRepo userRepo, UserStudyRoomRepo userStudyRoomRepo) {
+    public UserService(UserRepo userRepo, UserStudyRoomRepo userStudyRoomRepo, StudyRoomRepo studyRoomRepo) {
         this.repo = userRepo;
         this.userStudyRoomRepo = userStudyRoomRepo;
+        this.studyRoomRepo = studyRoomRepo;
     }
 
     public User getCurrentUser(String username) {
@@ -43,6 +46,12 @@ public class UserService {
                     return new UserRoomDto(room, rel.isAdmin(), userStudyRoomRepo.countByStudyRoom(room));
                 })
                 .collect(Collectors.toList());
+    }
+
+    public void deleteAccount(User user) {
+        List<StudyRoom> roomsToDelete = userStudyRoomRepo.findAdminRoomsByUser(user.getId());
+        studyRoomRepo.deleteAll(roomsToDelete);
+        repo.delete(user);
     }
 }
 

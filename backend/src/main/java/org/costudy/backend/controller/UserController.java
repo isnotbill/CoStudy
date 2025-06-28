@@ -60,6 +60,14 @@ public class UserController {
         );
     }
 
+    @DeleteMapping("/delete/account")
+    public ResponseEntity<ApiResponse<?>> deleteAccount(@AuthenticationPrincipal UserDetails userDetails){
+        User user = userService.getCurrentUser(userDetails.getUsername());
+        userService.deleteAccount(user);
+        return ResponseEntity.ok(new ApiResponse<>(true, "User " + user.getUsername() + " deleted"));
+
+    }
+
 
 
 }

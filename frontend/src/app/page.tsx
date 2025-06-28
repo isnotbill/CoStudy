@@ -135,9 +135,11 @@ export default function Home() {
                 minLength={8}
               />
             </div>
-            {error && <div className="text-red-500">{
-              error.map((msg, i) => (<p key={i}>{msg}</p>))
-              }</div>}
+
+              {error && <div className="text-red-500 text-sm flex flex-col gap-2">{
+                error.map((msg, i) => (<p key={i}>{msg}</p>))
+                }</div>}
+
           </div>
           <button
             type="submit"

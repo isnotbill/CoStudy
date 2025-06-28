@@ -20,6 +20,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -157,31 +158,5 @@ public class AuthController {
                 .body(new ApiResponse<>(true, "Token refreshed"));
     }
 
-//    @PostMapping("/logout")
-//    public ResponseEntity<?> logout(HttpServletResponse response){
-//
-//        ResponseCookie clearAccess = ResponseCookie.from("access_token","")
-//                .httpOnly(true)
-//                .secure(false) // TODO: SET TRUE IN PRODUCTION
-//                .path("/")
-//                .maxAge(0)
-//                .sameSite("Strict")
-//                .build();
-//
-//        ResponseCookie clearRefresh = ResponseCookie.from("refresh_token","")
-//                .httpOnly(true)
-//                .secure(false) // TODO: SET TRUE IN PRODUCTION
-//                .path("/")
-//                .maxAge(0)
-//                .sameSite("Strict")
-//                .build();
-//
-//        response.addHeader(HttpHeaders.SET_COOKIE, clearAccess.toString());
-//        response.addHeader(HttpHeaders.SET_COOKIE, clearRefresh.toString());
-//
-//        return ResponseEntity.ok()
-//                .body(new ApiResponse<>(true, "Logout successful"));
-//
-//    }
 
 }

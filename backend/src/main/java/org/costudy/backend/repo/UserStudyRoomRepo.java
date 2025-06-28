@@ -4,6 +4,7 @@ import org.costudy.backend.model.StudyRoom;
 import org.costudy.backend.model.User;
 import org.costudy.backend.model.UserStudyRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,4 +18,9 @@ public interface UserStudyRoomRepo extends JpaRepository<UserStudyRoom, Integer>
 
     int countByStudyRoom(StudyRoom room);
     int countByUser(User user);
+
+    @Query("""
+           SELECT usr.studyRoom FROM UserStudyRoom usr WHERE usr.user.id = :id AND usr.isAdmin = true
+           """)
+    List<StudyRoom> findAdminRoomsByUser(int id);
 }

@@ -521,7 +521,8 @@ export default function ClientRoom() {
                                 
                                 <UpdateRoom 
                                 settings={settings} roomId={roomId}
-                                isClientAdmin={roomUsers.find(u => u.id === profile?.id)?.admin || false}/>
+                                isClientAdmin={roomUsers.find(u => u.id === profile?.id)?.admin || false}
+                                setToggleSettings={setToggleSettings}/>
                             )}
 
                         </div>
@@ -558,7 +559,7 @@ export default function ClientRoom() {
                             <div className="text-red-500 m-3 text-center">WARNING: As an ADMIN, the room will be permanently deleted if you leave the room.</div> }
 
                         <button className="popup-button w-full h-[45px] mt-5"
-                        onClick={(e) => {
+                        onClick={() => {
                             if(showPopUp == false) return
                             roomUsers.find(u => u.id === profile?.id)?.admin  ? deleteRoom(roomId) : leaveRoom(String(roomCode))
                             setShowPopUp(false);

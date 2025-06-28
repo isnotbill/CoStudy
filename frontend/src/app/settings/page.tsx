@@ -16,22 +16,41 @@ export default function AccountPage()
   const [activeTab, setActiveTab] = useState("profile");
 
   const [logoutLoading, setLogoutLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const [logoutError, setLogoutError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
+  // Logout handler
   async function handleLogout(){
     setLogoutLoading(true)
-    setLogoutError(null)
+    setError(null)
 
     try {
       await apiClient.post("/logout")
       router.replace('/login')
     } catch (err: any) {
-      setLogoutError(err.message)
+      setError(err.message)
     } finally {
       setLogoutLoading(false)
     }
   }
+
+  // Delete account handler
+  async function handleDelete(){
+    setError(null)
+    setDeleteLoading(true)
+
+    try {
+      await apiClient.delete("/delete/account")
+      await apiClient.post("/logout")
+      router.replace('/login')
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
+
   return(
     <>
       <header>
@@ -67,14 +86,22 @@ export default function AccountPage()
             </button>
 
             <button className={`w-full  py-3 rounded-2xl font-semibold
-            hover:text-[#d6d6d6] mt-[170px]`}
+            hover:text-[#d6d6d6] mt-[130px] mb-2`}
             type="button"
             onClick={handleLogout}
             disabled={logoutLoading}>
               Logout
             </button>
 
-            {logoutError && <p className="text-red-500 text-[12px]">{logoutError}</p>}
+            <button className={`w-full  py-3 rounded-2xl font-semibold text-red-600
+            hover:text-[#be3535]`}
+            type="button"
+            onClick={handleDelete}
+            disabled={deleteLoading}>
+              Delete Account
+            </button>
+
+            {error && <p className="text-red-500 text-[12px]">{error}</p>}
 
 
           </div>

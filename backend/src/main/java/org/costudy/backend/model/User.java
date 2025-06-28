@@ -7,7 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.costudy.backend.dto.RegisterDto;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -22,7 +24,10 @@ public class User {
     private String email;
     private String image = "default-avatar.png";
 
-    @OneToMany(mappedBy = "user")
+
+    @OneToMany(mappedBy="user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     @JsonIgnore
     private List<UserStudyRoom> userStudyRooms;
 }

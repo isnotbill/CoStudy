@@ -41,7 +41,7 @@ const presetSettings: Record<string, SettingsDto> = {
 };
 
 
-export default function CreateRoom({ settings, roomId, isClientAdmin } : { settings: SettingsDto | null, roomId: number | null, isClientAdmin: boolean | null}) {
+export default function CreateRoom({ settings, roomId, isClientAdmin, setToggleSettings } : { settings: SettingsDto | null, roomId: number | null, isClientAdmin: boolean | null, setToggleSettings: React.Dispatch<React.SetStateAction<boolean>>}) {
     if (settings == null || roomId == null){return <div className='text-xl text-white text-center'>LOADING ...</div>}
 
     const [createInputVal, setCreateInputVal] = useState<SettingsDto>(settings);
@@ -49,7 +49,6 @@ export default function CreateRoom({ settings, roomId, isClientAdmin } : { setti
     const [roomPrivacy, setRoomPrivacy] = useState<'public' | 'private'>(settings.publicRoom ? "public" : "private");
 
     const [createErrors, setCreateErrors] = useState<Record<string, string>>({});
-    const router = useRouter();
 
 
     const updateRoom = async (roomSettings : SettingsDto) => {
@@ -243,7 +242,10 @@ export default function CreateRoom({ settings, roomId, isClientAdmin } : { setti
                         <button className='start-button '
                         onClick={(e: any) => {
                             e.stopPropagation()
-                            updateRoom(createInputVal)}}
+                            updateRoom(createInputVal)
+                            setToggleSettings((prev) => !prev)
+                        }
+                    }
                             disabled={!isClientAdmin}>
                             Update Room
                         </button>
