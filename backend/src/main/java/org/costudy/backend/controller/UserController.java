@@ -1,19 +1,23 @@
 package org.costudy.backend.controller;
 
-
+import jakarta.validation.Valid;
+import org.costudy.backend.dto.UpdateInfoDto;
+import org.costudy.backend.dto.UpdatePasswordDto;
 import org.costudy.backend.model.User;
 import org.costudy.backend.response.ApiResponse;
 import org.costudy.backend.service.FileStorageService;
 import org.costudy.backend.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -58,6 +62,46 @@ public class UserController {
         return ResponseEntity.ok().body(
                 new ApiResponse<>(true, "Rooms fetched", userService.getUserRooms(userDetails.getUsername()))
         );
+    }
+
+    @PutMapping("/user/details")
+    public ResponseEntity<ApiResponse<?>> updateUserInfo(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody UpdateInfoDto updateInfoDto,
+            BindingResult bindingResult
+    ) {
+        if(bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for(FieldError error : bindingResult.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+            return ResponseEntity.badRequest().body(
+                    new ApiResponse<>(false, "Unable to update info", errors)
+            );
+        }
+
+        userService.updateUserInfo(updateInfoDto, userService.getCurrentUser(userDetails.getUsername()));
+        return ResponseEntity.ok(new ApiResponse<>(true, "Updated info"));
+    }
+
+    @PutMapping("/user/password")
+    public ResponseEntity<ApiResponse<?>> updatePassword(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody UpdatePasswordDto updatePasswordDto,
+            BindingResult bindingResult
+    ) {
+        if(bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for(FieldError error : bindingResult.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+            return ResponseEntity.badRequest().body(
+                    new ApiResponse<>(false, "Unable to update password", errors)
+            );
+        }
+
+        userService.updatePassword(updatePasswordDto, userService.getCurrentUser(userDetails.getUsername()));
+        return ResponseEntity.ok(new ApiResponse<>(true, "Updated password"));
     }
 
 

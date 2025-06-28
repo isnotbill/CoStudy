@@ -149,9 +149,6 @@ public class AuthController {
                 .sameSite("Lax")
                 .build();
 
-        System.out.println("Refresh: " + refreshToken);
-        System.out.println("Access: " + accessToken);
-
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
                 .body(new ApiResponse<>(true, "Token refreshed"));

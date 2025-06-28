@@ -74,18 +74,14 @@ public class StudyRoomController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable String roomCode
             ) {
-        try {
-            StudyRoom room = roomService.getStudyRoom(roomCode);
-            UserDto user = roomService.joinRoom(userService.getCurrentUser(userDetails.getUsername()), roomCode);
-            ChatMessage chat = roomService.announceJoin(userService.getCurrentUser(userDetails.getUsername()), room);
-            tpl.convertAndSend("/topic/room/" + room.getRoomId(), chat);
-            tpl.convertAndSend("/topic/room/" + roomCode + "/join", user);
-            return ResponseEntity.ok(new ApiResponse<>(true, "Successfully joined room"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    new ApiResponse<>(false, e.getMessage())
-            );
-        }
+
+        StudyRoom room = roomService.getStudyRoom(roomCode);
+        UserDto user = roomService.joinRoom(userService.getCurrentUser(userDetails.getUsername()), roomCode);
+        ChatMessage chat = roomService.announceJoin(userService.getCurrentUser(userDetails.getUsername()), room);
+        tpl.convertAndSend("/topic/room/" + room.getRoomId(), chat);
+        tpl.convertAndSend("/topic/room/" + roomCode + "/join", user);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Successfully joined room"));
+
     }
 
     @DeleteMapping("/{roomCode}/leave")
@@ -142,22 +138,12 @@ public class StudyRoomController {
 
     @DeleteMapping("/{roomId}/delete")
     public ResponseEntity<ApiResponse<?>> deleteStudyRoom(@AuthenticationPrincipal UserDetails userDetails, @PathVariable int roomId) {
-        try {
-            roomService.deleteRoomById(
-                    roomId,
-                    userService.getCurrentUser(userDetails.getUsername())
-            );
-            return ResponseEntity.ok(
-                    new ApiResponse<>(true, "Room successfully deleted"));
-        }
-        catch (AccessDeniedException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new ApiResponse<>(false, e.getMessage()));
-        } catch (Exception e) {
-            // Log error if needed
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(false, "An error occurred while deleting the room."));
-        }
+        roomService.deleteRoomById(
+                roomId,
+                userService.getCurrentUser(userDetails.getUsername())
+        );
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Room successfully deleted"));
     }
 
     @GetMapping("/public")

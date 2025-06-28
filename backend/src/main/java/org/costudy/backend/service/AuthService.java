@@ -6,17 +6,18 @@ import org.costudy.backend.mapper.UserMapper;
 import org.costudy.backend.model.User;
 import org.costudy.backend.repo.UserRepo;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
     private final UserRepo repo;
-    private final BCryptPasswordEncoder encoder;
+    private final PasswordEncoder encoder;
 
-    public AuthService(UserRepo userRepo) {
+    public AuthService(UserRepo userRepo, PasswordEncoder encoder) {
         this.repo = userRepo;
-        this.encoder = new BCryptPasswordEncoder(12);
+        this.encoder = encoder;
     }
 
     public void register(RegisterDto registerDto){

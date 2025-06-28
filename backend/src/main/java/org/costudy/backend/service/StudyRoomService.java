@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.costudy.backend.dto.CreateRoomDto;
 import org.costudy.backend.dto.PublicRoomDto;
 import org.costudy.backend.dto.UserDto;
+import org.costudy.backend.exception.ConflictException;
 import org.costudy.backend.exception.RoomLimitExceededException;
 import org.costudy.backend.model.*;
 import org.costudy.backend.model.MessageType;
@@ -121,7 +122,7 @@ public class StudyRoomService {
         }
 
         if(isInRoom(currentUser, room)) {
-            throw new AccessDeniedException("Duplicate");
+            throw new ConflictException("Duplicate");
         }
 
         if(userStudyRoomRepo.countByUser(currentUser) >= maxRooms) {
