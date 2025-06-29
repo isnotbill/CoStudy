@@ -13,7 +13,9 @@ import org.costudy.backend.repo.UserStudyRoomRepo;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,14 +55,21 @@ public class UserService {
     }
 
     public void updatePassword(UpdatePasswordDto updatePasswordDto, User currentUser) {
+        Map<String, String> errors = new HashMap<>();
         String currentPassword = currentUser.getPassword();
         if(!passwordEncoder.matches(updatePasswordDto.getOldPassword(), currentPassword)) {
-            throw new InvalidCredentialsException("Old password does not match.");
+            errors.put("oldPassword", "Old password does not match.");
+//            throw new InvalidCredentialsException("Old password does not match.");
         }
 
         if(!updatePasswordDto.getNewPassword()
                 .equals(updatePasswordDto.getConfirmPassword())) {
-            throw new InvalidCredentialsException("Password does not match.");
+            errors.put("confirmPassword", "Password does not match.");
+//            throw new InvalidCredentialsException("Password does not match.");
+        }
+
+        if(!errors.isEmpty()) {
+            throw new InvalidCredentialsException("Password errors", errors);
         }
 
         currentUser.setPassword(
@@ -71,11 +80,20 @@ public class UserService {
         System.out.println(user.getPassword());
     }
 
-    public void updateUserInfo(UpdateInfoDto updateInfoDto, User currentUser) {
-        currentUser.setUsername(updateInfoDto.getNewUsername());
-        currentUser.setEmail(updateInfoDto.getNewEmail());
+    public String updateUserInfo(UpdateInfoDto updateInfoDto, User currentUser) {
+        System.out.println(currentUser.getUsername());
+        if(updateInfoDto.getUsername() != null) {
+            currentUser.setUsername(updateInfoDto.getUsername());
+        }
+        if(updateInfoDto.getEmail() != null) {
+            currentUser.setEmail(updateInfoDto.getEmail());
+        }
+
+
 
         repo.save(currentUser);
+
+        return currentUser.getUsername();
     }
 }
 

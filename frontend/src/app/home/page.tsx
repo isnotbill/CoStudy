@@ -30,6 +30,7 @@ export default function HomePage(){
             setProfile(response.data)
         } catch (err: any) {
             setError(err.message || 'Failed to fetch user profile')
+            window.location.href = '/login'
         } finally {
             setLoading(false)
         }
@@ -40,7 +41,7 @@ export default function HomePage(){
 
     useEffect(() => {
         if (error) {
-            window.location.href = '/login'
+            //window.location.href = '/login'
         }
     }, [error])
 

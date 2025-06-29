@@ -211,7 +211,7 @@
 /* Pomodoro timer */
 
 :root {
-  --base-bg: rgb(33,31,48);           
+  --base-bg: rgb(37, 33, 51);           
   --pomodoro-anim-duration: 40s; 
   --pomodoro-fade-duration: 0.5s;
 }
@@ -263,6 +263,6 @@
 }
 
 .card-pane {                   
-  background: rgba(62, 59, 80, 0.452);
+  background: rgba(255, 255, 255, 0.08);
 
 }

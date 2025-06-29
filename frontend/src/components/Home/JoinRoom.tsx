@@ -108,7 +108,7 @@ export default function JoinRoom({ username } : { username: string}) {
                     <div key={room.id} className="w-full">
                         <div 
                             onClick={async () => {
-                                await apiClient.get("/refresh-token");
+                                //await apiClient.get("/refresh-token");
                                 await apiClient.post(`/room/${room.code}/join`)
                                 router.push(`/room/${room.code}`);
                             }}

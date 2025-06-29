@@ -1,12 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation"
 import AccountSettings from "@/components/AccountSettings";
 import PublicProfile from "@/components/PublicProfile";
 import MainHeader from "@/components/MainHeader";
 import apiClient from "../../../lib/apiClient";
 
+interface UserProfile {
+  id: number;
+  username: string;
+  email: string;
+  image: string;
+}
 
 export default function AccountPage()
 {
@@ -18,6 +24,21 @@ export default function AccountPage()
   const [logoutLoading, setLogoutLoading] = useState(false);
 
   const [logoutError, setLogoutError] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState('');
+  const [profile, setProfile] = useState<UserProfile>();
+
+  useEffect(() => {
+      async function fetchProfile() {
+      try {
+          const response = await apiClient.get('/user')
+          const data = response.data
+          setProfile(data)  
+        } catch (err: any) {
+          setErrorMsg(err.message || 'Failed to fetch user profile')
+        }
+      }
+      fetchProfile()
+  }, [])
 
   async function handleLogout(){
     setLogoutLoading(true)
@@ -79,10 +100,10 @@ export default function AccountPage()
 
           </div>
           <div className="flex flex-col justify-center items-center bg-[rgb(198,197,199)] h-[550]
-          w-[620] gap-12 px-10">
+          w-[620]">
 
-            {activeTab === "profile" && <PublicProfile />}
-            {activeTab === "account" && <AccountSettings />}
+            {activeTab === "profile" && profile?.id && <PublicProfile user={{ id: profile.id, image: profile.image }}/>}
+            {activeTab === "account" && profile?.id && <AccountSettings user={{ id: profile.id, username: profile.username, email: profile.email}} />}
 
           </div>
         </div>

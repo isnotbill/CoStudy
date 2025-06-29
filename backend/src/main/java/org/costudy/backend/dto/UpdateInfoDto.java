@@ -13,15 +13,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UpdateInfoDto {
 
-    @NotBlank
     @Size(min = 3, max = 16, message = "Username must be between 3 and 16 characters long.")
     @Pattern(
             regexp = "^[A-Za-z0-9_]*$",
             message = "Username can only contain numbers, characters, and underscore."
     )
-    private String newUsername;
+    private String username;
 
-    @NotBlank
     @Email
-    private String newEmail;
+    private String email;
 }

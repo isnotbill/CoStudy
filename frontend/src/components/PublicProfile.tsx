@@ -5,28 +5,26 @@ import Image from "next/image";
 import axios from "axios";
 import apiClient from "../../lib/apiClient";
 
-export default function PublicProfile() {
+interface Profile {
+  user: {
+      id: number,
+    image: string
+  }
+}
+
+export default function PublicProfile( { user } : Profile ) {
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [error, setError] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
 
-  const [profile, setProfile] = useState<any>(null)
+  const [profile, setProfile] = useState<any>(user)
 
   const [src, setSrc] = useState('http://localhost:8080/default-avatar.png')
 
-    useEffect(() => {
-      async function fetchProfile() {
-      try {
-          const response = await apiClient.get('/user')
-          const data = response.data
-          setProfile(data)
-          if (data.image != null){setSrc(`http://localhost:8080/avatars/${data.image}`)}   
-        } catch (err: any) {
-          setError(err.message || 'Failed to fetch user profile')
-        }
-      }
-      fetchProfile()
+  useEffect(() => {
+    if (user.image != null){setSrc(`http://localhost:8080/avatars/${user.image}`)}   
+
   }, [])
 
   async function handleFileChange(e: ChangeEvent<HTMLInputElement>){

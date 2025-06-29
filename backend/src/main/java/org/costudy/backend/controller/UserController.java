@@ -6,7 +6,10 @@ import org.costudy.backend.dto.UpdatePasswordDto;
 import org.costudy.backend.model.User;
 import org.costudy.backend.response.ApiResponse;
 import org.costudy.backend.service.FileStorageService;
+import org.costudy.backend.service.JwtService;
 import org.costudy.backend.service.UserService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,10 +30,12 @@ public class UserController {
 
     private final FileStorageService storage;
     private final UserService userService;
+    private final JwtService jwtService;
 
-    public UserController(UserService userService, FileStorageService storage) {
+    public UserController(UserService userService, FileStorageService storage, JwtService jwtService) {
         this.userService = userService;
         this.storage = storage;
+        this.jwtService = jwtService;
     }
 
     @GetMapping("/user")
@@ -80,8 +85,33 @@ public class UserController {
             );
         }
 
-        userService.updateUserInfo(updateInfoDto, userService.getCurrentUser(userDetails.getUsername()));
-        return ResponseEntity.ok(new ApiResponse<>(true, "Updated info"));
+        String newUsername = userService.updateUserInfo(updateInfoDto, userService.getCurrentUser(userDetails.getUsername()));
+        String accessToken = jwtService.generateAccessToken(newUsername);
+        String refreshToken = jwtService.generateRefreshToken(newUsername);
+
+        ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
+                .httpOnly(true)
+                .secure(false) // TODO: SET TRUE IN PRODUCTION
+                .path("/")
+                .maxAge(24*60*60)
+                .sameSite("Lax")
+                .build();
+
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
+                .httpOnly(true)
+                .secure(false) // TODO: SET TRUE IN PRODUCTION
+                .path("/")
+                .maxAge(24*60*60)
+                .sameSite("Lax")
+                .build();
+
+        System.out.println("Refresh: " + refreshToken);
+        System.out.println("Access: " + accessToken);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                .body(new ApiResponse<>(true, "Updated Info"));
     }
 
     @PutMapping("/user/password")

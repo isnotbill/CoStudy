@@ -22,7 +22,7 @@ export function middleware(req: NextRequest){
   //console.log('[MW] middleware fired for:', req.nextUrl.pathname)
   const token = req.cookies.get('access_token')?.value
 
-  // If already contains a JWT token, then auto log in, otherwise let them access the preregistration pages
+  //If already contains a JWT token, then auto log in, otherwise let them access the preregistration pages
   if (['/login', '/', '/about'].includes(req.nextUrl.pathname)){
     if (token)
     {
@@ -33,8 +33,6 @@ export function middleware(req: NextRequest){
     return NextResponse.next()
   }
 
-  
-  
   if (!token){
     const url = req.nextUrl.clone()
     url.pathname = '/login'
