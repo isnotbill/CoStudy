@@ -3,6 +3,13 @@
 @tailwind utilities;
 
 
+@layer components {
+  .page-wrapper {
+    @apply w-full max-w-6xl mx-auto px-6 lg:px-8;
+  }
+}
+
+
 .chat-scroll::-webkit-scrollbar {
   width: 8px;
 }
@@ -211,7 +218,9 @@
 /* Pomodoro timer */
 
 :root {
-  --base-bg: rgb(33,31,48);           
+  --base-bg: rgb(33,31,48);
+  /* --base-bg: #5A639C; */
+  /* --base-bg: rgb(33,31,48);            */
   --pomodoro-anim-duration: 40s; 
   --pomodoro-fade-duration: 0.5s;
 }
