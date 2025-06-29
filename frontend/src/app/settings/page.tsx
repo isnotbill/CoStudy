@@ -6,7 +6,7 @@ import AccountSettings from "@/components/AccountSettings";
 import PublicProfile from "@/components/PublicProfile";
 import MainHeader from "@/components/MainHeader";
 import apiClient from "../../../lib/apiClient";
-
+import Popup from "@/components/Popup";
 
 export default function AccountPage()
 {
@@ -17,6 +17,7 @@ export default function AccountPage()
 
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [showPopUp, setShowPopUp] = useState(false)
 
   const [error, setError] = useState<string | null>(null)
 
@@ -96,13 +97,28 @@ export default function AccountPage()
             <button className={`w-full  py-3 rounded-2xl font-semibold text-red-600
             hover:text-[#be3535]`}
             type="button"
-            onClick={handleDelete}
+            onClick={() => setShowPopUp(true)}
             disabled={deleteLoading}>
               Delete Account
             </button>
 
             {error && <p className="text-red-500 text-[12px]">{error}</p>}
-
+              <Popup 
+              isOpen={showPopUp}
+              onClose={() => setShowPopUp(false)}
+              >
+              <h1 className="text-white m-3 mt-8 text-center">Are you sure you want to delete your account?</h1>
+              <div className="text-red-500 m-3 text-center">WARNING: This action is irreversible. All rooms in which you are an admin will be deleted.</div>  
+              <button className="popup-button w-full h-[45px] mt-5"
+              onClick={() => {
+                  if(showPopUp == false) return
+                  handleDelete()
+                  setShowPopUp(false);
+              }}>
+              
+                  Confirm
+              </button>
+              </Popup>  
 
           </div>
           <div className="flex flex-col justify-center items-center bg-[rgb(198,197,199)] h-[550]
@@ -113,7 +129,7 @@ export default function AccountPage()
 
           </div>
         </div>
-
+        
 
       </div>
     </>

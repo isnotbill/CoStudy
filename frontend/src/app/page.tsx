@@ -169,8 +169,10 @@ export default function Home() {
 
         </section>
       </main>
+      <section id="about">
+        <AboutPage />
+      </section>
 
-      <AboutPage />
     </>
 
   );
