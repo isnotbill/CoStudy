@@ -17,6 +17,8 @@ public class ChatMessage {
     @GeneratedValue
     private int chatMessageId;
     private int userId;
+
+    @Column(length = 1000)
     private String content;
     private String username;
     private String imageIcon;

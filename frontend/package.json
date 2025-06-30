@@ -14,8 +14,11 @@
     "framer-motion": "^12.19.2",
     "jsonwebtoken": "^9.0.2",
     "next": "^15.3.2",
+    "openai": "^5.8.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "sockjs-client": "^1.6.1",
     "stompjs": "^2.3.3"
   },
