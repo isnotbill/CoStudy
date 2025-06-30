@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user;
 
         if(emailPattern.matcher(username).matches()) {
-            user = repo.findByEmail(username);
+            user = repo.findByEmail(username).get();
         } else {
             user = repo.findByUsername(username);
         }

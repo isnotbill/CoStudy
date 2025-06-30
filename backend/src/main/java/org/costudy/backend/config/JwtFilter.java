@@ -37,7 +37,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (path.equals("/login")
                 || path.equals("/register")
-                || path.equals("/refresh-token")){
+                || path.equals("/refresh-token")
+                || path.startsWith("/oauth2/")
+                || path.startsWith("/login/oauth2")){
             filterChain.doFilter(request, response);
             return;
         }
