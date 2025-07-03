@@ -1,5 +1,7 @@
 
 import Image from "next/image"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
 interface ChatInterface{
   content: string
@@ -27,6 +29,37 @@ export default function ChatMessage(props: ChatInterface){
         <span className="flex-1 h-px bg-gray-600/40" />
       </p>
     )
+  } else if (props.type === "AI") {
+    return (
+      <div className="flex items-start gap-2">
+
+          <div className="relative w-12 h-12 overflow-hidden rounded-full  mt-[5px] border-yellow-700 border-2">
+            <Image
+            src="/images/IconAI.png"
+            alt="Profile icon"
+            fill
+            className="object-cover"
+            />
+          </div>
+
+          <div className="flex flex-col items-start ">
+            <label className="text-white">AI Tutor</label>
+            {/* <div className="bg-[rgba(185,229,241,0.95)] rounded-3xl p-2 max-w-xs break-words">
+                {props.content}
+            </div> */}
+            <div className="bg-[rgba(185,229,241,0.95)] rounded-3xl p-2 max-w-xs break-words">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+              >
+                {props.content}
+              </ReactMarkdown>
+            </div>
+
+          </div>
+
+
+      </div>
+    )
   }
 
   // USER message
@@ -38,7 +71,7 @@ export default function ChatMessage(props: ChatInterface){
 
           <div className="flex flex-col items-end ">
             {/* <label className="text-white">{props.username}</label> */}
-            <div className="bg-[rgba(206,133,255,0.92)] rounded-3xl p-2 flex justify-end max-w-xs break-all">
+            <div className="bg-[rgba(206,133,255,0.92)] rounded-3xl p-2 flex justify-end max-w-xs break-words">
                 {props.content}
             </div>
           </div>
@@ -67,7 +100,7 @@ export default function ChatMessage(props: ChatInterface){
 
           <div className="flex flex-col items-start ">
             <label className="text-white">{props.username}</label>
-            <div className="bg-[rgba(255,255,255,0.91)] rounded-3xl p-2 max-w-xs break-all">
+            <div className="bg-[rgba(255,255,255,0.91)] rounded-3xl p-2 max-w-xs break-words">
                 {props.content}
             </div>
           </div>

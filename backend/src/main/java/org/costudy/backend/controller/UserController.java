@@ -69,69 +69,12 @@ public class UserController {
         );
     }
 
-    @PutMapping("/user/details")
-    public ResponseEntity<ApiResponse<?>> updateUserInfo(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @Valid @RequestBody UpdateInfoDto updateInfoDto,
-            BindingResult bindingResult
-    ) {
-        if(bindingResult.hasErrors()) {
-            Map<String, String> errors = new HashMap<>();
-            for(FieldError error : bindingResult.getFieldErrors()) {
-                errors.put(error.getField(), error.getDefaultMessage());
-            }
-            return ResponseEntity.badRequest().body(
-                    new ApiResponse<>(false, "Unable to update info", errors)
-            );
-        }
+    @DeleteMapping("/delete/account")
+    public ResponseEntity<ApiResponse<?>> deleteAccount(@AuthenticationPrincipal UserDetails userDetails){
+        User user = userService.getCurrentUser(userDetails.getUsername());
+        userService.deleteAccount(user);
+        return ResponseEntity.ok(new ApiResponse<>(true, "User " + user.getUsername() + " deleted"));
 
-        String newUsername = userService.updateUserInfo(updateInfoDto, userService.getCurrentUser(userDetails.getUsername()));
-        String accessToken = jwtService.generateAccessToken(newUsername);
-        String refreshToken = jwtService.generateRefreshToken(newUsername);
-
-        ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
-                .httpOnly(true)
-                .secure(false) // TODO: SET TRUE IN PRODUCTION
-                .path("/")
-                .maxAge(24*60*60)
-                .sameSite("Lax")
-                .build();
-
-        ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
-                .httpOnly(true)
-                .secure(false) // TODO: SET TRUE IN PRODUCTION
-                .path("/")
-                .maxAge(24*60*60)
-                .sameSite("Lax")
-                .build();
-
-        System.out.println("Refresh: " + refreshToken);
-        System.out.println("Access: " + accessToken);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
-                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                .body(new ApiResponse<>(true, "Updated Info"));
-    }
-
-    @PutMapping("/user/password")
-    public ResponseEntity<ApiResponse<?>> updatePassword(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @Valid @RequestBody UpdatePasswordDto updatePasswordDto,
-            BindingResult bindingResult
-    ) {
-        if(bindingResult.hasErrors()) {
-            Map<String, String> errors = new HashMap<>();
-            for(FieldError error : bindingResult.getFieldErrors()) {
-                errors.put(error.getField(), error.getDefaultMessage());
-            }
-            return ResponseEntity.badRequest().body(
-                    new ApiResponse<>(false, "Unable to update password", errors)
-            );
-        }
-
-        userService.updatePassword(updatePasswordDto, userService.getCurrentUser(userDetails.getUsername()));
-        return ResponseEntity.ok(new ApiResponse<>(true, "Updated password"));
     }
 
 

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import ChatMessage from "@/components/ChatMessage"
 import MainHeader from "@/components/MainHeader";
 import RoomUser from "@/components/RoomUser";
+import Image from "next/image";
 
 import { Client } from '@stomp/stompjs'
 import { useParams, useRouter } from "next/navigation";
@@ -11,6 +12,7 @@ import  SockJS  from 'sockjs-client';
 import apiClient from "../../../../lib/apiClient";
 import Popup from "@/components/Popup";
 import UpdateRoom from "@/components/UpdateRoom"
+import axios from "axios";
 
 interface ChatMessage{
     chatMessageId: number,
@@ -84,6 +86,8 @@ export default function ClientRoom() {
     const [profile, setProfile] = useState<Profile | null>(null)
     const [settings, setSettings] = useState<Settings | null>(null)
     const messagesContainerRef = useRef<HTMLDivElement>(null)
+
+    const [loadAIMessage, setLoadAIMessage] = useState(false)
     
     const [timer, setTimer] = useState<TimerDto | null>(null)
     const [ms, setMs] = useState(0)
@@ -322,6 +326,64 @@ export default function ClientRoom() {
         
     }
 
+    async function handleSendAi(){
+        const client = stompRef.current
+        if (!client?.connected) {return}
+
+        if (!inputMessage.trim() || loadAIMessage === true) {return}
+
+        const msg = inputMessage
+
+        setLoadAIMessage(true)
+        setInputMessage("")
+
+        client.publish({
+            destination: `/app/room/${roomId}`,
+            body: JSON.stringify({
+                roomId: roomId,
+                userId: profile?.id,
+                content: msg,
+                username: profile?.username,
+                imageIcon: profile?.image,
+                type: "USER"
+            })
+        })
+
+        try {
+            const res = await axios.post("/api/chat",
+                {
+                    messages: [
+                        {role: "system", content: "You are an AI tutor for a website named CoStudy, and you are in a virtual study room trying to help other users (students) with their questions. Your word limit is maximum 100 words."},
+                        {role: "user", content: msg}
+                    ]
+                }
+            )
+
+
+
+
+            const aiText = res.data.content
+            console.log("AI reply: ", aiText)
+
+            client.publish({
+                destination: `/app/room/${roomId}`,
+                body: JSON.stringify({
+                    roomId: roomId,
+                    userId: null,
+                    content: aiText,
+                    username: null,
+                    imageIcon: "",
+                    type: "AI",
+                })
+            })
+        } catch (err) {
+            console.error("AI request failed: ", err)
+        } finally {
+            setLoadAIMessage(false)
+        }
+
+    }
+
     // Handle kicking user
     async function kickUser(username: string){
         try {
@@ -521,7 +583,8 @@ export default function ClientRoom() {
                                 
                                 <UpdateRoom 
                                 settings={settings} roomId={roomId}
-                                isClientAdmin={roomUsers.find(u => u.id === profile?.id)?.admin || false}/>
+                                isClientAdmin={roomUsers.find(u => u.id === profile?.id)?.admin || false}
+                                setToggleSettings={setToggleSettings}/>
                             )}
 
                         </div>
@@ -558,7 +621,7 @@ export default function ClientRoom() {
                             <div className="text-red-500 m-3 text-center">WARNING: As an ADMIN, the room will be permanently deleted if you leave the room.</div> }
 
                         <button className="popup-button w-full h-[45px] mt-5"
-                        onClick={(e) => {
+                        onClick={() => {
                             if(showPopUp == false) return
                             roomUsers.find(u => u.id === profile?.id)?.admin  ? deleteRoom(roomId) : leaveRoom(String(roomCode))
                             setShowPopUp(false);
@@ -595,7 +658,18 @@ export default function ClientRoom() {
                             placeholder="Enter your message"
                             onChange={(e) => setInputMessage(e.target.value)}
                             className="flex-1 rounded-l-md bg-[rgba(33,28,36,0.6)] text-white px-2 py-3 focus:outline-none"/>
-                            
+                        
+                        <button className="relative bg-[rgba(33,28,36,0.6)] text-white px-2"
+                        type="button"
+                        onClick={() => handleSendAi()}>
+                            <Image
+                            src="/images/AI.png" 
+                            alt="AI png"
+                            width={25}
+                            height={25}
+                            className="invert"
+                            />
+                        </button>
                         <button
                             type="submit"
                             className=" rounded-r-md bg-[rgba(33,28,36,0.6)] text-white px-4 py-3 hover:bg-gray-700">

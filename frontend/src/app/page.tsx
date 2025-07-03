@@ -4,7 +4,14 @@ import axios from 'axios'
 import Image from "next/image"
 import Header from "@/components/Header"
 import { useState } from 'react';
-import { errorToJSON } from 'next/dist/server/render';
+import AboutPage from '@/components/About';
+import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
+
+export const fadeInUp: Variants = {
+  initial: { opacity: 0, y: 40 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
 
 export default function Home() {
   const [error, setError] = useState<string[] | null>(null);
@@ -58,95 +65,115 @@ export default function Home() {
   }
 
   return (
-    <main className="h-screen flex flex-col select-none">
-      <Header/>
+    <>
+      <main className="min-h-screen flex flex-col">
+        <Header/>
 
-      <section className="flex-1 bg-[rgb(70,60,102)] flex items-center justify-center gap-[160px]">
-        <div className="flex flex-col items-left justify-center">
-          <h1 className="text-white font-cedarville text-5xl font-normal">Study Together, Stress-Free</h1>
-          <h2 className="text-gray-300 font-kumbh my-5 text-lg font-normal">Join virtual study groups, stay motivated, and collaborate with friends.</h2>
-          <Image 
-            src="/images/heroimage.svg"
-            alt="img"
-            width={600}
-            height={800}
-          />
-        </div>
-        <form 
-        onSubmit={handleSubmit}
-        className="bg-gray-100 w-full max-w-[400px] min-w-[300px] h-[550px] px-[20] gap-8 rounded-2xl flex flex-col justify-center items-center">
-          <h2 className="text-2xl font-bold text-[rgba(49,32,77,0.8)] text-center">Create Your Account</h2>
-
-          <div className="flex flex-col gap-2 w-full">
-            <div className="flex flex-col">
-              <label htmlFor="confirm-password" className="text-[rgba(49,32,77,0.8)] font-medium">
-                Email
-              </label>
-              <input
-                name="email"
-                type="email"
-                id="confirm-password"
-                placeholder="Your email"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                minLength={8}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="username" className="text-[rgba(49,32,77,0.8)] font-medium">
-                Username
-              </label>
-              <input
-                name="username"
-                type="text"
-                id="username"
-                placeholder="Your username"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label htmlFor="password" className="text-[rgba(49,32,77,0.8)] font-medium">
-                Password
-              </label>
-              <input
-                name="password"
-                type="password"
-                id="password"
-                placeholder="Enter password"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                minLength={8}
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label htmlFor="confirm-password" className="text-[rgba(49,32,77,0.8)] font-medium">
-                Confirm Password
-              </label>
-              <input
-                name="confirm"
-                type="password"
-                id="confirm-password"
-                placeholder="Confirm password"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                minLength={8}
-              />
-            </div>
-            {error && <div className="text-red-500">{
-              error.map((msg, i) => (<p key={i}>{msg}</p>))
-              }</div>}
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 text-white py-3 rounded-2xl font-semibold hover:bg-indigo-700 transition"
+        <section className="flex-1 bg-[#574a85] flex items-center justify-center w-full">
+          <motion.section
+            variants={fadeInUp}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.3 }}
           >
-            Sign Up
-          </button>
-        </form>
+            <div className=' justify-center page-wrapper flex flex-col-reverse lg:flex-row items-center gap-16'>
+              <div className="flex flex-col w-[620px] items-left justify-center">
+                <h1 className="text-white font-cedarville text-4xl font-normal">Study Together, Stress-Free</h1>
+                <h2 className="text-gray-300 font-kumbh my-5 text-lg font-normal">Join virtual study groups, stay motivated, and collaborate with friends.</h2>
+                <Image 
+                  src="/images/heroimage.svg"
+                  alt="img"
+                  width={560}
+                  height={800}
+                />
+              </div>
+              <form 
+              onSubmit={handleSubmit}
+              className="bg-gray-100 w-full max-w-[380px] min-w-[200px] h-[550px] px-[20] gap-8 rounded-2xl flex flex-col justify-center items-center">
+                <h2 className="text-2xl font-bold text-[rgba(49,32,77,0.8)] text-center">Create Your Account</h2>
+
+                <div className="flex flex-col gap-2 w-full">
+                  <div className="flex flex-col">
+                    <label htmlFor="confirm-password" className="text-[rgba(49,32,77,0.8)] font-medium">
+                      Email
+                    </label>
+                    <input
+                      name="email"
+                      type="email"
+                      id="confirm-password"
+                      placeholder="Your email"
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      minLength={8}
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label htmlFor="username" className="text-[rgba(49,32,77,0.8)] font-medium">
+                      Username
+                    </label>
+                    <input
+                      name="username"
+                      type="text"
+                      id="username"
+                      placeholder="Your username"
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label htmlFor="password" className="text-[rgba(49,32,77,0.8)] font-medium">
+                      Password
+                    </label>
+                    <input
+                      name="password"
+                      type="password"
+                      id="password"
+                      placeholder="Enter password"
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      minLength={8}
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label htmlFor="confirm-password" className="text-[rgba(49,32,77,0.8)] font-medium">
+                      Confirm Password
+                    </label>
+                    <input
+                      name="confirm"
+                      type="password"
+                      id="confirm-password"
+                      placeholder="Confirm password"
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      minLength={8}
+                    />
+                  </div>
+
+                    {error && <div className="text-red-500 text-sm flex flex-col gap-2">{
+                      error.map((msg, i) => (<p key={i}>{msg}</p>))
+                      }</div>}
+
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-indigo-600 text-white py-3 rounded-2xl font-semibold hover:bg-indigo-700 transition"
+                >
+                  Sign Up
+                </button>
+              </form>
+            </div>
+              
+          </motion.section>
+
+        </section>
+      </main>
+      <section id="about">
+        <AboutPage />
       </section>
-    </main>
+
+    </>
+
   );
 }
