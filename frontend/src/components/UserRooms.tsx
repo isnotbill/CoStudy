@@ -49,7 +49,7 @@ export default function UserRooms() {
     )
 
     return (
-        <div className='bg-[rgba(255,255,255,0.1)] flex w-full max-w-[480px] h-[650px] flex-col rounded-md p-2 gap-2 shadow-2xl'>
+        <div className='bg-[rgba(20,20,20,0.22)] flex w-full max-w-[480px] h-[650px] flex-col rounded-md p-2 gap-2'>
             <div className=" w-full flex">
                 <div className="flex-1 h-[50] flex justify-between gap-1 items-center">
                     <input 

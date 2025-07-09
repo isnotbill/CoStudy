@@ -6,7 +6,13 @@ import AccountSettings from "@/components/AccountSettings";
 import PublicProfile from "@/components/PublicProfile";
 import MainHeader from "@/components/MainHeader";
 import apiClient from "../../../lib/apiClient";
-import Popup from "@/components/Popup";
+
+interface UserProfile {
+  id: number;
+  username: string;
+  email: string;
+  image: string;
+}
 
 export default function AccountPage()
 {
@@ -16,42 +22,37 @@ export default function AccountPage()
   const [activeTab, setActiveTab] = useState("profile");
 
   const [logoutLoading, setLogoutLoading] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [showPopUp, setShowPopUp] = useState(false)
 
-  const [error, setError] = useState<string | null>(null)
+  const [logoutError, setLogoutError] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState('');
+  const [profile, setProfile] = useState<UserProfile>();
 
-  // Logout handler
+  useEffect(() => {
+      async function fetchProfile() {
+      try {
+          const response = await apiClient.get('/user')
+          const data = response.data
+          setProfile(data)  
+        } catch (err: any) {
+          setErrorMsg(err.message || 'Failed to fetch user profile')
+        }
+      }
+      fetchProfile()
+  }, [])
+
   async function handleLogout(){
     setLogoutLoading(true)
-    setError(null)
+    setLogoutError(null)
 
     try {
       await apiClient.post("/logout")
       router.replace('/login')
     } catch (err: any) {
-      setError(err.message)
+      setLogoutError(err.message)
     } finally {
       setLogoutLoading(false)
     }
   }
-
-  // Delete account handler
-  async function handleDelete(){
-    setError(null)
-    setDeleteLoading(true)
-
-    try {
-      await apiClient.delete("/delete/account")
-      await apiClient.post("/logout")
-      router.replace('/login')
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setDeleteLoading(false)
-    }
-  }
-
   return(
     <>
       <header>
@@ -87,38 +88,15 @@ export default function AccountPage()
             </button>
 
             <button className={`w-full  py-3 rounded-2xl font-semibold
-            hover:text-[#d6d6d6] mt-[130px] mb-2`}
+            hover:text-[#d6d6d6] mt-[170px]`}
             type="button"
             onClick={handleLogout}
             disabled={logoutLoading}>
               Logout
             </button>
 
-            <button className={`w-full  py-3 rounded-2xl font-semibold text-red-600
-            hover:text-[#be3535]`}
-            type="button"
-            onClick={() => setShowPopUp(true)}
-            disabled={deleteLoading}>
-              Delete Account
-            </button>
+            {logoutError && <p className="text-red-500 text-[12px]">{logoutError}</p>}
 
-            {error && <p className="text-red-500 text-[12px]">{error}</p>}
-              <Popup 
-              isOpen={showPopUp}
-              onClose={() => setShowPopUp(false)}
-              >
-              <h1 className="text-white m-3 mt-8 text-center">Are you sure you want to delete your account?</h1>
-              <div className="text-red-500 m-3 text-center">WARNING: This action is irreversible. All rooms in which you are an admin will be deleted.</div>  
-              <button className="popup-button w-full h-[45px] mt-5"
-              onClick={() => {
-                  if(showPopUp == false) return
-                  handleDelete()
-                  setShowPopUp(false);
-              }}>
-              
-                  Confirm
-              </button>
-              </Popup>  
 
           </div>
           <div className="flex flex-col justify-center items-center bg-[rgb(198,197,199)] h-[550]
@@ -129,7 +107,7 @@ export default function AccountPage()
 
           </div>
         </div>
-        
+
 
       </div>
     </>

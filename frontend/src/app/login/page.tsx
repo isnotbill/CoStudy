@@ -51,6 +51,10 @@ export default function Login() {
         }
     }
 
+    const handleGoogleLogin = async () => {
+        window.location.href = "http://localhost:8080/oauth2/authorization/google";
+    }
+
     return (
     <>
     <header>
@@ -96,20 +100,24 @@ export default function Login() {
                         </div> 
                     </div>
                 </div>
+
                 <button
-                        type="submit"
-                        className="w-full bg-indigo-600 text-white py-3 rounded-2xl font-semibold hover:bg-indigo-700 transition">
-                        Log In
-                    </button>
+                    type="submit"
+                    className="w-full bg-indigo-600 text-white py-3 rounded-2xl font-semibold hover:bg-indigo-700 transition">
+                    Log In
+                </button>
 
                     {error && <p className="text-red-500 text-sm mt-[-30px]">{error}</p>}
                     {reason === "expired_token" && <p className="text-red-500 text-sm mt-[-30px]">Token expired, please log in again.</p>}
-                    <div className="flex items-center space-x-1 mt-[-35px] text-xs text-gray-500">
+                <div className="flex items-center space-x-1 mt-[-35px] text-xs text-gray-500">
                     <span>Don't have an account?</span>
                     <Link href="/" className="text-indigo-600 hover:underline">
                         Sign up
                     </Link>
-                    </div>
+                </div>
+                <button onClick={handleGoogleLogin} className="w-full bg-white text-gray-800 py-3 rounded-2xl font-semibold hover:bg-gray-100 transition flex items-center justify-center space-x-2">
+                    Log in with Google
+                </button>
                 
             </form>
             <div className="relative bg-[rgb(169,177,194)] w-[450px] h-[580px] rounded-r-xl overflow-visible flex justify-center shadow-lg">

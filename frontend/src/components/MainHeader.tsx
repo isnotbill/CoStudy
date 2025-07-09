@@ -9,7 +9,7 @@ const MainHeader = () => {
             </Link>
             <Link href="/settings" passHref>
                 <button
-                    className="border-none bg-[rgb(244,249,253)] text-[rgb(72,23,112)] px-[22px] py-1 rounded-[20px] font-kumbh font-normal text-[18px] cursor-pointer transition-colors duration-200 hover:bg-[#d4d4d4]">
+                    className="bg-none border-gray-300 border text-gray-300 px-4 py-1 rounded-xl font-kumbh font-normal text-[18px] cursor-pointer transition-colors duration-200 hover:bg-[#ffffff1e]">
                     Settings
                 </button>
             </Link>

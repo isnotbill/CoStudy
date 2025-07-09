@@ -78,7 +78,7 @@
 }
 
 .home-button-active {
-  background-color: rgba(91, 89, 192, 0.753);
+  background-color: #574a85;
   border: 2.5px solid rgba(54, 53, 148, 0);
   transform: translateY(0px);
   box-shadow: 0 1px 1px rgba(0,0,0,0.3);

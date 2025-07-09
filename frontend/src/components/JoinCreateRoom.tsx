@@ -15,7 +15,7 @@ export default function JoinCreateRoom({ username }: JoinCreateRoomProps) {
     const [activeTab, setActiveTab] = useState<'create' | 'join'>('create')
 
     return (
-        <div className='bg-[rgba(255,255,255,0.1)] flex items-center w-full max-w-[480px] h-[650px] flex-col rounded-md overflow-hidden px-2 pb-2 gap-2'>
+        <div className='bg-[rgba(20,20,20,0.22)] flex items-center w-full max-w-[480px] h-[650px] flex-col rounded-md overflow-hidden py-2 px-4 pb-2 gap-2'>
             <div className='relative w-full'>
                 <div className='relative flex gap-2 h-full w-full p-1'>
                     <button onClick={() => setActiveTab('join')}

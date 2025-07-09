@@ -94,6 +94,7 @@ public class SecurityConfig {
                                         System.out.println("Creating user..." + oauthUser.toString());
                                         User newUser = new User();
                                         newUser.setEmail(email);
+                                        newUser.setUsername(generateUniqueUsername(email.substring(0, email.indexOf("@"))));
                                         newUser.setProvider("GOOGLE");
 
                                         return userRepo.save(newUser);
@@ -123,7 +124,9 @@ public class SecurityConfig {
 
                                     response.setHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
                                     response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+                                    response.sendRedirect("http://localhost:3000/home");
                                 })))
+
                 .addFilterBefore(jwtFilter, OAuth2LoginAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -135,6 +138,17 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    private String generateUniqueUsername(String username) {
+        int count = 0;
+        String uniqueUsername = username;
+
+        while (userRepo.existsByUsername(uniqueUsername)) {
+            count++;
+            uniqueUsername = username + count;
+        }
+
+        return uniqueUsername;
+    }
 }
 
 

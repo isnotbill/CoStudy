@@ -54,28 +54,26 @@ export default function HomePage(){
     return (
         <>
 
-        <main className='bg-[rgb(33,31,48)] w-full min-h-screen flex flex-col items-center'>
+        <main className='bg-[#574a85] w-full min-h-screen flex flex-col items-center gap-4'>
             <MainHeader/>
-            <div className='flex flex-col w-full max-w-[1000px] justify-center items-center'>
-                <div className='relative flex items-center justify-start gap-4 rounded-3xl w-full h-[200px]'>
+            <div className='flex flex-col w-full max-w-[1000px] items-center flex-1 gap-4'>
+                <div className='flex flex-col gap-2 w-full items-center p-4 rounded-xl'>
+                    <Image
+                        src={src}
+                        alt="Profile avatar"
+                        width={150}
+                        height={150}
+                        className="flex-none w-[120px] h-[120px] rounded-full"
+                    />
 
-                        <Image
-                            src={src}
-                            alt="Profile avatar"
-                            width={150}
-                            height={150}
-                            className="ml-[30px] flex-none relative w-[120px] h-[120px] rounded-full bg-white"
-                        />
-
-                    <h1 className="text-white text-3xl">{profile?.username}</h1>
+                    <h1 className="text-white text-3xl text-center">{profile?.username}</h1>
                 </div>
-                <div className='w-full flex flex-col gap-4 justify-center '> 
 
-
+                <div className='w-full flex flex-col gap-4 justify-center'> 
                         {paramsReason === "invalid_room_code" && (
                             <h1 className='text-red-500 self-center'>No room code matches "{paramsCode}". Please double-check and try again.</h1>
                         )}
-                    <div className='flex flex-wrap gap-4 justify-center'>
+                    <div className='flex flex-wrap gap-4 justify-between'>
                         <JoinCreateRoom username={profile?.username}/>
                         <UserRooms/>
                     </div>
