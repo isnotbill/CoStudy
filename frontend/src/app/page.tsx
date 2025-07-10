@@ -7,6 +7,7 @@ import { useState } from 'react';
 import AboutPage from '@/components/About';
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
+import ReCaptcha from 'react-google-recaptcha';
 
 export const fadeInUp: Variants = {
   initial: { opacity: 0, y: 40 },
@@ -15,6 +16,8 @@ export const fadeInUp: Variants = {
 
 export default function Home() {
   const [error, setError] = useState<string[] | null>(null);
+
+  const [captchaToken, setCaptchaToken] = useState("")
 
   async function handleSubmit(e: React.FormEvent){
     e.preventDefault()
@@ -25,7 +28,8 @@ export default function Home() {
     const payload = {
       email: form.get("email"),
       username: form.get("username"),
-      password: form.get("password")
+      password: form.get("password"),
+      captchaToken: captchaToken
     }
 
     if (payload.password != confirmPassword) {
@@ -156,6 +160,18 @@ export default function Home() {
                       }</div>}
 
                 </div>
+                <ReCaptcha
+                  sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+                  onChange={(token : string | null) => {
+                    if (token) {
+                      setCaptchaToken(token);
+                    } else {
+                      setCaptchaToken("");
+                    }
+                  }}
+                  className="w-full">
+
+                </ReCaptcha>
                 <button
                   type="submit"
                   className="w-full bg-indigo-600 text-white py-3 rounded-2xl font-semibold hover:bg-indigo-700 transition"

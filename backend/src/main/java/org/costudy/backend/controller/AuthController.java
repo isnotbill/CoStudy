@@ -10,6 +10,7 @@ import org.costudy.backend.dto.RegisterDto;
 import org.costudy.backend.model.User;
 import org.costudy.backend.response.ApiResponse;
 import org.costudy.backend.service.AuthService;
+import org.costudy.backend.service.CaptchaService;
 import org.costudy.backend.service.JwtService;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
@@ -35,11 +36,13 @@ public class AuthController {
     private final AuthService authService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final CaptchaService captchaService;
 
-    public AuthController(AuthService authService, JwtService jwtService, AuthenticationManager authenticationManager) {
+    public AuthController(AuthService authService, JwtService jwtService, AuthenticationManager authenticationManager, CaptchaService captchaService) {
         this.authService = authService;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.captchaService = captchaService;
     }
 
     @PostMapping("/register")
@@ -55,6 +58,12 @@ public class AuthController {
                     errors
             ));
         }
+
+        String captchaToken = registerDto.getCaptchaToken();
+        if(!captchaService.verifyCaptcha(captchaToken)) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "CAPTCHA failed"));
+        }
+
         System.out.println(bindingResult.hasErrors());
         authService.register(registerDto);
         return ResponseEntity.ok(new ApiResponse<>(true, "Registration successful"));
