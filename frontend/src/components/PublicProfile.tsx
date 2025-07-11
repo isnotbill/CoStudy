@@ -104,7 +104,7 @@ export default function PublicProfile( { user } : Profile ) {
 
           <button
             
-            className="block w-full px-4 py-2 border border-gray-800 rounded-lg hover:bg-gray-200"
+            className="block w-full px-4 py-2 border border-gray-800 rounded-lg hover:bg-gray-200 text-gray-700"
           >
             Change Default Icon
           </button>
