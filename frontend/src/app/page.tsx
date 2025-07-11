@@ -93,7 +93,7 @@ export default function Home() {
               </div>
               <form 
               onSubmit={handleSubmit}
-              className="bg-gray-100 w-full max-w-[380px] min-w-[200px] h-[550px] px-[20] gap-8 rounded-2xl flex flex-col justify-center items-center">
+              className="bg-gray-100 w-full max-w-[380px] min-w-[200px] h-[550px] px-[20] gap-2 rounded-2xl flex flex-col justify-center items-center">
                 <h2 className="text-2xl font-bold text-[rgba(49,32,77,0.8)] text-center">Create Your Account</h2>
 
                 <div className="flex flex-col gap-2 w-full">
@@ -155,10 +155,9 @@ export default function Home() {
                     />
                   </div>
 
-                    {error && <div className="text-red-500 text-sm flex flex-col gap-2">{
+                    {error && <span className="text-red-500 text-sm flex flex-col gap-2">{
                       error.map((msg, i) => (<p key={i}>{msg}</p>))
-                      }</div>}
-
+                      }</span>}
                 </div>
                 <ReCaptcha
                   sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
@@ -169,7 +168,7 @@ export default function Home() {
                       setCaptchaToken("");
                     }
                   }}
-                  className="w-full">
+                  className="flex justify-center items-center w-full">
 
                 </ReCaptcha>
                 <button

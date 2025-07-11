@@ -47,8 +47,6 @@ public class CaptchaService {
 
         ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 
-        System.out.println(response.getBody());
-
         return response.getStatusCode() == HttpStatus.OK;
     }
 }

@@ -34,5 +34,6 @@ public class RegisterDto {
     @Email(message = "Invalid email")
     private String email;
 
+    @NotBlank(message = "Captcha is required")
     private String captchaToken;
 }
