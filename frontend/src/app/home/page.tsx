@@ -61,7 +61,7 @@ export default function HomePage() {
 
         {/* Error Message */}
         {paramsReason === "invalid_room_code" && (
-          <div className="bg-red-500/20 border border-red-500 text-red-200 px-6 py-4 rounded-lg text-center">
+          <div className="bg-red-500/20 border border-red-500 text-red-200 px-6 py-2 text-sm rounded-lg text-center">
             No room code matches "<span className="font-semibold">{paramsCode}</span>". Please double-check and try again.
           </div>
         )}

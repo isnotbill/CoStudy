@@ -60,7 +60,7 @@ export default function JoinRoom({ username } : { username: string}) {
     return (
         <div className='h-full w-full flex flex-col gap-1'>
             <h1 className='text-center h-[20px] text-white'>Enter Room Code</h1>
-            <input type="text" value={joinInputVal} className="bg-[rgba(255,255,255,0.1)] w-full h-[60px] text-white rounded-md text-center font-bold text-xl"
+            <input type="text" value={joinInputVal} className="bg-[rgba(255,255,255,0.1)] w-full h-[60px] text-white rounded-md text-center font-bold text-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
             placeholder='XXXXXX'
             onChange={(e) => {
                 setJoinInputVal(e.target.value)
@@ -85,22 +85,26 @@ export default function JoinRoom({ username } : { username: string}) {
                 <span className="flex-1 h-px bg-[#574a85]" />
             </div>
 
-            <h1 className='text-white text-center h-[20px]'>
+            <h1 className='text-white text-center h-[20px] '>
                 Browse Public Rooms
             </h1>
-            <input 
-            type="text" 
-            placeholder="Search for room"
-            className="bg-[rgba(255,255,255,0.1)] h-[60px] text-white p-1 rounded-lg" 
-            value={searchTerm ?? ""}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                // trigger search here
-                    setSubmittedSearch(searchTerm)
-                }
-            }}
-            />
+            <div className='relative'>
+                <input 
+                type="text" 
+                placeholder="Search public rooms"
+                className="w-full  px-4 py-2 pl-10 rounded-md bg-[rgba(255,255,255,0.1)]  text-white placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-400" 
+                value={searchTerm ?? ""}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                    // trigger search here
+                        setSubmittedSearch(searchTerm)
+                    }
+                }}
+                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-200 text-sm">🔍</span>
+            </div>
+
             <div className='h-[260px] overflow-y-auto chat-scroll mt-4 bg-none rounded-md'>
                 {publicRooms
                 .filter((room) => room.hostName !== username)
