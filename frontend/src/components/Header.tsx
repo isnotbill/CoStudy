@@ -4,7 +4,7 @@ import Link from 'next/link';
 const Header = () => {
   return (
     <>
-    <header className="flex justify-center items-center p-[4px] text-[rgb(242,247,253)] bg-[#574a85] select-none">
+    <header className="flex justify-center items-center p-[4px] text-[rgb(242,247,253)] bg-none select-none">
       <h1 className="font-cedarville font-thin text-[35px] mx-[80px]">
         costudy
       </h1>

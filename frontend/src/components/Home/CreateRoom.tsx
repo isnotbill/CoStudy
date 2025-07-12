@@ -85,7 +85,7 @@ export default function CreateRoom({ username } : { username: string }) {
     }
 
     return (
-        <div className='w-full h-full flex flex-col gap-6 justify-between'>
+        <div className='w-full h-full flex flex-col justify-between gap-3'>
                     <div className='flex flex-col justify-center items-center'>
                         <h1 className='text-center text-white'>Room Title</h1>
                         <input type="text" value={createInputVal.name} className="bg-[rgba(255,255,255,0.1)] w-full h-[60px] text-white p-1 rounded-md shadow-md text-center font-semibold text-2xl"
@@ -96,7 +96,6 @@ export default function CreateRoom({ username } : { username: string }) {
                         <h1 className='text-red-400 text-[12px] h-[10px]'>
                             {createErrors.name && <p>{createErrors.name}</p>}
                         </h1>
-                        
                     </div>
                     
                     <div className='h-[60px] flex text-white'>

@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import MainHeader from '@/components/MainHeader'
 import { useEffect, useState } from 'react'
-import apiClient from '../../../lib/apiClient' 
+import apiClient from '../../../lib/apiClient'
 import UserRooms from '@/components/UserRooms'
 import JoinCreateRoom from '@/components/JoinCreateRoom'
 import { useSearchParams } from 'next/navigation'
@@ -13,74 +13,69 @@ interface Profile {
   image?: string | null
 }
 
-export default function HomePage(){
+export default function HomePage() {
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
 
-    const [profile, setProfile] = useState<Profile | null>(null)
-    const [error, setError] = useState<string | null>(null)
-    const [loading, setLoading] = useState(true)
+  const searchParams = useSearchParams()
+  const paramsReason = searchParams.get("reason")
+  const paramsCode = searchParams.get("code")
 
-    const searchParams = useSearchParams()
-    const paramsReason = searchParams.get("reason")
-    const paramsCode = searchParams.get("code")
-
-    useEffect(() => {
-        async function fetchProfile() {
-        try {
-            const response = await apiClient.get('/user')
-            setProfile(response.data)
-        } catch (err: any) {
-            setError(err.message || 'Failed to fetch user profile')
-            window.location.href = '/login'
-        } finally {
-            setLoading(false)
-        }
-        }
-        fetchProfile()
-    }, [])
-
-
-    useEffect(() => {
-        if (error) {
-            //window.location.href = '/login'
-        }
-    }, [error])
-
-    let src = 'http://localhost:8080/avatars/default-avatar.png'
-    console.log(profile?.image)
-    if (profile?.image) {
-        src = `http://localhost:8080/avatars/${profile.image}`
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const response = await apiClient.get('/user')
+        setProfile(response.data)
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch user profile')
+        window.location.href = '/login'
+      } finally {
+        setLoading(false)
+      }
     }
+    fetchProfile()
+  }, [])
 
-    return (
-        <>
+  let src = 'http://localhost:8080/avatars/default-avatar.png'
+  if (profile?.image) {
+    src = `http://localhost:8080/avatars/${profile.image}`
+  }
 
-        <main className='bg-[#574a85] w-full min-h-screen flex flex-col items-center gap-4'>
-            <MainHeader/>
-            <div className='flex flex-col w-full max-w-[1000px] items-center flex-1 gap-4'>
-                <div className='flex flex-col gap-2 w-full items-center p-4 rounded-xl'>
-                    <Image
-                        src={src}
-                        alt="Profile avatar"
-                        width={150}
-                        height={150}
-                        className="flex-none w-[120px] h-[120px] rounded-full"
-                    />
+  return (
+    <main className="bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94] text-white min-h-screen w-full">
+      <MainHeader />
 
-                    <h1 className="text-white text-3xl text-center">{profile?.username}</h1>
-                </div>
+      <div className="max-w-5xl mx-auto px-4 py-8 flex flex-col items-center gap-6">
+        {/* Profile Card */}
+        <div className="w-full flex flex-col items-center gap-4 bg-white/10 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-white/20">
+          <Image
+            src={src}
+            alt="Profile avatar"
+            width={120}
+            height={120}
+            className="rounded-full border-4 border-white shadow-md"
+          />
+          <h1 className="text-3xl font-bold">{profile?.username}</h1>
+        </div>
 
-                <div className='w-full flex flex-col gap-4 justify-center'> 
-                        {paramsReason === "invalid_room_code" && (
-                            <h1 className='text-red-500 self-center'>No room code matches "{paramsCode}". Please double-check and try again.</h1>
-                        )}
-                    <div className='flex flex-wrap gap-4 justify-between'>
-                        <JoinCreateRoom username={profile?.username}/>
-                        <UserRooms/>
-                    </div>
+        {/* Error Message */}
+        {paramsReason === "invalid_room_code" && (
+          <div className="bg-red-500/20 border border-red-500 text-red-200 px-6 py-4 rounded-lg text-center">
+            No room code matches "<span className="font-semibold">{paramsCode}</span>". Please double-check and try again.
+          </div>
+        )}
 
-                </div>
-            </div>
-        </main>
-        </>
-    );
+        {/* Room Actions */}
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 h-[580px]">
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl shadow-md border border-white/20">
+            <JoinCreateRoom username={profile?.username} />
+          </div>
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl shadow-md border border-white/20">
+            <UserRooms />
+          </div>
+        </div>
+      </div>
+    </main>
+  )
 }

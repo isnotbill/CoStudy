@@ -53,7 +53,7 @@ export default function AccountPage() {
         <title>Settings - CoStudy</title>
       </header>
 
-      <div className="min-h-screen bg-gradient-to-br from-[#574a85] via-[#644fb1] to-[#5c4d94] text-white">
+      <div className="min-h-screen bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94] text-white">
         <MainHeader />
 
         <div className="max-w-5xl mx-auto px-6 py-12">

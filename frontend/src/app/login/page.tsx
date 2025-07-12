@@ -60,7 +60,7 @@ export default function Login() {
     <header>
         <title>Login - CoStudy</title>
     </header>
-    <main className='bg-[#574a85] h-screen select-none overflow-hidden'>
+    <main className='bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94] h-screen select-none overflow-hidden'>
         
         <div className='flex justify-center items-center h-full'>
             

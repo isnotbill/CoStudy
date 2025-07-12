@@ -70,10 +70,10 @@ export default function Home() {
 
   return (
     <>
-      <main className="min-h-screen flex flex-col">
+      <main className="min-h-screen flex flex-col bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94]">
         <Header/>
 
-        <section className="flex-1 bg-[#574a85] flex items-center justify-center w-full">
+        <section className="flex-1 flex items-center justify-center w-full">
           <motion.section
             variants={fadeInUp}
             initial="initial"

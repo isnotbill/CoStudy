@@ -119,7 +119,7 @@ export default function AboutPage() {
           initial="initial"
           whileInView="animate"
           viewport={{ once: true, amount: 0.3 }}
-          className="bg-[#574a85] w-full py-20 px-6"
+          className=" bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94] w-full py-20 px-6"
         >
           <div className="max-w-5xl mx-auto text-center space-y-16">
             <h2 className="text-4xl md:text-5xl font-bold">The Developers</h2>

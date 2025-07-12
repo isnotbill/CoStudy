@@ -74,14 +74,14 @@ export default function JoinRoom({ username } : { username: string}) {
                 />
 
             {joinErrorMsg && (
-                    <div className="text-red-400 text-center">
+                    <span className="text-red-400 text-center text-sm">
                         {joinErrorMsg}
-                    </div>
+                    </span>
             )}
             <div className='relative flex items-center justify-center select-none
                 text-xs font-medium text-gray-400 my-1'>
                 <span className="flex-1 h-px bg-[#574a85]" />
-                <span className='text-center text-gray-300 p-5 font-bold text-xl'>OR</span>
+                <span className='text-center text-gray-300 font-bold text-xl'>OR</span>
                 <span className="flex-1 h-px bg-[#574a85]" />
             </div>
 
@@ -101,27 +101,27 @@ export default function JoinRoom({ username } : { username: string}) {
                 }
             }}
             />
-            <div className='flex flex-col h-[290px] overflow-y-auto chat-scroll mt-4 bg-[rgb(59,59,59)] rounded-md'>
+            <div className='h-[260px] overflow-y-auto chat-scroll mt-4 bg-none rounded-md'>
                 {publicRooms
                 .filter((room) => room.hostName !== username)
-                .map(((room) => (
+                .map((room) => (
                     <div key={room.id} className="w-full">
-                        <div 
-                            onClick={async () => {
-                                //await apiClient.get("/refresh-token");
-                                await apiClient.post(`/room/${room.code}/join`)
-                                router.push(`/room/${room.code}`);
-                            }}
-                            className="roomlist-button relative w-full h-[70px] group justify-between text-white border-[rgba(255,255,255,0.2)] flex items-center p-2 gap-2">
-                            <div className="h-full flex items-center gap-2">
-                                <h1 className="text-l">{room.roomName}</h1>
+                    <div 
+                        onClick={async () => {
+                        await apiClient.post(`/room/${room.code}/join`)
+                        router.push(`/room/${room.code}`);
+                        }}
+                        className="roomlist-button relative w-full h-[70px] group justify-between text-white border-[rgba(255,255,255,0.2)] flex items-center p-2 gap-2"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="flex flex-col">
+                            <span className="font-semibold text-white">{room.roomName}</span>
+                            <span className="text-sm text-purple-200">{room.members} member{room.members !== 1 ? "s" : ""}</span>
                             </div>
-                            
-                            <h1 className="absolute right-1/3 top-1/2 -translate-y-1/2 text-gray-300">{room.members + "👤"}</h1>
                         </div>
                     </div>
-                )))
-                }
+                    </div>
+                ))}
             </div>
         </div>
  )

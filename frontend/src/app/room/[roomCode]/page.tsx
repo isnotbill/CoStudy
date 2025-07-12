@@ -526,7 +526,7 @@ export default function ClientRoom() {
             <MainHeader/>
             <div className="w-full flex justify-center items-start flex-wrap gap-8 my-8">
                 <div className="flex flex-col gap-8 w-[500px] h-full">
-                    <div className=" card-pane w-[500px]  h-[500px] rounded-md p-8 ">
+                    <div className=" card-pane w-[500px]  h-[500px] rounded-md p-8 shadow-md">
                         <div className="relative w-full h-full rounded-md flex flex-col justify-center items-center gap-4">
                             <button className="absolute top-[-20px] right-[-20px] settings-button"
                                     onClick={() => {
@@ -537,7 +537,7 @@ export default function ClientRoom() {
                                     
                                     <div className="flex flex-col items-center pb-2">
                                         <h1 className="text-white text-xl font-medium">{roomName}</h1>
-                                        <h1 className="text-gray-400 text-md">Code: {roomCode}</h1>
+                                        <h1 className="text-gray-300/80 text-md">Code: {roomCode}</h1>
                                     </div>
 
                                     <div className="text-white flex gap-2 mb-[-20px] text-lg">
@@ -589,7 +589,7 @@ export default function ClientRoom() {
 
                         </div>
                     </div>
-                    <div className="card-pane rounded-md  flex items-start flex-col h-[269px]">
+                    <div className="card-pane rounded-md  flex items-start flex-col h-[269px] shadow-md">
                         <div className="chat-scroll mt-4 flex flex-1 flex-col overflow-y-auto w-full">
                             {roomUsers.map(user => (
                                 <RoomUser
@@ -604,7 +604,7 @@ export default function ClientRoom() {
                             ))}
                         </div>
                         <button
-                        className=" text-red-600 text-xs p-1 self-end m-4 mb-5 border-red-600 border-2 hover:bg-red-600 hover:text-white"
+                        className=" text-red-500 text-xs p-1 self-end m-4 mb-5 border-red-500 border-2 hover:bg-red-500 hover:text-white"
                         onClick={() => {
                             setShowPopUp(true)
                         }}
@@ -634,7 +634,7 @@ export default function ClientRoom() {
                 </Popup>
 
 
-                <div className=" card-pane rounded-md w-[500px]  h-[800px] flex flex-col gap-1">
+                <div className=" card-pane rounded-md w-[500px]  h-[800px] flex flex-col gap-1 shadow-md">
                     <div 
                     ref={messagesContainerRef}
                     className="flex-1 px-3 py-8 flex flex-col gap-4 overflow-y-auto rounded-md chat-scroll">

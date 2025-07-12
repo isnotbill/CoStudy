@@ -18,15 +18,15 @@ export default function ChatMessage(props: ChatInterface){
     return (
       <p className="
           relative my-1 flex items-center justify-center select-none
-          text-xs font-medium tracking-wide text-gray-400
+          text-xs font-medium tracking-wide text-gray-300
         ">
-        <span className="flex-1 h-px bg-gray-600/40" />
+        <span className="flex-1 h-px bg-gray-300/40" />
 
         <span className="mx-3 whitespace-nowrap">
           {props.content}
         </span>
 
-        <span className="flex-1 h-px bg-gray-600/40" />
+        <span className="flex-1 h-px bg-gray-300/40" />
       </p>
     )
   } else if (props.type === "AI") {
@@ -71,7 +71,7 @@ export default function ChatMessage(props: ChatInterface){
 
           <div className="flex flex-col items-end ">
             {/* <label className="text-white">{props.username}</label> */}
-            <div className="bg-[rgba(206,133,255,0.92)] rounded-3xl p-2 flex justify-end max-w-xs break-words">
+            <div className="bg-[rgba(226,121,255,0.92)] rounded-3xl p-2 flex justify-end max-w-xs break-words">
                 {props.content}
             </div>
           </div>
