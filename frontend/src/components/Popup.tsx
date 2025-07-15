@@ -1,55 +1,44 @@
+import ReactDOM from 'react-dom';
 
-import React, { ReactNode } from "react";
-
-interface PopupItem {
-    isOpen: boolean,    
-    onClose: () => void,
-    children: ReactNode
+interface PopupProps {
+  show: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
 }
 
-export default function Popup({ isOpen, onClose, children }: PopupItem) {
-  if (!isOpen) return null; // don’t render if closed
+const Popup = ({ show, onClose, children }: PopupProps) => {
+  if (!show) return null;
 
-  return (
-    <>
-      {/* Overlay */}
-      <div
-        onClick={onClose}
-        style={{
-          position: "fixed",
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: "rgba(0,0,0,0.3)",
-          zIndex: 1000,
-        }}
-      />
-      {/* Modal */}
-      <div
-        style={{
-          position: "fixed",
-          top: "50%", left: "50%",
-          transform: "translate(-50%, -50%)",
-          backgroundColor: "rgb(33,31,70)",
-          borderRadius: "8px",
-          padding: "10px",
-          zIndex: 1001,
-          width: "400px",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.3)",
-        }}
-      >
+  return ReactDOM.createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="relative w-[90%] max-w-lg p-6 sm:p-8 rounded-3xl shadow-xl border border-white/10 bg-white/20 dark:bg-[#1a1a2c]/60 backdrop-blur-md text-gray-900 dark:text-gray-100 animate-fadeIn">
+        {/* Close Button */}
         <button
           onClick={onClose}
-          style={{ float: "right", 
-            fontWeight: "bold", 
-            cursor: "pointer",
-            color: "red",
-        
-        }}
-          aria-label="Close modal"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-300 transition"
+          aria-label="Close popup"
         >
-          x
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
         </button>
+
+        {/* Popup Content */}
         {children}
       </div>
-    </>
-  )
-}
+    </div>,
+    document.body
+  );
+};
+
+export default Popup;

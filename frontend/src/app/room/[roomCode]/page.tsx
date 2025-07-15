@@ -612,7 +612,7 @@ export default function ClientRoom() {
                     </div>
                 </div>
                 
-                <Popup isOpen={showPopUp} onClose={() => setShowPopUp(false)}>
+                <Popup show={showPopUp} onClose={() => setShowPopUp(false)}>
 
                     <div className="flex flex-col justify-center items-center">
                         <h1 className="text-white m-3 mt-8">Are you sure you want to leave this room?</h1>
