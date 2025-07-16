@@ -73,24 +73,33 @@ export default function Home() {
       <main className="min-h-screen flex flex-col bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94]">
         <Header/>
 
-        <section className="flex-1 flex items-center justify-center w-full">
+        <section className="flex-1 flex items-center justify-center w-full py-10">
           <motion.section
             variants={fadeInUp}
             initial="initial"
             whileInView="animate"
             viewport={{ once: true, amount: 0.3 }}
           >
-            <div className=' justify-center page-wrapper flex flex-col-reverse lg:flex-row items-center gap-16'>
-              <div className="flex flex-col w-[620px] items-left justify-center">
-                <h1 className="text-white font-cedarville text-4xl font-normal">Study Together, Stress-Free</h1>
-                <h2 className="text-gray-300 font-kumbh my-5 text-lg font-normal">Join virtual study groups, stay motivated, and collaborate with friends.</h2>
+            <div className='justify-center page-wrapper flex flex-col lg:flex-row items-center gap-8'>
+              <div className="flex flex-col items-start justify-center w-full max-w-xl px-4 sm:px-6 md:px-0 text-left">
+                <h1 className="text-white font-cedarville text-4xl sm:text-4xl lg:text-4xl font-normal">
+                Study Together, Stress-Free
+                </h1>
+
+                <h2 className="text-gray-300 font-kumbh my-4 sm:my-5 text-base sm:text-lg font-normal">
+                Join virtual study groups, stay motivated, and collaborate with friends.
+                </h2>
+
                 <Image 
-                  src="/images/heroimage.svg"
-                  alt="img"
-                  width={560}
-                  height={800}
+                src="/images/heroimage.svg"
+                alt="Study together illustration"
+                width={0}
+                height={0}
+                sizes="100vw"
+                className="w-full max-w-md sm:max-w-lg h-auto"
                 />
-              </div>
+                </div>
+
               <form 
               onSubmit={handleSubmit}
               className="bg-gray-100 w-full max-w-[380px] min-w-[200px] h-[550px] px-[20] gap-2 rounded-2xl flex flex-col justify-center items-center">

@@ -44,7 +44,7 @@ export default function UserRooms() {
   )
 
   return (
-    <div className="w-full flex flex-col gap-4">
+    <div className="w-full flex flex-col gap-2">
       {/* Search */}
       <div className="relative">
         <input

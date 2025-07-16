@@ -1,33 +1,38 @@
 import Link from 'next/link';
 
-
 const Header = () => {
   return (
-    <>
-    <header className="flex justify-center items-center p-[4px] text-[rgb(242,247,253)] bg-none select-none">
-      <h1 className="font-cedarville font-thin text-[35px] mx-[80px]">
-        costudy
-      </h1>
+    <header className="w-full bg-transparent text-[#f2f7fd] py-4 px-6 select-none">
+      <div className="max-w-7xl mx-auto flex justify-center items-center gap-2 sm:gap-16 flex-wrap md:flex-nowrap">
+        {/* Logo */}
+        <h1 className="font-cedarville text-[32px] md:text-[32px] lg:text-[36px] font-thin text-center">
+          costudy
+        </h1>
 
-      <div className="flex items-center gap-[80px] font-kumbh font-medium text-[10px] mr-[100px]">
-        <Link href="/" className="text-[#dfebf7] text-[17px] no-underline hover:text-[#d6d6d6] hover:underline">
-          Home
-        </Link>
-
-        <Link href="/#about" className="text-[#dfebf7] text-[17px] no-underline hover:text-[#d6d6d6] hover:underline">
-          About Us
-        </Link>
-
-        <Link href="/login" passHref>
-          <button
-            className="border-none bg-[rgb(244,249,253)] text-[rgb(72,23,112)] px-[40px] py-1 rounded-[30px] font-kumbh font-normal text-[17px] cursor-pointer transition-colors duration-200 hover:bg-[#d4d4d4]"
+        {/* Navigation + Button */}
+        <div className="flex items-center justify-center gap-6 md:gap-10 text-[15px] md:text-[17px] font-kumbh font-medium flex-wrap">
+          <Link
+            href="/"
+            className="text-[#dfebf7] no-underline hover:text-[#d6d6d6] hover:underline transition duration-150"
           >
-            Login
-          </button>
-        </Link>
+            Home
+          </Link>
+
+          <Link
+            href="/#about"
+            className="text-[#dfebf7] no-underline hover:text-[#d6d6d6] hover:underline transition duration-150"
+          >
+            About Us
+          </Link>
+
+          <Link href="/login" passHref>
+            <button className="bg-[#f4f9fd] text-[#481770] px-6 py-1.5 rounded-full font-normal text-[15px] md:text-[17px] hover:bg-[#d4d4d4] transition-colors duration-200 shadow-sm">
+              Login
+            </button>
+          </Link>
+        </div>
       </div>
     </header>
-        </>
   );
 };
 
