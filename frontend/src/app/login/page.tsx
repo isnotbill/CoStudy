@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Header from '@/components/Header'
 
 export default function Login() {
     const [error, setError] = useState<null | string[]>(null)
@@ -61,8 +62,8 @@ export default function Login() {
         <title>Login - CoStudy</title>
     </header>
     <main className='bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94] h-screen select-none overflow-hidden'>
-        
-        <div className='flex justify-center items-center h-full'>
+        <Header />
+        <div className='flex justify-center items-center py-32'>
             
             <form
             onSubmit={handleSubmit}
