@@ -69,11 +69,8 @@ export default function ChatMessage(props: ChatInterface){
       {props.isClient
       ? (<div className="flex justify-end items-start gap-2">
 
-          <div className="flex flex-col items-end ">
-            {/* <label className="text-white">{props.username}</label> */}
-            <div className="bg-[rgba(226,121,255,0.92)] rounded-3xl p-2 flex justify-end max-w-xs break-words">
-                {props.content}
-            </div>
+          <div className="bg-[rgba(226,121,255,0.92)] rounded-3xl p-2 flex justify-end max-w-xs break-words break-all">
+            {props.content}
           </div>
 
           {/* <div className="w-12 h-12 rounded-full bg-white overflow-hidden mt-[4px]">
@@ -100,8 +97,8 @@ export default function ChatMessage(props: ChatInterface){
 
           <div className="flex flex-col items-start ">
             <label className="text-white">{props.username}</label>
-            <div className="bg-[rgba(255,255,255,0.91)] rounded-3xl p-2 max-w-xs break-words">
-                {props.content}
+            <div className="bg-[rgba(255,255,255,0.91)] rounded-3xl p-2 max-w-xs break-words break-all">
+              {props.content}
             </div>
           </div>
 

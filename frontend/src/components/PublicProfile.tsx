@@ -71,23 +71,23 @@ export default function PublicProfile( { user } : Profile ) {
 
   
   return (
-    <div className="space-y-8">
-      
-      <div className="flex items-center space-x-6">
+    <div className="space-y-8 px-4 sm:px-6 md:px-0 max-w-md mx-auto">
+      <div className="flex flex-col md:flex-row items-center md:space-x-6 space-y-6 md:space-y-0">
         
-        <div className="rounded-full border-4 border-[rgb(215,217,238)]">
+        {/* Avatar */}
+        <div className="rounded-full border-4 border-[rgb(215,217,238)] flex-shrink-0">
           <Image
             src={src}
             alt="Profile avatar"
             width={250}
             height={250}
-            className="flex-none w-[250px] h-[250px] rounded-full bg-white"
+            className="w-40 h-40 sm:w-48 sm:h-48 md:w-[250px] md:h-[250px] rounded-full bg-white object-cover"
           />
         </div>
 
-        
-        <div className="space-y-2">
-
+        {/* Buttons */}
+        <div className="flex flex-col space-y-4 w-full max-w-xs">
+          
           <input 
             type='file'
             accept='image/*'
@@ -96,25 +96,28 @@ export default function PublicProfile( { user } : Profile ) {
             disabled={uploading}
             className="hidden"
           />
+          
           <button
             type='button'
             disabled={uploading}
             onClick={() => fileInputRef.current?.click()}
-            className="block w-full px-4 py-2 bg-[rgb(84,78,143)] text-white rounded-lg hover:bg-[rgb(70,60,102)]"
+            className={`w-full px-4 py-3 rounded-lg text-white bg-[rgb(84,78,143)] hover:bg-[rgb(70,60,102)] transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+              uploading ? "cursor-not-allowed opacity-70" : "cursor-pointer"
+            }`}
           >
             {uploading ? 'Uploading...' : 'Upload Avatar'}
           </button>
 
           <button
-            
-            className="block w-full px-4 py-2 border border-gray-800 rounded-lg hover:bg-gray-200 text-gray-700"
+            type="button"
+            className="w-full px-4 py-3 border border-gray-800 rounded-lg text-gray-700 hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             Change Default Icon
           </button>
-          {error && <p className="text-red-500">{error}</p>}
+
+          {error && <p className="text-red-500 text-center">{error}</p>}
         </div>
       </div>
-
     </div>
   );
 }

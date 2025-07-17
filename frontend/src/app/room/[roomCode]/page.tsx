@@ -522,168 +522,203 @@ export default function ClientRoom() {
     // if (loadingMessages) return <p className="text.purple">Loading room...</p>
     if (error){return <p className="text-red-500">{error}</p>}
     return (
-        <>        
-        <main className={`main-bg w-screen min-h-screen flex flex-col items-center
-        ${bgClass}`}
-        >
-            <MainHeader/>
-            <div className="w-full flex justify-center items-start flex-wrap gap-8 my-8">
-                <div className="flex flex-col gap-8 w-[500px] h-full">
-                    <div className=" card-pane w-[500px]  h-[500px] rounded-md p-8 shadow-md">
-                        <div className="relative w-full h-full rounded-md flex flex-col justify-center items-center gap-4">
-                            <button className="absolute top-[-20px] right-[-20px] settings-button"
-                                    onClick={() => {
-                                        setToggleSettings(prev => !prev)
-                                    }}>⚙️</button>
-                            {toggleSettings ? (
-                                <>
-                                    
-                                    <div className="flex flex-col items-center pb-2">
-                                        <h1 className="text-white text-xl font-medium">{roomName}</h1>
-                                        <h1 className="text-gray-300/80 text-md">Code: {roomCode}</h1>
-                                    </div>
-
-                                    <div className="text-white flex gap-2 mb-[-20px] text-lg">
-                                        <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
-                                            timer?.phase === "WORK" ? "bg-[rgba(23,21,36,0.49)]" : ""
-                                        }`}
-                                        onClick={() => {skipTimer("/app/timer/skipTo", {
-                                            roomId: roomId,
-                                            skipToPhase: "WORK"
-                                        })}}
-                                        >Work Cycle {currentWorkCycles}</button>
-                                        <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
-                                            timer?.phase === "SHORT_BREAK" ? "bg-[rgba(23,21,36,0.49)]" : ""
-                                        }`}
-                                        onClick={() => {skipTimer("/app/timer/skipTo", {
-                                            roomId: roomId,
-                                            skipToPhase: "SHORT_BREAK"
-                                        })}}>Short Break</button>
-                                        <button className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
-                                            timer?.phase === "LONG_BREAK" ? "bg-[rgba(23,21,36,0.49)]" : ""
-                                        }`}
-                                        onClick={() => {skipTimer("/app/timer/skipTo", {
-                                            roomId: roomId,
-                                            skipToPhase: "LONG_BREAK"
-                                        })}}>Long Break</button>
-                                    </div>
-                                    <h1 className="text-[rgb(255,255,255)] text-9xl font-mono py-4">{mm}:{ss}</h1>
-                                    
-                                    <button className="start-button"
-                                            onClick={() => {
-                                                if (!timer){
-                                                    sendTimer("/app/timer/start", { roomId })
-                                                } else if (timer.status === 'PAUSED') {
-                                                    sendTimer("/app/timer/resume", roomId)
-                                                } else {
-                                                    sendTimer("/app/timer/pause", roomId)
-                                                }
-                                                }}>
-                                    {!timer || timer.status === 'PAUSED' ? 'START' : 'PAUSE'}
-                                    </button>
-                                </>
-                            ) : (
-                                
-                                <UpdateRoom 
-                                settings={settings} roomId={roomId}
-                                isClientAdmin={roomUsers.find(u => u.id === profile?.id)?.admin || false}
-                                setToggleSettings={setToggleSettings}/>
-                            )}
-
-                        </div>
-                    </div>
-                    <div className="card-pane rounded-md  flex items-start flex-col h-[269px] shadow-md">
-                        <div className="chat-scroll mt-4 flex flex-1 flex-col overflow-y-auto w-full">
-                            {roomUsers.map(user => (
-                                <RoomUser
-                                key={user.id}   
-                                isClient={user.id == profile?.id}
-                                isAdmin={user.admin}
-                                username= {user.username}
-                                iconImage= {user.image}
-                                onKick={() => {kickUser(user.username)}}
-                                isAdminClient={roomUsers.find(u => u.id === profile?.id)?.admin || false}
-                                />
-                            ))}
-                        </div>
-                        <button
-                        className=" text-red-500 text-xs p-1 self-end m-4 mb-5 border-red-500 border-2 hover:bg-red-500 hover:text-white"
-                        onClick={() => {
-                            setShowPopUp(true)
-                        }}
-                        >LEAVE ROOM</button>
-                    </div>
+  <>
+    <main className={`main-bg w-screen min-h-screen flex flex-col items-center
+      ${bgClass}`}
+    >
+      <MainHeader />
+      <div className="w-full max-w-[1200px] flex flex-col md:flex-row justify-center items-start gap-6 px-4 md:px-0 my-8">
+        {/* Left: Timer & Users */}
+        <div className="flex flex-col md:w-[500px] w-full gap-6">
+          <div className="card-pane w-full h-auto md:h-[500px] rounded-md p-6 md:p-8 shadow-md flex flex-col justify-center items-center relative">
+            <button
+              className="absolute top-[10px] right-[10px] settings-button"
+              onClick={() => setToggleSettings((prev) => !prev)}
+            >
+              ⚙️
+            </button>
+            {toggleSettings ? (
+              <>
+                <div className="flex flex-col items-center pb-2">
+                  <h1 className="text-white text-xl font-medium">{roomName}</h1>
+                  <h1 className="text-gray-300/80 text-md">Code: {roomCode}</h1>
                 </div>
-                
-                <Popup show={showPopUp} onClose={() => setShowPopUp(false)}>
 
-                    <div className="flex flex-col justify-center items-center">
-                        <h1 className="text-white m-3 mt-8">Are you sure you want to leave this room?</h1>
-
-                        {roomUsers.find(u => u.id === profile?.id)?.admin &&
-                            <div className="text-red-500 m-3 text-center">WARNING: As an ADMIN, the room will be permanently deleted if you leave the room.</div> }
-
-                        <button className="popup-button w-full h-[45px] mt-5"
-                        onClick={() => {
-                            if(showPopUp == false) return
-                            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                            roomUsers.find(u => u.id === profile?.id)?.admin  ? deleteRoom(roomId) : leaveRoom(String(roomCode))
-                            setShowPopUp(false);
-                        }}>
-                        
-                            Confirm
-                        </button>
-                    </div>
-
-                </Popup>
-
-
-                <div className=" card-pane rounded-md w-[500px]  h-[800px] flex flex-col gap-1 shadow-md">
-                    <div 
-                    ref={messagesContainerRef}
-                    className="flex-1 px-3 py-8 flex flex-col gap-4 overflow-y-auto rounded-md chat-scroll">
-
-
-                        {roomMessages.map(m => (
-                            <ChatMessage
-                            key={m.chatMessageId} 
-                            content={m.content}
-                            isClient={m.userId === profile?.id}
-                            iconImage={m.imageIcon}
-                            username={m.username}
-                            type={m.type}
-                            />
-                        ))}
-                    </div>
-
-                    <form onSubmit={handleSend} className="flex p-2">
-                        <input
-                            value={inputMessage}
-                            placeholder="Enter your message"
-                            onChange={(e) => setInputMessage(e.target.value)}
-                            className="flex-1 rounded-l-md bg-[rgba(33,28,36,0.6)] text-white px-2 py-3 focus:outline-none"/>
-                        
-                        <button className="relative bg-[rgba(33,28,36,0.6)] text-white px-2"
-                        type="button"
-                        onClick={() => handleSendAi()}>
-                            <Image
-                            src="/images/AI.png" 
-                            alt="AI png"
-                            width={25}
-                            height={25}
-                            className="invert"
-                            />
-                        </button>
-                        <button
-                            type="submit"
-                            className=" rounded-r-md bg-[rgba(33,28,36,0.6)] text-white px-4 py-3 hover:bg-gray-700">
-                            Send</button>
-                    </form>
+                <div className="text-white flex flex-wrap gap-2 mb-[-20px] text-lg justify-center">
+                  <button
+                    className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
+                      timer?.phase === "WORK" ? "bg-[rgba(23,21,36,0.49)]" : ""
+                    }`}
+                    onClick={() => {
+                      skipTimer("/app/timer/skipTo", {
+                        roomId: roomId,
+                        skipToPhase: "WORK",
+                      });
+                    }}
+                  >
+                    Work Cycle {currentWorkCycles}
+                  </button>
+                  <button
+                    className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
+                      timer?.phase === "SHORT_BREAK" ? "bg-[rgba(23,21,36,0.49)]" : ""
+                    }`}
+                    onClick={() => {
+                      skipTimer("/app/timer/skipTo", {
+                        roomId: roomId,
+                        skipToPhase: "SHORT_BREAK",
+                      });
+                    }}
+                  >
+                    Short Break
+                  </button>
+                  <button
+                    className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
+                      timer?.phase === "LONG_BREAK" ? "bg-[rgba(23,21,36,0.49)]" : ""
+                    }`}
+                    onClick={() => {
+                      skipTimer("/app/timer/skipTo", {
+                        roomId: roomId,
+                        skipToPhase: "LONG_BREAK",
+                      });
+                    }}
+                  >
+                    Long Break
+                  </button>
                 </div>
+                <h1 className="text-[rgb(255,255,255)] text-7xl md:text-9xl font-mono py-4">
+                  {mm}:{ss}
+                </h1>
+
+                <button className="start-button w-full text-center h-[4.5em] text-lg"
+                  onClick={() => {
+                    if (!timer) {
+                      sendTimer("/app/timer/start", { roomId });
+                    } else if (timer.status === "PAUSED") {
+                      sendTimer("/app/timer/resume", roomId);
+                    } else {
+                      sendTimer("/app/timer/pause", roomId);
+                    }
+                  }}
+                >
+                  {!timer || timer.status === "PAUSED" ? "START" : "PAUSE"}
+                </button>
+              </>
+            ) : (
+              <UpdateRoom
+                settings={settings}
+                roomId={roomId}
+                isClientAdmin={roomUsers.find((u) => u.id === profile?.id)?.admin || false}
+                setToggleSettings={setToggleSettings}
+              />
+            )}
+          </div>
+
+          <div className="card-pane rounded-md flex flex-col h-[300px] md:h-[269px] shadow-md overflow-hidden">
+            <div className="chat-scroll mt-4 flex-1 flex flex-col overflow-y-auto w-full">
+              {roomUsers.map((user) => (
+                <RoomUser
+                  key={user.id}
+                  isClient={user.id === profile?.id}
+                  isAdmin={user.admin}
+                  username={user.username}
+                  iconImage={user.image}
+                  onKick={() => {
+                    kickUser(user.username);
+                  }}
+                  isAdminClient={roomUsers.find((u) => u.id === profile?.id)?.admin || false}
+                />
+              ))}
             </div>
-            
-            
-        </main>
-        </>
-    );
+            <button
+              className="text-red-500 text-xs p-1 self-end m-4 mb-5 border-red-500 border-2 hover:bg-red-500 hover:text-white"
+              onClick={() => setShowPopUp(true)}
+            >
+              LEAVE ROOM
+            </button>
+          </div>
+        </div>
+
+        {/* Right: Chat */}
+        <div className="card-pane rounded-md w-full md:w-[500px] h-[500px] md:h-[800px] flex flex-col gap-1 shadow-md">
+          <div
+            ref={messagesContainerRef}
+            className="flex-1 px-3 py-4 md:py-8 flex flex-col gap-4 overflow-y-auto rounded-md chat-scroll"
+          >
+            {roomMessages.map((m) => (
+              <ChatMessage
+                key={m.chatMessageId}
+                content={m.content}
+                isClient={m.userId === profile?.id}
+                iconImage={m.imageIcon}
+                username={m.username}
+                type={m.type}
+              />
+            ))}
+          </div>
+
+          <form onSubmit={handleSend} className="flex p-2 gap-1">
+            <input
+              value={inputMessage}
+              placeholder="Enter your message"
+              onChange={(e) => setInputMessage(e.target.value)}
+              className="flex-1 rounded-l-md bg-[rgba(33,28,36,0.6)] text-white px-3 py-3 focus:outline-none"
+            />
+
+            <button
+              className="relative bg-[rgba(33,28,36,0.6)] text-white px-3 flex items-center justify-center rounded-none"
+              type="button"
+              onClick={() => handleSendAi()}
+              disabled={loadAIMessage}
+              title={loadAIMessage ? "Loading AI response..." : "Send to AI tutor"}
+            >
+              <Image
+                src="/images/AI.png"
+                alt="AI png"
+                width={25}
+                height={25}
+                className="invert"
+              />
+            </button>
+
+            <button
+              type="submit"
+              className="rounded-r-md bg-[rgba(33,28,36,0.6)] text-white px-4 py-3 hover:bg-gray-700 disabled:opacity-50"
+              disabled={loadAIMessage}
+            >
+              Send
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <Popup show={showPopUp} onClose={() => setShowPopUp(false)}>
+        <div className="flex flex-col justify-center items-center">
+          <h1 className="text-white m-3 mt-8 text-center">
+            Are you sure you want to leave this room?
+          </h1>
+
+          {roomUsers.find((u) => u.id === profile?.id)?.admin && (
+            <div className="text-red-500 m-3 text-center">
+              WARNING: As an ADMIN, the room will be permanently deleted if you leave
+              the room.
+            </div>
+          )}
+
+          <button
+            className="popup-button w-full h-[45px] mt-5"
+            onClick={() => {
+              if (showPopUp == false) return;
+              roomUsers.find((u) => u.id === profile?.id)?.admin
+                ? deleteRoom(roomId)
+                : leaveRoom(String(roomCode));
+              setShowPopUp(false);
+            }}
+          >
+            Confirm
+          </button>
+        </div>
+      </Popup>
+    </main>
+  </>
+);
 }
