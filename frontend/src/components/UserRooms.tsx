@@ -44,7 +44,7 @@ export default function UserRooms() {
   )
 
   return (
-    <div className="w-full flex flex-col gap-4">
+    <div className="w-full flex flex-col gap-2">
       {/* Search */}
       <div className="relative">
         <input
@@ -102,7 +102,7 @@ export default function UserRooms() {
       </div>
 
       {/* Confirmation */}
-      <Popup isOpen={!!popupRoom} onClose={() => setPopupRoom(null)}>
+      <Popup show={!!popupRoom} onClose={() => setPopupRoom(null)}>
         <h1 className="text-white text-center text-lg">
           Are you sure you want to {popupRoom?.admin ? "delete" : "leave"} this room?
         </h1>

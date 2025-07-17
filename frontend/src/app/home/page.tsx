@@ -64,7 +64,7 @@ export default function HomePage() {
         )}
 
         {/* Room Actions */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 h-[580px]">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl shadow-md border border-white/20">
             <JoinCreateRoom username={profile?.username} />
           </div>
