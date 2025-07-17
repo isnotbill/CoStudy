@@ -1,13 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, ChangeEvent, useRef, useEffect } from "react";
 import Image from "next/image";
-import axios from "axios";
 import apiClient from "../../lib/apiClient";
 
 interface Profile {
   user: {
-      id: number,
+    id: number,
     image: string
   }
 }
@@ -18,14 +18,14 @@ export default function PublicProfile( { user } : Profile ) {
   const [error, setError] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
 
-  const [profile, setProfile] = useState<any>(user)
+  const profile = user
 
   const [src, setSrc] = useState('http://localhost:8080/default-avatar.png')
 
   useEffect(() => {
     if (user.image != null){setSrc(`http://localhost:8080/avatars/${user.image}`)}   
 
-  }, [])
+  }, [user.image])
 
   async function handleFileChange(e: ChangeEvent<HTMLInputElement>){
     const file = e.target.files?.[0]
@@ -54,10 +54,13 @@ export default function PublicProfile( { user } : Profile ) {
       setSrc(`http://localhost:8080/avatars/${res.data.avatarUrl}`)
 
     } catch (err: any) {
+
       setError(
         err.message ||
         'Upload failed'
       )
+
+
     } finally {
       setUploading(false)
       e.target.value=''

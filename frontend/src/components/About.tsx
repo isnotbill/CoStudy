@@ -1,7 +1,5 @@
 "use client";
 
-import Header from "@/components/Header";
-import Head from "next/head";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Variants } from "framer-motion";
 import Image from "next/image";

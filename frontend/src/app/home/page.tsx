@@ -15,8 +15,7 @@ interface Profile {
 
 export default function HomePage() {
   const [profile, setProfile] = useState<Profile | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+
 
   const searchParams = useSearchParams()
   const paramsReason = searchParams.get("reason")
@@ -27,12 +26,10 @@ export default function HomePage() {
       try {
         const response = await apiClient.get('/user')
         setProfile(response.data)
-      } catch (err: any) {
-        setError(err.message || 'Failed to fetch user profile')
+      } catch {
+
         window.location.href = '/login'
-      } finally {
-        setLoading(false)
-      }
+      } 
     }
     fetchProfile()
   }, [])
@@ -62,7 +59,7 @@ export default function HomePage() {
         {/* Error Message */}
         {paramsReason === "invalid_room_code" && (
           <div className="bg-red-500/20 border border-red-500 text-red-200 px-6 py-2 text-sm rounded-lg text-center">
-            No room code matches "<span className="font-semibold">{paramsCode}</span>". Please double-check and try again.
+            No room code matches &quot;<span className="font-semibold">{paramsCode}</span>&quot;. Please double-check and try again.
           </div>
         )}
 

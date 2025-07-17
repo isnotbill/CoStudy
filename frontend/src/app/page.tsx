@@ -38,32 +38,36 @@ export default function Home() {
     }
 
     try {
-      const res = await axios.post(
+      await axios.post(
         'http://localhost:8080/register',
         payload,
         { timeout: 5000 }
       )
       window.location.href='/login'
-    } catch (error: any) {
-      
-      if (error.response && error.response.data){
-        const apiBody= error.response.data as {
-          success?: boolean
-          message?: string
-          data?: string[]
-          error?: string
-        }
-        if (Array.isArray(apiBody.data)){
-          setError(apiBody.data)
-          
+    } catch (error) {
+
+      if (axios.isAxiosError(error)){
+        if (error.response && error.response.data){
+          const apiBody= error.response.data as {
+            success?: boolean
+            message?: string
+            data?: string[]
+            error?: string
+          }
+          if (Array.isArray(apiBody.data)){
+            setError(apiBody.data)
+            
+          } else {
+            setError([apiBody.message ?? apiBody.error ?? "Unexpected Error"])
+          }
         } else {
-          setError([apiBody.message ?? apiBody.error ?? "Unexpected Error"])
+          setError([error.message])
+          console.log(error.message)
+          
         }
-      } else {
-        setError([error.message])
-        console.log(error.message)
-        
       }
+      
+
 
     }
   }

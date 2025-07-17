@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import apiClient from "../../lib/apiClient";
+import axios from "axios";
 
 interface Profile {
   user: {
@@ -49,9 +50,12 @@ export default function AccountSettings({ user }: Profile) {
     try {
       await apiClient.put("/user/password", passwordChange);
       setPasswordChange({ oldPassword: "", newPassword: "", confirmPassword: ""});
-    } catch (err : any) {
+    } catch (err) {
       console.log(err);
-      setPasswordErrors(err.response.data.data);
+      if (axios.isAxiosError(err)) {
+        setPasswordErrors(err.response?.data.data);
+      }
+
       // Optionally show an error message
     }
   };

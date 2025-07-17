@@ -6,6 +6,7 @@ import AccountSettings from "@/components/AccountSettings";
 import PublicProfile from "@/components/PublicProfile";
 import MainHeader from "@/components/MainHeader";
 import apiClient from "../../../lib/apiClient";
+import axios from "axios";
 
 interface UserProfile {
   id: number;
@@ -27,8 +28,10 @@ export default function AccountPage() {
       try {
         const response = await apiClient.get("/user");
         setProfile(response.data);
-      } catch (err: any) {
-        setErrorMsg(err.message || "Failed to fetch user profile");
+      } catch (err) {
+        if (axios.isAxiosError(err)){
+          setErrorMsg(err.message || "Failed to fetch user profile");
+        }
       }
     }
     fetchProfile();
@@ -40,8 +43,10 @@ export default function AccountPage() {
     try {
       await apiClient.post("/logout");
       router.replace("/login");
-    } catch (err: any) {
-      setLogoutError(err.message);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setLogoutError(err.message);
+      } 
     } finally {
       setLogoutLoading(false);
     }

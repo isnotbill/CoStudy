@@ -17,7 +17,7 @@ export const config = {
 
 export function middleware(req: NextRequest){
 
-  const { pathname } = req.nextUrl
+
 
   //console.log('[MW] middleware fired for:', req.nextUrl.pathname)
   const token = req.cookies.get('access_token')?.value

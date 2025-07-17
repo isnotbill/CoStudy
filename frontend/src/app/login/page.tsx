@@ -30,24 +30,26 @@ export default function Login() {
             )
             console.log(data)
             window.location.href='/home'
-        } catch (err: any) {
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err)){
+                if (err.response && err.response.data) {
+                    const apiBody = err.response.data as {
+                        success?: boolean
+                        message?: string
+                        data?: string[]
+                        error?: string                    
+                    }
 
-            if (err.response && err.response.data) {
-                const apiBody = err.response.data as {
-                    success?: boolean
-                    message?: string
-                    data?: string[]
-                    error?: string                    
-                }
-
-                if (Array.isArray(apiBody.data)){
-                    setError(apiBody.data)
+                    if (Array.isArray(apiBody.data)){
+                        setError(apiBody.data)
+                    } else {
+                        setError([apiBody.message ?? apiBody.error ?? "Unexpected Error"])
+                    }
                 } else {
-                    setError([apiBody.message ?? apiBody.error ?? "Unexpected Error"])
+                    setError([err.message])
                 }
-            } else {
-                setError([err.message])
             }
+
 
         }
     }
@@ -111,7 +113,7 @@ export default function Login() {
                     {error && <p className="text-red-500 text-sm mt-[-30px]">{error}</p>}
                     {reason === "expired_token" && <p className="text-red-500 text-sm mt-[-30px]">Token expired, please log in again.</p>}
                 <div className="flex items-center space-x-1 mt-[-35px] text-xs text-gray-500">
-                    <span>Don't have an account?</span>
+                    <span>Don&apos;t have an account?</span>
                     <Link href="/" className="text-indigo-600 hover:underline">
                         Sign up
                     </Link>

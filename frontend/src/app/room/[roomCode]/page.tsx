@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useRef, useState, useMemo } from "react";
@@ -149,14 +150,14 @@ export default function ClientRoom() {
             }
         }
         fetchRoomUsers() 
-    }, [loadJoinRoom])
+    }, [loadJoinRoom, roomCode])
 
     // Let the user join the room if haven't already
     useEffect(() => {
 
         async function joinRoom(){
             try {
-                const resUsers = await apiClient.post(`/room/${roomCode}/join`)
+                await apiClient.post(`/room/${roomCode}/join`)
             } catch (err: any){
                 if (err.response?.data?.message === "Duplicate"){return} // TODO DO NOT USE .message to check
                 setError("Failed to join room")
@@ -165,6 +166,7 @@ export default function ClientRoom() {
             }
         }
         joinRoom() 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     // Loads all the room messages
@@ -251,6 +253,7 @@ export default function ClientRoom() {
             client.deactivate()
         }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loadingMessages, roomId, loadingProfile])
 
     // Local clock ticking for timer
@@ -265,7 +268,7 @@ export default function ClientRoom() {
         if (roomId == null){return}
         async function createTimer(){
             try {
-                const res = await apiClient.post(`/timer/create/${roomId}`)
+                await apiClient.post(`/timer/create/${roomId}`)
             } catch (err : any) {
                 setError(err);
             }
@@ -387,7 +390,7 @@ export default function ClientRoom() {
     // Handle kicking user
     async function kickUser(username: string){
         try {
-            const res = await apiClient.delete(
+            await apiClient.delete(
                 `/room/${roomCode}/kick`,
                 {
                     data: username,
@@ -406,7 +409,7 @@ export default function ClientRoom() {
         if (roomId == null) return
 
         apiClient.delete(`/room/${roomId}/delete`)
-            .then(res => {
+            .then(() => {
                 router.replace("/home")
             })
             .catch(err => console.error(err));
@@ -623,6 +626,7 @@ export default function ClientRoom() {
                         <button className="popup-button w-full h-[45px] mt-5"
                         onClick={() => {
                             if(showPopUp == false) return
+                            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                             roomUsers.find(u => u.id === profile?.id)?.admin  ? deleteRoom(roomId) : leaveRoom(String(roomCode))
                             setShowPopUp(false);
                         }}>

@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import apiClient from '../../../lib/apiClient';
-import { join } from 'path';
+
 import { useRouter } from 'next/navigation';
 
-import Image from 'next/image'
+
 
 interface PublicRoom {
     id: number,
@@ -32,19 +33,19 @@ export default function JoinRoom({ username } : { username: string}) {
                 const res = await apiClient.get(`/room/public?page=${page}&size=${size}&keyword=${searchTerm}`);
                 const rooms = res.data._embedded?.publicRoomDtoList || [];
                 setPublicRooms(rooms)
-            } catch (err : any) {
+            } catch {
                 console.error('Error fetching rooms')
             }
         };
 
         fetchPublicRooms();
     }
-    , [submittedSearch, page])
+    , [submittedSearch, page, searchTerm])
     
 
     const joinRoom = async (roomCode : string) => {
         try {
-            const res = await apiClient.post(`/room/${roomCode}/join`);
+            await apiClient.post(`/room/${roomCode}/join`);
             
             router.push(`/room/${roomCode}`);
 

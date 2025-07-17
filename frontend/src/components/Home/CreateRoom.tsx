@@ -53,12 +53,14 @@ export default function CreateRoom({ username } : { username: string }) {
         if (username && createInputVal.name === '') {
             setCreateInputVal(prev => ({ ...prev, name: `${username}'s room` }));
         }
-    }, [username]);
+
+    }, [createInputVal.name, username]);
 
     const createRoom = async (roomSettings : SettingsDto) => {
         try {
             const res = await apiClient.post(`/room/create`, roomSettings);
             router.push(`/room/${res.data.data}`);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err : any) {
             const errorData = err?.response?.data;
 
@@ -100,28 +102,28 @@ export default function CreateRoom({ username } : { username: string }) {
                     
                     <div className='h-[60px] flex text-white'>
                         <button className={(activeSetting === 'Pomodoro' ? 'create-settings-active' : '') + ' create-settings flex-1'}
-                        onClick={(e) => {
+                        onClick={() => {
                             setActiveSetting('Pomodoro');
                             setCreateInputVal({...presetSettings['pomodoroClassic'], name: createInputVal.name});
                         }}>
                             Pomodoro
                         </button>
                         <button className={(activeSetting === '52/17' ? 'create-settings-active' : '') + ' create-settings flex-1'}
-                        onClick={(e) => {
+                        onClick={() => {
                             setActiveSetting('52/17');
                             setCreateInputVal({...presetSettings['52/17'], name: createInputVal.name});
                         }}>
                             52/17
                         </button>
                         <button className={(activeSetting === 'Ultradian' ? 'create-settings-active' : '') + ' create-settings flex-1'}
-                        onClick={(e) => {
+                        onClick={() => {
                             setActiveSetting('Ultradian');
                             setCreateInputVal({...presetSettings['Ultradian'], name: createInputVal.name});
                         }}>
                             Ultradian
                         </button>
                         <button className={(activeSetting === 'Custom' ? 'create-settings-active' : '') + ' create-settings flex-1'}
-                        onClick={(e) => {
+                        onClick={() => {
                             setActiveSetting('Custom');
                             setCreateInputVal(createInputVal);
                         }}>

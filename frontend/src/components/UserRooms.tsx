@@ -110,6 +110,8 @@ export default function UserRooms() {
           className="popup-button w-full h-[45px] mt-6"
           onClick={() => {
             if (!popupRoom) return
+
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             popupRoom.admin ? deleteRoom(popupRoom.roomId) : leaveRoom(popupRoom.code)
             setPopupRoom(null)
           }}

@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Cedarville_Cursive } from "next/font/google";
 import "./globals.css";
 
-import Header from "@/components/Header";
 
 const cedarville = Cedarville_Cursive({
   weight: '400',

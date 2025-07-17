@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 'use client'
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import apiClient from '../../lib/apiClient';
-import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 interface SettingsDto {
     name: string,
@@ -53,23 +54,26 @@ export default function CreateRoom({ settings, roomId, isClientAdmin, setToggleS
 
     const updateRoom = async (roomSettings : SettingsDto) => {
         try {
-            const res = await apiClient.post(`/settings/update/${roomId}`, roomSettings);
-        } catch (err : any) {
-            const errorData = err?.response?.data;
+            await apiClient.post(`/settings/update/${roomId}`, roomSettings);
+        } catch (err) {
+            if (axios.isAxiosError(err)){
+                const errorData = err?.response?.data;
 
-            if (err.response?.status === 400) {
-                const fieldErrors = errorData?.data;
+                if (err.response?.status === 400) {
+                    const fieldErrors = errorData?.data;
 
-                if (fieldErrors && typeof fieldErrors === 'object' && !Array.isArray(fieldErrors)) {
-                    setCreateErrors(fieldErrors);
+                    if (fieldErrors && typeof fieldErrors === 'object' && !Array.isArray(fieldErrors)) {
+                        setCreateErrors(fieldErrors);
+                    } else {
+                        setCreateErrors({ general: "Invalid input" });
+                    }
+                } else if (err.response?.status === 409) {
+                    setCreateErrors({ name: errorData?.message || "Room conflict" });
                 } else {
-                    setCreateErrors({ general: "Invalid input" });
+                    setCreateErrors({ general: errorData?.message || "Something went wrong" });
                 }
-            } else if (err.response?.status === 409) {
-                setCreateErrors({ name: errorData?.message || "Room conflict" });
-            } else {
-                setCreateErrors({ general: errorData?.message || "Something went wrong" });
             }
+
         }
     }
 
@@ -95,7 +99,7 @@ export default function CreateRoom({ settings, roomId, isClientAdmin, setToggleS
                     {isClientAdmin && (
                         <div className='h-[60px] flex text-white'>
                             <button className={(activeSetting === 'Pomodoro' ? 'create-settings-active' : '') + ' create-settings flex-1'}
-                            onClick={(e) => {
+                            onClick={() => {
                                 setActiveSetting('Pomodoro');
                                 setCreateInputVal({...presetSettings['pomodoroClassic'], name: createInputVal.name});
                             }}
@@ -104,7 +108,7 @@ export default function CreateRoom({ settings, roomId, isClientAdmin, setToggleS
                                 Pomodoro
                             </button>
                             <button className={(activeSetting === '52/17' ? 'create-settings-active' : '') + ' create-settings flex-1'}
-                            onClick={(e) => {
+                            onClick={() => {
                                 setActiveSetting('52/17');
                                 setCreateInputVal({...presetSettings['52/17'], name: createInputVal.name});
                             }}
@@ -112,7 +116,7 @@ export default function CreateRoom({ settings, roomId, isClientAdmin, setToggleS
                                 52/17
                             </button>
                             <button className={(activeSetting === 'Ultradian' ? 'create-settings-active' : '') + ' create-settings flex-1'}
-                            onClick={(e) => {
+                            onClick={() => {
                                 setActiveSetting('Ultradian');
                                 setCreateInputVal({...presetSettings['Ultradian'], name: createInputVal.name});
                             }}
@@ -120,7 +124,7 @@ export default function CreateRoom({ settings, roomId, isClientAdmin, setToggleS
                                 Ultradian
                             </button>
                             <button className={(activeSetting === 'Custom' ? 'create-settings-active' : '') + ' create-settings flex-1'}
-                            onClick={(e) => {
+                            onClick={() => {
                                 setActiveSetting('Custom');
                                 setCreateInputVal(createInputVal);
                             }}
@@ -240,7 +244,7 @@ export default function CreateRoom({ settings, roomId, isClientAdmin, setToggleS
                     </div>
                     { isClientAdmin && (
                         <button className='start-button '
-                        onClick={(e: any) => {
+                        onClick={(e) => {
                             e.stopPropagation()
                             updateRoom(createInputVal)
                             setToggleSettings((prev) => !prev)
