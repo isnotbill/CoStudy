@@ -121,7 +121,7 @@ export default function ClientRoom() {
         })
     }, [roomCode, router])
 
-    // Fetch profile
+    // Fetch user profile
     useEffect(() => {
         async function fetchProfile() {
         try {
