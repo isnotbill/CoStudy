@@ -232,7 +232,7 @@ export default function CreateRoom({ username } : { username: string }) {
                             <h1 className='text-white'>Public</h1>
                         </div>
                     </div>
-                    <button className='start-button'
+                    <button className='start-button w-full h-[4.5em]'
                     onClick={() => createRoom(createInputVal)}>
                         Create Room
                     </button>

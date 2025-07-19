@@ -58,7 +58,7 @@ export default function UserRooms() {
       </div>
 
       {/* Room List */}
-      <div className="flex flex-col gap-1 h-[500] overflow-y-auto pr-2 chat-scroll">
+      <div className="flex flex-col gap-1 h-[500] overflow-y-auto chat-scroll">
         {filteredRooms.map(room => (
           <div
             key={room.roomId}

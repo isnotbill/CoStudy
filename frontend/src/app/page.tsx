@@ -106,7 +106,7 @@ export default function Home() {
 
               <form 
               onSubmit={handleSubmit}
-              className="bg-gray-100 w-full max-w-[380px] min-w-[200px] h-[550px] px-[20] gap-2 rounded-2xl flex flex-col justify-center items-center">
+              className="bg-gray-100 w-full max-w-[380px] min-w-[200px] h-[550px] px-4 gap-2 rounded-2xl flex flex-col justify-center items-center">
                 <h2 className="text-2xl font-bold text-[rgba(49,32,77,0.8)] text-center">Create Your Account</h2>
 
                 <div className="flex flex-col gap-2 w-full">

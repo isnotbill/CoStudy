@@ -101,7 +101,7 @@ export default function PublicProfile( { user } : Profile ) {
             type='button'
             disabled={uploading}
             onClick={() => fileInputRef.current?.click()}
-            className={`w-full px-4 py-3 rounded-lg text-white bg-[rgb(84,78,143)] hover:bg-[rgb(70,60,102)] transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            className={`w-full px-4 py-3 rounded-lg text-white bg-indigo-600 rounded hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
               uploading ? "cursor-not-allowed opacity-70" : "cursor-pointer"
             }`}
           >
