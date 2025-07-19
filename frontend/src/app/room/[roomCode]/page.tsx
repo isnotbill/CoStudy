@@ -708,6 +708,7 @@ export default function ClientRoom() {
             className="popup-button w-full h-[45px] mt-5"
             onClick={() => {
               if (showPopUp == false) return;
+              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               roomUsers.find((u) => u.id === profile?.id)?.admin
                 ? deleteRoom(roomId)
                 : leaveRoom(String(roomCode));
