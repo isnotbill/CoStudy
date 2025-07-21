@@ -18,7 +18,7 @@ export default function RoomUser(props: RoomUserInterface){
 
                 <div className="relative w-12 h-12 rounded-full overflow-hidden bg-white">
                     <Image 
-                    src={`http://localhost:8080/avatars/${props.iconImage}`}
+                    src={`https://api.costudy.online/avatars/${props.iconImage}`}
                     alt="User icon image"
                     fill
                     />

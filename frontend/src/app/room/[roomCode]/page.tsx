@@ -104,7 +104,7 @@ export default function ClientRoom() {
     // Check if room code is valid
     useEffect(() => {
         apiClient.get(
-            `http://localhost:8080/room/${roomCode}`,
+            `https://api.costudy.online/room/${roomCode}`,
             {withCredentials: true}
         )
         .then(res => {
@@ -173,7 +173,7 @@ export default function ClientRoom() {
     useEffect(() => {
         if (roomId == null){return}
         apiClient.get(
-            `http://localhost:8080/rooms/${roomId}/messages`,
+            `https://api.costudy.online/rooms/${roomId}/messages`,
             {withCredentials: true}
         )
         .then(res => {
@@ -192,7 +192,7 @@ export default function ClientRoom() {
 
 
         const client = new Client({
-            webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+            webSocketFactory: () => new SockJS('https://api.costudy.online/ws'),
             reconnectDelay: 5000,
             debug: str => console.log('[STOMP]', str),
         })

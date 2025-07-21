@@ -34,9 +34,9 @@ export default function HomePage() {
     fetchProfile()
   }, [])
 
-  let src = 'http://localhost:8080/avatars/default-avatar.png'
+  let src = 'https://api.costudy.online/avatars/default-avatar.png'
   if (profile?.image) {
-    src = `http://localhost:8080/avatars/${profile.image}`
+    src = `https://api.costudy.online/avatars/${profile.image}`
   }
 
   return (

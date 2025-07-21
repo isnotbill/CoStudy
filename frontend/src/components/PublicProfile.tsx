@@ -20,10 +20,10 @@ export default function PublicProfile( { user } : Profile ) {
 
   const profile = user
 
-  const [src, setSrc] = useState('http://localhost:8080/default-avatar.png')
+  const [src, setSrc] = useState('https://api.costudy.online/default-avatar.png')
 
   useEffect(() => {
-    if (user.image != null){setSrc(`http://localhost:8080/avatars/${user.image}`)}   
+    if (user.image != null){setSrc(`https://api.costudy.online/avatars/${user.image}`)}   
 
   }, [user.image])
 
@@ -42,7 +42,7 @@ export default function PublicProfile( { user } : Profile ) {
 
     try {
       const res = await apiClient.post(
-        `http://localhost:8080/${profile.id}/avatar`,
+        `https://api.costudy.online/${profile.id}/avatar`,
         formData,
         {
           withCredentials: true,
@@ -51,7 +51,7 @@ export default function PublicProfile( { user } : Profile ) {
         }
       )
 
-      setSrc(`http://localhost:8080/avatars/${res.data.avatarUrl}`)
+      setSrc(`https://api.costudy.online/avatars/${res.data.avatarUrl}`)
 
     } catch (err: any) {
 

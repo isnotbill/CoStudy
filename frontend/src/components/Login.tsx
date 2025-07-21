@@ -22,7 +22,7 @@ export default function Login() {
         }
         try {
             const { data } = await axios.post(
-                'http://localhost:8080/login',
+                'https://api.costudy.online/login',
                 payload,
                 { 
                     withCredentials: true,
@@ -55,7 +55,7 @@ export default function Login() {
     }
 
     const handleGoogleLogin = async () => {
-        window.location.href = "http://localhost:8080/oauth2/authorization/google";
+        window.location.href = "https://api.costudy.online/oauth2/authorization/google";
     }
 
 return (
