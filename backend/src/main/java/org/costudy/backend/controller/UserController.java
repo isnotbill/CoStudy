@@ -77,6 +77,10 @@ public class UserController {
 
     }
 
+    @GetMapping("/ping")
+    public ResponseEntity<ApiResponse<?>> ping(){
+        return ResponseEntity.ok(new ApiResponse<>(true, "pong"));
+    }
 
 
 }
