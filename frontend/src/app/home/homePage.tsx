@@ -36,7 +36,7 @@ export default function HomePage() {
 
   let src = 'http://localhost:8080/avatars/default-avatar.png'
   if (profile?.image) {
-    src = `http://localhost:8080/avatars/${profile.image}`
+    src = `https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${profile.image}?=${Date.now()}`
   }
 
   return (
