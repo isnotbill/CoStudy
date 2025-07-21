@@ -3,7 +3,7 @@ import Link from 'next/link';
 const Header = () => {
   return (
     <header className="w-full bg-transparent text-[#f2f7fd] py-4 px-6 select-none">
-      <div className="max-w-7xl mx-auto flex justify-center items-center gap-2 sm:gap-16 flex-wrap md:flex-nowrap">
+      <div className="max-w-7xl mx-auto flex justify-center items-center gap-2 sm:gap-16 flex-wrap md:flex-nowrap flex-col md:flex-row">
         {/* Logo */}
         <h1 className="font-cedarville text-[32px] md:text-[32px] lg:text-[36px] font-thin text-center">
           costudy
