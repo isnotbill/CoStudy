@@ -65,7 +65,7 @@ return (
     </header>
     <main className="bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94] min-h-screen select-none overflow-hidden flex flex-col">
       <Header />
-      <div className="flex flex-1 justify-center items-center">
+      <div className="flex flex-1 justify-center items-center px-4 pb-1">
         {/* LEFT: Login Form */}
         <form
           onSubmit={handleSubmit}
