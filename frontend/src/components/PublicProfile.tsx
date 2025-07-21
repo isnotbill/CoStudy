@@ -23,7 +23,7 @@ export default function PublicProfile( { user } : Profile ) {
   const [src, setSrc] = useState('http://localhost:8080/default-avatar.png')
 
   useEffect(() => {
-    if (user.image != null){setSrc(`http://localhost:8080/avatars/${user.image}`)}   
+    if (user.image != null){setSrc(`https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${user.image}?=${Date.now()}`)}   
 
   }, [user.image])
 
@@ -42,7 +42,7 @@ export default function PublicProfile( { user } : Profile ) {
 
     try {
       const res = await apiClient.post(
-        `http://localhost:8080/${profile.id}/avatar`,
+        `http://localhost:8080/api/${profile.id}/upload`,
         formData,
         {
           withCredentials: true,
@@ -51,7 +51,7 @@ export default function PublicProfile( { user } : Profile ) {
         }
       )
 
-      setSrc(`http://localhost:8080/avatars/${res.data.avatarUrl}`)
+      setSrc(`https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${res.data.avatarUrl}?=${Date.now()}`)
 
     } catch (err: any) {
 
