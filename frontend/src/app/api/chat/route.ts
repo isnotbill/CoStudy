@@ -31,7 +31,7 @@ export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
 
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
   if (!apiKey) {
     console.error("🔑 Missing OPENAI_API_KEY!");
     return NextResponse.json({ error: "Server misconfiguration" }, { status: 500 });
