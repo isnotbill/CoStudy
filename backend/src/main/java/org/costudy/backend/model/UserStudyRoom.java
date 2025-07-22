@@ -29,5 +29,6 @@ public class UserStudyRoom {
     private StudyRoom studyRoom;
 
     private boolean isAdmin;
+    private boolean hasLeft;
 }
 

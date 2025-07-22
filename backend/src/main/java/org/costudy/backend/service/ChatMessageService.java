@@ -34,7 +34,7 @@ public class ChatMessageService {
         msg.setUserId(chatDto.getUserId());
         msg.setContent(chatDto.getContent());
         msg.setUsername(chatDto.getUsername());
-        msg.setImageIcon(chatDto.getImageIcon());
+//        msg.setImageIcon(chatDto.getImageIcon());
         msg.setType(chatDto.getType());
         chatRepo.save(msg);
         tpl.convertAndSend("/topic/room/" + roomId, msg);

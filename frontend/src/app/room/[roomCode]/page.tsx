@@ -22,7 +22,6 @@ interface ChatMessage{
     content: string,
     sentAt: string,
     username: string,
-    imageIcon: string,
     type: string
 }
 
@@ -80,6 +79,8 @@ export default function ClientRoom() {
     const [inputMessage, setInputMessage] = useState("")
     const [roomMessages, setRoomMessages] = useState<ChatMessage[]>([])
     const [roomUsers, setRoomUsers] = useState<RoomUser[]>([]);
+    const [userPfpMap, setUserPfpMap] = useState<{ [id: string]: string }>({});
+
     const [loadJoinRoom, setLoadJoinRoom] = useState(true)
     const [loadingMessages, setLoadingMessages] = useState(true)
     const [loadingProfile, setLoadingProfile] = useState(true)
@@ -145,6 +146,21 @@ export default function ClientRoom() {
                 const resUsers = await apiClient.get(`/room/${roomCode}/users`)
                 const data = resUsers.data.data
                 setRoomUsers(data)
+
+                
+                const newMap: { [id: string]: string } = {};
+
+                for(const user of data) {
+                  if(user.image) {
+                    newMap[user.id] = `https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${user.image}?=${Date.now()}`;
+                  } else {
+                    newMap[user.id] = 'http://localhost:8080/avatars/default-avatar.png';
+                  }
+                }
+
+                setUserPfpMap(newMap)
+                console.log(userPfpMap)
+                
             } catch {
                 setError("Failed to load")
             }
@@ -621,7 +637,7 @@ export default function ClientRoom() {
                   isClient={user.id === profile?.id}
                   isAdmin={user.admin}
                   username={user.username}
-                  iconImage={user.image}
+                  iconImage={userPfpMap[user.id] || 'http://localhost:8080/avatars/default-avatar.png'}
                   onKick={() => {
                     kickUser(user.username);
                   }}
@@ -649,7 +665,7 @@ export default function ClientRoom() {
                 key={m.chatMessageId}
                 content={m.content}
                 isClient={m.userId === profile?.id}
-                iconImage={m.imageIcon}
+                iconImage={userPfpMap[m.userId] || 'http://localhost:8080/avatars/default-avatar.png'}
                 username={m.username}
                 type={m.type}
               />

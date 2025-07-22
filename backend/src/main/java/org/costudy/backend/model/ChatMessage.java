@@ -21,7 +21,7 @@ public class ChatMessage {
     @Column(length = 1000)
     private String content;
     private String username;
-    private String imageIcon;
+//    private String imageIcon;
     private Instant sentAt = Instant.now();
 
     @Enumerated(EnumType.STRING)

@@ -20,7 +20,7 @@ export default function PublicProfile( { user } : Profile ) {
 
   const profile = user
 
-  const [src, setSrc] = useState('http://localhost:8080/default-avatar.png')
+  const [src, setSrc] = useState('http://localhost:8080/avatars/default-avatar.png')
 
   useEffect(() => {
     if (user.image != null){setSrc(`https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${user.image}?=${Date.now()}`)}   

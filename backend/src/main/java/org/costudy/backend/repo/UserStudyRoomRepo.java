@@ -18,6 +18,7 @@ public interface UserStudyRoomRepo extends JpaRepository<UserStudyRoom, Integer>
 
     int countByStudyRoom(StudyRoom room);
     int countByUser(User user);
+    int countByStudyRoomAndHasLeftFalse(StudyRoom studyRoom);
 
     @Query("""
            SELECT usr.studyRoom FROM UserStudyRoom usr WHERE usr.user.id = :id AND usr.isAdmin = true

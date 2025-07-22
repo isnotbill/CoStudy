@@ -149,13 +149,16 @@ public class StudyRoomService {
             throw new IllegalArgumentException("Room does not exist or invalid room code");
         }
 
-        if(!isInRoom(currentUser, room)) {
+        Optional<UserStudyRoom> rel = userStudyRoomRepo.findByIdUserIdAndIdRoomId(currentUser.getId(), room.getRoomId());
+
+        if(rel.isEmpty()) {
             throw new AccessDeniedException("User is not in this room");
         }
 
-        userStudyRoomRepo.delete(
-                userStudyRoomRepo.findByIdUserIdAndIdRoomId(currentUser.getId(), room.getRoomId())
-                        .get());
+        UserStudyRoom userRel = rel.get();
+        userRel.setHasLeft(true);
+
+        userStudyRoomRepo.save(userRel);
     }
 
     public List<UserDto> getUsersInRoom(String roomCode) {
@@ -173,10 +176,6 @@ public class StudyRoomService {
             throw new IllegalArgumentException("Room does not exist or this code is invalid");
         }
 
-        if(!isInRoom(admin, room) || !isInRoom(user, room)) {
-            throw new AccessDeniedException("This user does not belong to this room");
-        }
-
         Optional<UserStudyRoom> relationship = userStudyRoomRepo.findByIdUserIdAndIdRoomId(admin.getId(), room.getRoomId());
         if(relationship.isEmpty()) {
             throw new AccessDeniedException("This admin is not in this room");
@@ -187,9 +186,9 @@ public class StudyRoomService {
             throw new AccessDeniedException("This user is not an admin");
         }
 
-        userStudyRoomRepo.delete(
-                userStudyRoomRepo.findByIdUserIdAndIdRoomId(user.getId(), room.getRoomId()).get()
-        );
+        rel.setHasLeft(true);
+
+        userStudyRoomRepo.save(rel);
     }
 
     public ChatMessage announceJoin(User user, StudyRoom room) {
@@ -233,7 +232,7 @@ public class StudyRoomService {
                             hostName = r.getUser().getUsername();
                         }
                     }
-                    return new PublicRoomDto(room.getRoomId(), room.getCode(), room.getName(), hostName, userStudyRoomRepo.countByStudyRoom(room));
+                    return new PublicRoomDto(room.getRoomId(), room.getCode(), room.getName(), hostName, userStudyRoomRepo.countByStudyRoomAndHasLeftFalse(room));
                 });
     }
 
