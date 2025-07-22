@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -79,7 +80,8 @@ public class SecurityConfig {
                 .anyRequest().authenticated())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .deleteCookies("access_token", "refresh_token")
+                        .addLogoutHandler(cookieClearingLogoutHandler())
+//                        .deleteCookies("access_token", "refresh_token")
                         .logoutSuccessHandler((req,res,auth) -> res.setStatus(HttpServletResponse.SC_OK))
                         .permitAll())
                 .oauth2Login(oauth ->
@@ -135,6 +137,31 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Bean
+    public LogoutHandler cookieClearingLogoutHandler(){
+        return (request, response, authentication) -> {
+            ResponseCookie clearAccess = ResponseCookie.from("access_token", "")
+                    .domain(".costudy.online")
+                    .path("/")
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("None")
+                    .maxAge(0)
+                    .build();
+
+            ResponseCookie clearRefresh = ResponseCookie.from("refresh_token", "")
+                    .domain(".costudy.online")
+                    .path("/")
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("None")
+                    .maxAge(0)
+                    .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, clearAccess.toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, clearRefresh.toString());
+        };
+
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
