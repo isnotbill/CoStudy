@@ -5,7 +5,7 @@ import { getToken, setToken } from './TokenService'
 
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.costudy.online',
   withCredentials: true, // Send cookies automatically
 });
 
@@ -24,6 +24,8 @@ type QueueItem = {
   resolve: (token: string | null) => void
   reject: (error: unknown) => void
 }
+
+
 
 let failedQueue: QueueItem[] = []
 

@@ -105,7 +105,7 @@ export default function ClientRoom() {
     // Check if room code is valid
     useEffect(() => {
         apiClient.get(
-            `http://localhost:8080/room/${roomCode}`,
+            `https://api.costudy.online/room/${roomCode}`,
             {withCredentials: true}
         )
         .then(res => {
@@ -154,7 +154,7 @@ export default function ClientRoom() {
                   if(user.image) {
                     newMap[user.id] = `https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${user.image}?=${Date.now()}`;
                   } else {
-                    newMap[user.id] = 'http://localhost:8080/avatars/default-avatar.png';
+                    newMap[user.id] = 'https://api.costudy.online/avatars/default-avatar.png';
                   }
                 }
 
@@ -189,7 +189,7 @@ export default function ClientRoom() {
     useEffect(() => {
         if (roomId == null){return}
         apiClient.get(
-            `http://localhost:8080/rooms/${roomId}/messages`,
+            `https://api.costudy.online/rooms/${roomId}/messages`,
             {withCredentials: true}
         )
         .then(res => {
@@ -208,7 +208,7 @@ export default function ClientRoom() {
 
 
         const client = new Client({
-            webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+            webSocketFactory: () => new SockJS('https://api.costudy.online/ws'),
             reconnectDelay: 5000,
             debug: str => console.log('[STOMP]', str),
         })
@@ -637,7 +637,7 @@ export default function ClientRoom() {
                   isClient={user.id === profile?.id}
                   isAdmin={user.admin}
                   username={user.username}
-                  iconImage={userPfpMap[user.id] || 'http://localhost:8080/avatars/default-avatar.png'}
+                  iconImage={userPfpMap[user.id] || 'https://api/costudy.online/avatars/default-avatar.png'}
                   onKick={() => {
                     kickUser(user.username);
                   }}
@@ -665,7 +665,7 @@ export default function ClientRoom() {
                 key={m.chatMessageId}
                 content={m.content}
                 isClient={m.userId === profile?.id}
-                iconImage={userPfpMap[m.userId] || 'http://localhost:8080/avatars/default-avatar.png'}
+                iconImage={userPfpMap[m.userId] || 'https://api/costudy.online/avatars/default-avatar.png'}
                 username={m.username}
                 type={m.type}
               />

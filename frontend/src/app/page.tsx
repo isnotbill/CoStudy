@@ -39,7 +39,7 @@ export default function Home() {
 
     try {
       await axios.post(
-        'http://localhost:8080/register',
+        'https://api.costudy.online/register',
         payload,
         { timeout: 5000 }
       )

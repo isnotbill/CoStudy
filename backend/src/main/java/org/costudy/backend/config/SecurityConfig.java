@@ -10,6 +10,7 @@ import org.costudy.backend.service.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -18,14 +19,12 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 @Configuration
@@ -74,12 +73,15 @@ public class SecurityConfig {
         http.csrf(customizer -> customizer.disable());
 
         http.authorizeHttpRequests(request -> request
-                .requestMatchers("/register","/login", "/refresh-token", "/avatars/**","/logout", "/ws/**", "/oauth2/**", "/login/oauth2/**")
+
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/register","/login", "/refresh-token", "/avatars/**","/logout", "/ws/**", "/oauth2/**", "/login/oauth2/**", "/ping")
                 .permitAll()
                 .anyRequest().authenticated())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .deleteCookies("access_token", "refresh_token")
+                        .addLogoutHandler(cookieClearingLogoutHandler())
+//                        .deleteCookies("access_token", "refresh_token")
                         .logoutSuccessHandler((req,res,auth) -> res.setStatus(HttpServletResponse.SC_OK))
                         .permitAll())
                 .oauth2Login(oauth ->
@@ -104,19 +106,21 @@ public class SecurityConfig {
                                     String refreshToken = jwtService.generateRefreshToken(user.getUsername());
 
                                     ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
+                                            .domain(".costudy.online")
                                             .httpOnly(true)
-                                            .secure(false) // set true in production!
+                                            .secure(true) // set true in production!
                                             .path("/")
                                             .maxAge(24 * 60 * 60)
-                                            .sameSite("Lax")
+                                            .sameSite("None")
                                             .build();
 
                                     ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
+                                            .domain(".costudy.online")
                                             .httpOnly(true)
-                                            .secure(false)
+                                            .secure(true)
                                             .path("/")
                                             .maxAge(24 * 60 * 60)
-                                            .sameSite("Lax")
+                                            .sameSite("None")
                                             .build();
 
                                     response.setStatus(HttpServletResponse.SC_OK);
@@ -124,13 +128,39 @@ public class SecurityConfig {
 
                                     response.setHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
                                     response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-                                    response.sendRedirect("http://localhost:3000/home");
+                                    response.sendRedirect("https://costudy.online/home");
                                 })))
 
                 .addFilterBefore(jwtFilter, OAuth2LoginAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
+    }
+
+    @Bean
+    public LogoutHandler cookieClearingLogoutHandler(){
+        return (request, response, authentication) -> {
+            ResponseCookie clearAccess = ResponseCookie.from("access_token", "")
+                    .domain(".costudy.online")
+                    .path("/")
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("None")
+                    .maxAge(0)
+                    .build();
+
+            ResponseCookie clearRefresh = ResponseCookie.from("refresh_token", "")
+                    .domain(".costudy.online")
+                    .path("/")
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("None")
+                    .maxAge(0)
+                    .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, clearAccess.toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, clearRefresh.toString());
+        };
+
     }
 
     @Bean
