@@ -17,12 +17,10 @@ import java.util.List;
 
 @Controller
 public class ChatController {
-    private final SimpMessagingTemplate tpl;
     private final ChatMessageService chatService;
     private final UserService userService;
 
-    public ChatController(SimpMessagingTemplate tpl, ChatMessageService chatService, UserService userService) {
-        this.tpl = tpl;
+    public ChatController(ChatMessageService chatService, UserService userService) {
         this.chatService = chatService;
         this.userService = userService;
     }

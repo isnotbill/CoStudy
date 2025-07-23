@@ -137,6 +137,7 @@ public class StudyRoomService {
         rel.setStudyRoom(room);
         rel.setUser(currentUser);
         rel.setAdmin(false);
+        rel.setHasLeft(false);
 
         userStudyRoomRepo.save(rel);
 
