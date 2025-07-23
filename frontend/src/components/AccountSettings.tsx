@@ -33,13 +33,13 @@ export default function AccountSettings({ user }: Profile) {
     setSaving(true);
     setSaveSuccess(false);
     try {
-      await apiClient.put("/user/details", { username });
+      await apiClient.put("/user/details", { "newUsername": username });
       setOriginalUsername(username);
       setIsEditingUsername(false);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2500);
     } catch (err) {
-      console.error(err);
+      console.log(err);
     } finally {
       setSaving(false);
     }
@@ -57,12 +57,13 @@ export default function AccountSettings({ user }: Profile) {
     try {
       await apiClient.put("/user/password", passwordChange);
       setPasswordChange({ oldPassword: "", newPassword: "", confirmPassword: ""});
+      setSaving(false);
     } catch (err) {
       console.log(err);
       if (axios.isAxiosError(err)) {
         setPasswordErrors(err.response?.data.data);
       }
-
+      setSaving(false);
       // Optionally show an error message
     }
   };
@@ -130,12 +131,11 @@ export default function AccountSettings({ user }: Profile) {
             onChange={(e) => setPasswordChange({ ...passwordChange, oldPassword: e.target.value })}
             placeholder="Old password"
             disabled={saving}
-            className={`flex-grow px-2 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 ${
-              passwordErrors.oldPassword ? "border-red-500" : "border-gray-300"
+            className={`flex-grow px-2 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500
             }`}
           />
         </div>
-        {passwordErrors.oldPassword && (
+        {passwordErrors?.oldPassword && (
           <p className="text-xs text-red-600 ml-[75px]">{passwordErrors.oldPassword}</p>
         )}
 
@@ -147,12 +147,10 @@ export default function AccountSettings({ user }: Profile) {
             onChange={(e) => setPasswordChange({ ...passwordChange, newPassword: e.target.value })}
             placeholder="New password"
             disabled={saving}
-            className={`flex-grow px-2 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 ${
-              passwordErrors.newPassword ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`flex-grow px-2 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500`}
           />
         </div>
-        {passwordErrors.newPassword && (
+        {passwordErrors?.newPassword && (
           <p className="text-xs text-red-600 ml-[75px]">{passwordErrors.newPassword}</p>
         )}
 
@@ -164,12 +162,11 @@ export default function AccountSettings({ user }: Profile) {
             onChange={(e) => setPasswordChange({ ...passwordChange, confirmPassword: e.target.value })}
             placeholder="Confirm new password"
             disabled={saving}
-            className={`flex-grow px-2 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 ${
-              passwordErrors.confirmPassword ? "border-red-500" : "border-gray-300"
+            className={`flex-grow px-2 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500"
             }`}
           />
         </div>
-        {passwordErrors.confirmPassword && (
+        {passwordErrors?.confirmPassword && (
           <p className="text-xs text-red-600 ml-[75px]">{passwordErrors.confirmPassword}</p>
         )}
 
