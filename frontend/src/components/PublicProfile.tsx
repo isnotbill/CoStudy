@@ -42,7 +42,7 @@ export default function PublicProfile( { user } : Profile ) {
 
     try {
       const res = await apiClient.post(
-        `https://api/costudy.online/avatars/api/${profile.id}/upload`,
+        `https://api.costudy.online/api/${profile.id}/upload`,
         formData,
         {
           withCredentials: true,
