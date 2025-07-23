@@ -46,11 +46,11 @@ public class UserService {
 
     public List<UserRoomDto> getUserRooms(String username) {
         User user = getCurrentUser(username);
-        List<UserStudyRoom> relationships = userStudyRoomRepo.findByUser(user);
+        List<UserStudyRoom> relationships = userStudyRoomRepo.findActiveByUser(user);
         return relationships.stream()
                 .map(rel -> {
                     StudyRoom room = rel.getStudyRoom();
-                    return new UserRoomDto(room, rel.isAdmin(), userStudyRoomRepo.countByStudyRoom(room));
+                    return new UserRoomDto(room, rel.isAdmin(), userStudyRoomRepo.countByStudyRoomAndHasLeftFalse(room));
                 })
                 .collect(Collectors.toList());
     }

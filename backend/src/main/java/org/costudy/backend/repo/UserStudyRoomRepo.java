@@ -5,6 +5,7 @@ import org.costudy.backend.model.User;
 import org.costudy.backend.model.UserStudyRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,9 +17,15 @@ public interface UserStudyRoomRepo extends JpaRepository<UserStudyRoom, Integer>
     List<UserStudyRoom> findByStudyRoom(StudyRoom studyRoom);
     Optional<UserStudyRoom> findByIdUserIdAndIdRoomId(int userId, int roomId);
 
+    @Query("SELECT u FROM UserStudyRoom u WHERE u.user = :user AND u.hasLeft = false")
+    List<UserStudyRoom> findActiveByUser(@Param("user") User user);
+
+    @Query("SELECT u FROM UserStudyRoom u WHERE u.studyRoom = :studyRoom AND u.hasLeft = false")
+    List<UserStudyRoom> findActiveByStudyRoom(@Param("studyRoom") StudyRoom studyRoom);
+
     int countByStudyRoom(StudyRoom room);
     int countByUser(User user);
-    int countByStudyRoomAndHasLeftFalse(StudyRoom studyRoom);
+    int countByStudyRoomAndHasLeftFalse(StudyRoom room);
 
     @Query("""
            SELECT usr.studyRoom FROM UserStudyRoom usr WHERE usr.user.id = :id AND usr.isAdmin = true
