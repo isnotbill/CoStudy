@@ -1,6 +1,7 @@
 package org.costudy.backend.service;
 
 import org.costudy.backend.dto.TimerDto;
+import org.costudy.backend.model.RoomSound;
 import org.costudy.backend.model.Settings;
 import org.costudy.backend.model.StudyRoom;
 import org.costudy.backend.model.timer.RoomTimer;
@@ -57,6 +58,7 @@ public class TimerService {
 
         schedule(roomId, roomSettings.getStudyTimeMs());
         broadcast(roomId, t);
+        tpl.convertAndSend("/topic/room/" + roomId + "/sound", RoomSound.CLICK);
 
         return TimerDto.from(t);
 
@@ -95,6 +97,7 @@ public class TimerService {
 
         cancel(roomId);
         broadcast(roomId, t);
+        tpl.convertAndSend("/topic/room/" + roomId + "/sound", RoomSound.CLICK);
         return TimerDto.from(t);
 
     }
@@ -113,6 +116,7 @@ public class TimerService {
 
         schedule(roomId, t.getDurationMs());
         broadcast(roomId, t);
+        tpl.convertAndSend("/topic/room/" + roomId + "/sound", RoomSound.CLICK);
         return TimerDto.from(t);
     }
 
@@ -206,6 +210,8 @@ public class TimerService {
         timerRepo.save(t);
         cancel(roomId);
         broadcast(roomId, t);
+
+        tpl.convertAndSend("/topic/room/" + roomId + "/sound", RoomSound.ALARM);
 
     }
 
