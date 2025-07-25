@@ -35,6 +35,7 @@ public interface StudyRoomRepo extends JpaRepository<StudyRoom, Integer> {
           SELECT 1 FROM UserStudyRoom usr
           WHERE usr.studyRoom = r
             AND usr.user.username = :username
+            AND usr.hasLeft = false
       )
 """)
     Page<StudyRoom> findPublicRoomsExcludingUser(

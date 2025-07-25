@@ -109,10 +109,7 @@ public class StudyRoomService {
 
     public boolean isInRoom(User user, StudyRoom room) {
         Optional<UserStudyRoom> rel = userStudyRoomRepo.findByIdUserIdAndIdRoomId(user.getId(), room.getRoomId());
-        if(rel.isEmpty()) {
-            return false;
-        }
-        return true;
+        return rel.isPresent() && !rel.get().isHasLeft();
     }
 
     public UserDto joinRoom(User currentUser, String roomCode) {
