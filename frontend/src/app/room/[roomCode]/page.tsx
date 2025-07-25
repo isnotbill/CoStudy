@@ -330,8 +330,8 @@ export default function ClientRoom() {
     // Initialize sound effects
     useEffect(() => {
       audioMapRef.current = {
-        click: new Audio('/audio/button-click.mp3'),
-        alarm: new Audio('/audio/alarm.mp3')
+        CLICK: new Audio('/audio/button-click.mp3'),
+        ALARM: new Audio('/audio/alarm.mp3')
       }
 
       Object.values(audioMapRef.current).forEach((audio) => {
@@ -342,6 +342,7 @@ export default function ClientRoom() {
     
     // Function to play a specific sound effect
     const playSound = (key: keyof typeof audioMapRef.current) => {
+      console.log("Function call playSound")
       const audio = audioMapRef.current[key]
       if (!audio) return
       audio.currentTime = 0
