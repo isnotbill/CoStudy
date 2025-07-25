@@ -23,11 +23,7 @@ export default function PublicProfile( { user } : Profile ) {
   const [src, setSrc] = useState('https://api.costudy.online/avatars/default-avatar.png')
 
   useEffect(() => {
-<<<<<<< HEAD
     if (user.image != null){setSrc(`https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${user.image}?t=${Date.now()}`)}   
-=======
-    if (user.image != null){setSrc(`https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${user.image}?=${Date.now()}`)}   
->>>>>>> da859a1041eed95f61a542ed4784d857ad9a1b45
 
   }, [user.image])
 
@@ -46,11 +42,7 @@ export default function PublicProfile( { user } : Profile ) {
 
     try {
       const res = await apiClient.post(
-<<<<<<< HEAD
-        `http://localhost:8080/api/${profile.id}/upload`,
-=======
         `https://api.costudy.online/api/${profile.id}/upload`,
->>>>>>> da859a1041eed95f61a542ed4784d857ad9a1b45
         formData,
         {
           withCredentials: true,
@@ -59,11 +51,7 @@ export default function PublicProfile( { user } : Profile ) {
         }
       )
 
-<<<<<<< HEAD
       setSrc(`https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${res.data.avatarUrl}?t=${Date.now()}`)
-=======
-      setSrc(`https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${res.data.avatarUrl}?=${Date.now()}`)
->>>>>>> da859a1041eed95f61a542ed4784d857ad9a1b45
 
     } catch (err: any) {
 
