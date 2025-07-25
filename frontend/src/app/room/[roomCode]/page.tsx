@@ -337,6 +337,7 @@ export default function ClientRoom() {
       Object.values(audioMapRef.current).forEach((audio) => {
         audio.preload = 'auto'
         audio.loop = false
+        audio.volume = 0.3
       })
     },[])
     
