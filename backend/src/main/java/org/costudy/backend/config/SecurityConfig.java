@@ -126,7 +126,7 @@ public class SecurityConfig {
                                     response.setStatus(HttpServletResponse.SC_OK);
                                     response.setContentType("application/json");
 
-                                    response.setHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+                                    response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
                                     response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
                                     response.sendRedirect("https://costudy.online/home");
                                 })))
