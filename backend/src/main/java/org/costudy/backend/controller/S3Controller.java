@@ -1,6 +1,5 @@
 package org.costudy.backend.controller;
 
-import org.costudy.backend.model.User;
 import org.costudy.backend.service.S3Service;
 import org.costudy.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Map;
 
 @RestController
 public class S3Controller {
@@ -28,18 +26,11 @@ public class S3Controller {
     }
 
     @PostMapping("/api/{id}/upload")
-    public ResponseEntity<Map<String, String>> upload(
+    public ResponseEntity<String> upload(
             @RequestParam("file") MultipartFile file,
             @PathVariable int id
             ) throws IOException {
         String key = s3Service.uploadFile(file, id);
-        User user = userService.getCurrentUserById(id);
-
-        user.setImage(key);
-        userService.save(user);
-
-        System.out.println();
-
-        return ResponseEntity.ok(Map.of("avatarUrl", key));
+        return ResponseEntity.ok("File uploaded successfully");
     }
 }

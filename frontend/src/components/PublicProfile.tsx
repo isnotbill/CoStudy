@@ -23,7 +23,7 @@ export default function PublicProfile( { user } : Profile ) {
   const [src, setSrc] = useState('https://api.costudy.online/avatars/default-avatar.png')
 
   useEffect(() => {
-    if (user.image != null){setSrc(`https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${user.image}?=${Date.now()}`)}   
+    if (user.image != null){setSrc(`https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${user.image}?t=${Date.now()}`)}   
 
   }, [user.image])
 
@@ -51,7 +51,7 @@ export default function PublicProfile( { user } : Profile ) {
         }
       )
 
-      setSrc(`https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${res.data.avatarUrl}?=${Date.now()}`)
+      setSrc(`https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${res.data.avatarUrl}?t=${Date.now()}`)
 
     } catch (err: any) {
 
