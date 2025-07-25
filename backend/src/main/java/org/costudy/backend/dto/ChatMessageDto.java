@@ -15,7 +15,7 @@ public class ChatMessageDto {
     private int userId;
     private String content;
     private String username;
-//    private String imageIcon;
+    private String imageIcon;
 
     private MessageType type; // USER or SERVER
 }
