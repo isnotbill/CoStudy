@@ -255,6 +255,7 @@ export default function ClientRoom() {
             client.subscribe(`/topic/room/${roomId}/sound`, msg => {
               const raw = msg.body
               const key = (raw.replace(/"/g, '') as keyof typeof audioMapRef.current)
+              console.log(key)
               playSound(key)
             })
 
@@ -345,6 +346,7 @@ export default function ClientRoom() {
       if (!audio) return
       audio.currentTime = 0
       audio.play().catch(console.warn)
+      console.log(`Playing ${audio}`)
     }
 
     // Handle sending chat messages to backend
