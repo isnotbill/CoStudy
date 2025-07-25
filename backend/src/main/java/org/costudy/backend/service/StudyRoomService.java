@@ -164,7 +164,7 @@ public class StudyRoomService {
 
     public List<UserDto> getUsersInRoom(String roomCode) {
         StudyRoom room = getStudyRoom(roomCode);
-        List<UserStudyRoom> relationships = userStudyRoomRepo.findByStudyRoom(room);
+        List<UserStudyRoom> relationships = userStudyRoomRepo.findActiveByStudyRoom(room);
         return relationships
                 .stream()
                 .map(rel -> new UserDto(rel.getUser(), rel.isAdmin()))

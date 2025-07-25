@@ -25,11 +25,13 @@ public class UserService {
     private final UserRepo repo;
     private final UserStudyRoomRepo userStudyRoomRepo;
     private final StudyRoomRepo studyRoomRepo;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepo userRepo, UserStudyRoomRepo userStudyRoomRepo, StudyRoomRepo studyRoomRepo) {
+    public UserService(UserRepo userRepo, UserStudyRoomRepo userStudyRoomRepo, StudyRoomRepo studyRoomRepo, PasswordEncoder passwordEncoder) {
         this.repo = userRepo;
         this.userStudyRoomRepo = userStudyRoomRepo;
         this.studyRoomRepo = studyRoomRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User getCurrentUser(String username) {
@@ -46,11 +48,11 @@ public class UserService {
 
     public List<UserRoomDto> getUserRooms(String username) {
         User user = getCurrentUser(username);
-        List<UserStudyRoom> relationships = userStudyRoomRepo.findByUser(user);
+        List<UserStudyRoom> relationships = userStudyRoomRepo.findActiveByUser(user);
         return relationships.stream()
                 .map(rel -> {
                     StudyRoom room = rel.getStudyRoom();
-                    return new UserRoomDto(room, rel.isAdmin(), userStudyRoomRepo.countByStudyRoom(room));
+                    return new UserRoomDto(room, rel.isAdmin(), userStudyRoomRepo.countByStudyRoomAndHasLeftFalse(room));
                 })
                 .collect(Collectors.toList());
     }
@@ -59,6 +61,31 @@ public class UserService {
         List<StudyRoom> roomsToDelete = userStudyRoomRepo.findAdminRoomsByUser(user.getId());
         studyRoomRepo.deleteAll(roomsToDelete);
         repo.delete(user);
+    }
+
+    public void updatePassword(UpdatePasswordDto updatePasswordDto, User currentUser) {
+        String currentPassword = currentUser.getPassword();
+        if(!passwordEncoder.matches(updatePasswordDto.getOldPassword(), currentPassword)) {
+            throw new InvalidCredentialsException("Old password does not match.");
+        }
+
+        if(!updatePasswordDto.getNewPassword()
+                .equals(updatePasswordDto.getConfirmPassword())) {
+            throw new InvalidCredentialsException("Password does not match.");
+        }
+
+        currentUser.setPassword(
+                passwordEncoder.encode(updatePasswordDto.getNewPassword())
+        );
+        User user = repo.save(currentUser);
+        System.out.println(passwordEncoder.encode(updatePasswordDto.getNewPassword()));
+        System.out.println(user.getPassword());
+    }
+
+    public void updateUserInfo(UpdateInfoDto updateInfoDto, User currentUser) {
+        currentUser.setUsername(updateInfoDto.getNewUsername());
+
+        repo.save(currentUser);
     }
 }
 
