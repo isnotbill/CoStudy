@@ -88,7 +88,7 @@ export default function ChatMessage(props: ChatInterface){
 
           <div className="relative w-12 h-12 overflow-hidden rounded-full bg-white mt-[5px] border-red border-[1px]">
             <Image
-            src={`http://localhost:8080/avatars/${props.iconImage}`}
+            src={props.iconImage}
             alt="Profile icon"
             fill
             className="object-cover"
