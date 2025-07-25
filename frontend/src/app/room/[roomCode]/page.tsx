@@ -252,6 +252,13 @@ export default function ClientRoom() {
                 setSettings(dto)
             })
 
+            client.subscribe(`/topic/room/${roomId}/sound`, msg => {
+              const raw = msg.body
+              const key = (raw.replace(/"/g, '') as keyof typeof audioMapRef.current)
+              console.log(key)
+              playSound(key)
+            })
+
             client.publish({
             destination: "/app/timer/status",
             body: String(roomId)})
@@ -316,6 +323,32 @@ export default function ClientRoom() {
             body: typeof body === "string" ? body : JSON.stringify(body)
         })
 
+    }
+
+    const audioMapRef = useRef<Record<string, HTMLAudioElement>>({})
+
+    // Initialize sound effects
+    useEffect(() => {
+      audioMapRef.current = {
+        CLICK: new Audio('/audio/button-click.mp3'),
+        ALARM: new Audio('/audio/alarm.mp3')
+      }
+
+      Object.values(audioMapRef.current).forEach((audio) => {
+        audio.preload = 'auto'
+        audio.loop = false
+        audio.volume = 0.3
+      })
+    },[])
+    
+    // Function to play a specific sound effect
+    const playSound = (key: keyof typeof audioMapRef.current) => {
+      console.log("Function call playSound")
+      const audio = audioMapRef.current[key]
+      if (!audio) return
+      audio.currentTime = 0
+      audio.play().catch(console.warn)
+      console.log(`Playing ${audio}`)
     }
 
     // Handle sending chat messages to backend
