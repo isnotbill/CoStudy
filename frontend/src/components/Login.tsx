@@ -65,11 +65,12 @@ return (
     </header>
     <main className="bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94] min-h-screen select-none overflow-hidden flex flex-col">
       <Header />
-      <div className="flex flex-1 justify-center items-center px-4 pb-1">
+      <div className="flex flex-1 justify-center items-center px-4 pb-10">
         {/* LEFT: Login Form */}
+        <div className="flex flex-col justify-center items-center bg-gray-100 h-[580px] w-[450px] gap-12 px-10 md:px-28 rounded-l-xl md:rounded-l-xl md:rounded-r-none rounded-2xl shadow-lg">
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col justify-center items-center bg-gray-100 h-[580px] w-[450px] gap-12 px-10 md:px-28 rounded-l-xl md:rounded-l-xl md:rounded-r-none rounded-2xl shadow-lg"
+          className="flex flex-col gap-6 w-full items-center justify-center"
         >
           <h1 className="font-cedarville text-4xl text-[rgba(49,32,77,0.8)] text-center">costudy</h1>
           <div className="flex flex-col w-full gap-2">
@@ -113,20 +114,30 @@ return (
             <p className="text-red-500 text-sm mt-[-30px]">Token expired, please log in again.</p>
           )}
 
-          <div className="flex items-center space-x-1 mt-[-35px] text-xs text-gray-500">
+          <div className="flex items-center space-x-1 text-xs text-gray-500">
             <span>Don&apos;t have an account?</span>
             <Link href="/" className="text-indigo-600 hover:underline">
               Sign up
             </Link>
           </div>
 
+          
+        </form>
           <button
             onClick={handleGoogleLogin}
-            className="w-full bg-white text-gray-800 py-3 rounded-2xl font-semibold hover:bg-gray-100 transition flex items-center justify-center space-x-2"
+            className="w-full bg-white text-gray-800 py-3 rounded-2xl font-semibold border-gray-100 border hover:border hover:border-gray-700 transition flex items-center justify-center space-x-2"
           >
+            <Image
+              src="https://developers.google.com/identity/images/g-logo.png"
+              alt="Google Logo"
+              width={18}
+              height={18}
+              style={{ marginRight: 8 }}
+            />
             Log in with Google
           </button>
-        </form>
+        </div>
+        
 
         {/* RIGHT: Hidden on mobile */}
         <div className="hidden md:flex relative bg-[rgb(169,177,194)] w-[450px] h-[580px] rounded-r-xl overflow-visible justify-center shadow-lg">
