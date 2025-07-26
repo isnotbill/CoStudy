@@ -46,13 +46,15 @@ export default function HomePage() {
       <div className="max-w-5xl mx-auto px-4 py-8 flex flex-col items-center gap-6">
         {/* Profile Card */}
         <div className="w-full flex flex-col items-center gap-4 bg-white/10 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-white/20">
-          <Image
-            src={src}
-            alt="Profile avatar"
-            width={120}
-            height={120}
-            className="rounded-full border-4 border-white shadow-md"
-          />
+          <div className="w-[120px] h-[120px] rounded-full border-4 border-[rgb(215,217,238)] overflow-hidden">
+            <Image
+              src={src}
+              alt="Profile avatar"
+              width={120}
+              height={120}
+              className="w-full h-full object-cover"
+            />
+          </div>
           <h1 className="text-3xl font-bold">{profile?.username}</h1>
         </div>
 

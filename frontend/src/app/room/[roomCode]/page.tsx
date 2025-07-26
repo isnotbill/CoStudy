@@ -510,16 +510,6 @@ export default function ClientRoom() {
         return "#" + (timer.workCyclesDone + 1)
     }, [timer])
 
-    // To handle notifications when timer ends
-    useEffect(() => {
-        if ('Notification' in window){
-            Notification.requestPermission().then(permission => {
-
-            console.log('Notification permission:', permission)
-            })
-        }
-    }, [])
-
     // To initialize settings information
 
     useEffect(() => {
@@ -535,28 +525,6 @@ export default function ClientRoom() {
         fetchSettings()
 
     }, [roomId])
-
-    const prevPhaseRef = useRef<TimerPhase | null>(null) // To detect when timer ends for push notification
-
-    // Push notifications when timer finishes
-    useEffect(() => {
-        if (timer == null) return
-        if (prevPhaseRef.current && prevPhaseRef.current !== timer.phase)
-        {
-            let body = "Your session has ended"
-            if (prevPhaseRef.current === "WORK" && timer.phase === "SHORT_BREAK") {body = "✅ Work done! Time for a quick break."}
-            if (prevPhaseRef.current === "LONG_BREAK" && timer.phase === "WORK" ) {body = "📚 Long break's over! Time to focus again."}
-            if (prevPhaseRef.current === "WORK" && timer.phase === "LONG_BREAK" ) {body = "🎉 Well done! Enjoy an extended break."}
-            if (prevPhaseRef.current === "SHORT_BREAK" && timer.phase === "WORK" ) {body = "📝 Break over, let's resume work."}
-
-
-            new Notification("Time's up!", {
-                body: body,
-                icon: '/favicon.ico'
-            })
-        }
-        prevPhaseRef.current = timer.phase
-    },[timer])
 
     // Minutes and seconds for timer
     const mm = String(Math.floor(ms / 60000)).padStart(2,"0")
