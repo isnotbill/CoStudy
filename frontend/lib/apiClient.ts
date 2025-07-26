@@ -5,7 +5,7 @@ import { getToken, setToken } from './TokenService'
 
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.costudy.online',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL!,
   withCredentials: true, // Send cookies automatically
 });
 

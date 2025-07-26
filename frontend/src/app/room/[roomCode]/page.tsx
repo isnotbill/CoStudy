@@ -105,7 +105,7 @@ export default function ClientRoom() {
     // Check if room code is valid
     useEffect(() => {
         apiClient.get(
-            `https://api.costudy.online/room/${roomCode}`,
+            `/room/${roomCode}`,
             {withCredentials: true}
         )
         .then(res => {
@@ -189,7 +189,7 @@ export default function ClientRoom() {
     useEffect(() => {
         if (roomId == null){return}
         apiClient.get(
-            `https://api.costudy.online/rooms/${roomId}/messages`,
+            `/rooms/${roomId}/messages`,
             {withCredentials: true}
         )
         .then(res => {

@@ -39,7 +39,7 @@ export default function Home() {
 
     try {
       await axios.post(
-        'https://api.costudy.online/register',
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/register`,
         payload,
         { timeout: 5000 }
       )

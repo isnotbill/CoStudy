@@ -22,7 +22,7 @@ export default function Login() {
         }
         try {
             const { data } = await axios.post(
-                'https://api.costudy.online/login',
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/login`,
                 payload,
                 { 
                     withCredentials: true,
