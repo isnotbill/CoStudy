@@ -69,7 +69,7 @@ return (
     <header>
       <title>Login - CoStudy</title>
     </header>
-    <main className="bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94] min-h-screen select-none overflow-hidden flex flex-col">
+    <main className="bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94] min-h-screen select-none overflow-hidden flex flex-col overflow-y-none [scrollbar-gutter:stable]">
       <Header />
       <div className="flex flex-1 justify-center items-center px-4 pb-10">
         <motion.section
@@ -122,9 +122,9 @@ return (
               Log In
             </button>
 
-            {error && <p className="text-red-500 text-sm mt-[-30px]">{error}</p>}
+            {error && <p className="text-red-500 text-sm mt-[-10px]">{error}</p>}
             {reason === "expired_token" && (
-              <p className="text-red-500 text-sm mt-[-30px]">Token expired, please log in again.</p>
+              <p className="text-red-500 text-sm">Token expired, please log in again.</p>
             )}
 
             <div className="flex items-center space-x-1 text-xs text-gray-500">

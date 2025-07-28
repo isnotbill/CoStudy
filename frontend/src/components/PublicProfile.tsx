@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, ChangeEvent, useRef, useEffect } from "react";
+import { useState, ChangeEvent, useRef} from "react";
 import Image from "next/image";
 import apiClient from "../../lib/apiClient";
 
@@ -20,12 +20,9 @@ export default function PublicProfile( { user } : Profile ) {
 
   const profile = user
 
-  const [src, setSrc] = useState('https://api.costudy.online/avatars/default-avatar.png')
 
-  useEffect(() => {
-    if (user.image != null){setSrc(`https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${user.image}?t=${Date.now()}`)}   
+  let src = user.image ? `https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${user.image}?t=${Date.now()}` : 'https://api.costudy.online/avatars/default-avatar.png'
 
-  }, [user.image])
 
   async function handleFileChange(e: ChangeEvent<HTMLInputElement>){
     const file = e.target.files?.[0]
@@ -51,7 +48,7 @@ export default function PublicProfile( { user } : Profile ) {
         }
       )
 
-      setSrc(`https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${res.data.avatarUrl}?t=${Date.now()}`)
+      src = `https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${res.data.avatarUrl}?t=${Date.now()}`
 
     } catch (err: any) {
 
