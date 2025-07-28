@@ -547,7 +547,7 @@ export default function ClientRoom() {
       <div className="w-full max-w-[1200px] flex flex-col md:flex-row justify-center items-start gap-6 px-4 md:px-0 my-8">
         {/* Left: Timer & Users */}
         <div className="flex flex-col md:w-[500px] w-full gap-6">
-          <div className="card-pane w-full h-auto md:h-[500px] rounded-md p-6 md:p-8 shadow-md flex flex-col justify-center items-center relative">
+          <div className="card-pane w-full h-auto md:h-[500px] rounded-md p-6 md:p-8 shadow-md flex flex-col justify-center items-center relative gap-3">
             <button
               className="absolute top-[10px] right-[10px] settings-button"
               onClick={() => setToggleSettings((prev) => !prev)}
@@ -561,7 +561,7 @@ export default function ClientRoom() {
                   <h1 className="text-gray-300/80 text-md">Code: {roomCode}</h1>
                 </div>
 
-                <div className="text-white flex flex-wrap gap-2 mb-[-20px] text-lg justify-center">
+                <div className="text-white flex flex-wrap gap-2 text-lg justify-center">
                   <button
                     className={`hover:text-[#b4b0b8] p-2 rounded-lg ${
                       timer?.phase === "WORK" ? "bg-[rgba(23,21,36,0.49)]" : ""
@@ -602,7 +602,7 @@ export default function ClientRoom() {
                     Long Break
                   </button>
                 </div>
-                <h1 className="text-[rgb(255,255,255)] text-7xl md:text-9xl font-mono py-4">
+                <h1 className="text-[rgb(255,255,255)] text-7xl md:text-9xl font-mono leading-none">
                   {mm}:{ss}
                 </h1>
 
@@ -630,7 +630,7 @@ export default function ClientRoom() {
             )}
           </div>
 
-          <div className="card-pane rounded-md flex flex-col h-[300px] md:h-[269px] shadow-md overflow-hidden">
+          <div className="card-pane rounded-md flex flex-col h-[300px] md:h-[275px] shadow-md overflow-hidden">
             <div className="chat-scroll mt-4 flex-1 flex flex-col overflow-y-auto w-full">
               {roomUsers.map((user) => (
                 <RoomUser
@@ -638,7 +638,7 @@ export default function ClientRoom() {
                   isClient={user.id === profile?.id}
                   isAdmin={user.admin}
                   username={user.username}
-                  iconImage={userPfpMap[user.id] || 'https://api/costudy.online/avatars/default-avatar.png'}
+                  iconImage={userPfpMap[user.id] || 'https://api.costudy.online/avatars/default-avatar.png'}
                   onKick={() => {
                     kickUser(user.username);
                   }}
@@ -666,7 +666,7 @@ export default function ClientRoom() {
                 key={m.chatMessageId}
                 content={m.content}
                 isClient={m.userId === profile?.id}
-                iconImage={userPfpMap[m.userId] || 'https://api/costudy.online/avatars/default-avatar.png'}
+                iconImage={userPfpMap[m.userId] || 'https://api.costudy.online/avatars/default-avatar.png'}
                 username={m.username}
                 type={m.type}
               />
