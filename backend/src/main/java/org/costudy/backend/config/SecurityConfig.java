@@ -106,21 +106,21 @@ public class SecurityConfig {
                                     String refreshToken = jwtService.generateRefreshToken(user.getUsername());
 
                                     ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
-//                                            .domain(".costudy.online")
+                                            .domain(".costudy.online")
                                             .httpOnly(true)
-                                            .secure(false) // set true in production!
+                                            .secure(true) // set true in production!
                                             .path("/")
                                             .maxAge(24 * 60 * 60)
-                                            .sameSite("Lax")
+                                            .sameSite("None")
                                             .build();
 
                                     ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
-//                                            .domain(".costudy.online")
+                                            .domain(".costudy.online")
                                             .httpOnly(true)
-                                            .secure(false)
+                                            .secure(true)
                                             .path("/")
                                             .maxAge(24 * 60 * 60)
-                                            .sameSite("Lax")
+                                            .sameSite("None")
                                             .build();
 
                                     response.setStatus(HttpServletResponse.SC_OK);
@@ -141,20 +141,20 @@ public class SecurityConfig {
     public LogoutHandler cookieClearingLogoutHandler(){
         return (request, response, authentication) -> {
             ResponseCookie clearAccess = ResponseCookie.from("access_token", "")
-//                    .domain(".costudy.online")
+                    .domain(".costudy.online")
                     .path("/")
                     .httpOnly(true)
-                    .secure(false)
-                    .sameSite("Lax")
+                    .secure(true)
+                    .sameSite("None")
                     .maxAge(0)
                     .build();
 
             ResponseCookie clearRefresh = ResponseCookie.from("refresh_token", "")
-//                    .domain(".costudy.online")
+                    .domain(".costudy.online")
                     .path("/")
                     .httpOnly(true)
-                    .secure(false)
-                    .sameSite("Lax")
+                    .secure(true)
+                    .sameSite("None")
                     .maxAge(0)
                     .build();
             response.addHeader(HttpHeaders.SET_COOKIE, clearAccess.toString());

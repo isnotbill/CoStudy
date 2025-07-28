@@ -90,21 +90,21 @@ public class AuthController {
             String refreshToken = jwtService.generateRefreshToken(userDetails.getUsername());
 
             ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
-//                    .domain(".costudy.online")
+                    .domain(".costudy.online")
                     .httpOnly(true)
-                    .secure(false) // TODO: SET TRUE IN PRODUCTION
+                    .secure(true) // TODO: SET TRUE IN PRODUCTION
                     .path("/")
                     .maxAge(24*60*60)
-                    .sameSite("Lax")
+                    .sameSite("None")
                     .build();
 
             ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
-//                    .domain(".costudy.online")
+                    .domain(".costudy.online")
                     .httpOnly(true)
-                    .secure(false) // TODO: SET TRUE IN PRODUCTION
+                    .secure(true) // TODO: SET TRUE IN PRODUCTION
                     .path("/")
                     .maxAge(24*60*60)
-                    .sameSite("Lax")
+                    .sameSite("None")
                     .build();
 
             System.out.println("Refresh: " + refreshToken);
@@ -153,12 +153,12 @@ public class AuthController {
 
         String accessToken = jwtService.generateAccessToken(username);
         ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
-//                .domain(".costudy.online")
+                .domain(".costudy.online")
                 .httpOnly(true)
-                .secure(false) // TODO: SET TRUE IN PRODUCTION
+                .secure(true) // TODO: SET TRUE IN PRODUCTION
                 .path("/")
                 .maxAge(24*60*60)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         return ResponseEntity.ok()
