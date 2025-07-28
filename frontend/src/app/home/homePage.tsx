@@ -36,7 +36,7 @@ export default function HomePage() {
 
   let src = 'https://api.costudy.online/avatars/default-avatar.png'
   if (profile?.image) {
-    src = `https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${profile.image}?=${Date.now()}`
+    src = `https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${profile.image}?t=${Date.now()}`
   }
 
   return (

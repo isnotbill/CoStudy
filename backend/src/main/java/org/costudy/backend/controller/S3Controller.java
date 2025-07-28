@@ -1,5 +1,6 @@
 package org.costudy.backend.controller;
 
+import org.costudy.backend.model.User;
 import org.costudy.backend.service.S3Service;
 import org.costudy.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,11 @@ public class S3Controller {
             @PathVariable int id
             ) throws IOException {
         String key = s3Service.uploadFile(file, id);
+        User user = userService.getCurrentUserById(id);
+
+        user.setImage(key);
+        userService.save(user);
+
         return ResponseEntity.ok("File uploaded successfully");
     }
 }
