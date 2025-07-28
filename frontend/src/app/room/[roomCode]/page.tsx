@@ -14,6 +14,13 @@ import apiClient from "../../../../lib/apiClient";
 import Popup from "@/components/Popup";
 import UpdateRoom from "@/components/UpdateRoom"
 import axios from "axios";
+import { motion, useInView } from "framer-motion";
+import type { Variants } from "framer-motion";
+
+const fadeInUp: Variants = {
+  initial: { opacity: 0, y: 40 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
 
 interface ChatMessage{
     chatMessageId: number,
@@ -101,6 +108,10 @@ export default function ClientRoom() {
     const [lastRunningPhase, setLastRunningPhase] = useState<TimerPhase | null>(null)
 
     const [showPopUp, setShowPopUp] = useState(false)
+
+    // For framer motion animation
+    const framerRef = useRef<HTMLElement>(null)
+    const inView = useInView(framerRef, {amount: 0.3, once: true})
 
     // Check if room code is valid
     useEffect(() => {
@@ -540,26 +551,32 @@ export default function ClientRoom() {
     if (error){return <p className="text-red-500">{error}</p>}
     return (
   <>
-    <main className={`main-bg w-screen min-h-screen flex flex-col items-center
+    <main className={`main-bg w-screen min-h-screen flex flex-col items-center overflow-y-auto [scrollbar-gutter:stable]
       ${bgClass}`}
     >
       <MainHeader />
-      <div className="w-full max-w-[1200px] flex flex-col md:flex-row justify-center items-start gap-6 px-4 md:px-0 my-8">
-        {/* Left: Timer & Users */}
-        <div className="flex flex-col md:w-[500px] w-full gap-6">
-          <div className="card-pane w-full h-auto md:h-[500px] rounded-md p-6 md:p-8 shadow-md flex flex-col justify-center items-center relative gap-3">
-            <button
-              className="absolute top-[10px] right-[10px] settings-button"
-              onClick={() => setToggleSettings((prev) => !prev)}
-            >
-              ⚙️
-            </button>
-            {toggleSettings ? (
-              <>
-                <div className="flex flex-col items-center pb-2">
-                  <h1 className="text-white text-xl font-medium">{roomName}</h1>
-                  <h1 className="text-gray-300/80 text-md">Code: {roomCode}</h1>
-                </div>
+      <motion.section
+        ref={framerRef}
+        variants={fadeInUp}
+        initial="initial"
+        animate={!loadingMessages && !loadingProfile && !loadJoinRoom && inView ? 'animate' : 'initial'}
+      >
+        <div className="w-full max-w-[1200px] flex flex-col md:flex-row justify-center items-start gap-6 px-4 md:px-0 my-8">
+          {/* Left: Timer & Users */}
+          <div className="flex flex-col md:w-[500px] w-full gap-6">
+            <div className="card-pane w-full h-auto md:h-[500px] rounded-md p-6 md:p-8 shadow-md flex flex-col justify-center items-center relative">
+              <button
+                className="absolute top-[10px] right-[10px] settings-button"
+                onClick={() => setToggleSettings((prev) => !prev)}
+              >
+                ⚙️
+              </button>
+              {toggleSettings ? (
+                <>
+                  <div className="flex flex-col items-center pb-2">
+                    <h1 className="text-white text-xl font-medium">{roomName}</h1>
+                    <h1 className="text-gray-300/80 text-md">Code: {roomCode}</h1>
+                  </div>
 
                 <div className="text-white flex flex-wrap gap-2 text-lg justify-center">
                   <button
@@ -606,29 +623,29 @@ export default function ClientRoom() {
                   {mm}:{ss}
                 </h1>
 
-                <button className="start-button w-full text-center h-[4.5em] text-lg"
-                  onClick={() => {
-                    if (!timer) {
-                      sendTimer("/app/timer/start", { roomId });
-                    } else if (timer.status === "PAUSED") {
-                      sendTimer("/app/timer/resume", roomId);
-                    } else {
-                      sendTimer("/app/timer/pause", roomId);
-                    }
-                  }}
-                >
-                  {!timer || timer.status === "PAUSED" ? "START" : "PAUSE"}
-                </button>
-              </>
-            ) : (
-              <UpdateRoom
-                settings={settings}
-                roomId={roomId}
-                isClientAdmin={roomUsers.find((u) => u.id === profile?.id)?.admin || false}
-                setToggleSettings={setToggleSettings}
-              />
-            )}
-          </div>
+                  <button className="start-button w-full text-center h-[4.5em] text-lg"
+                    onClick={() => {
+                      if (!timer) {
+                        sendTimer("/app/timer/start", { roomId });
+                      } else if (timer.status === "PAUSED") {
+                        sendTimer("/app/timer/resume", roomId);
+                      } else {
+                        sendTimer("/app/timer/pause", roomId);
+                      }
+                    }}
+                  >
+                    {!timer || timer.status === "PAUSED" ? "START" : "PAUSE"}
+                  </button>
+                </>
+              ) : (
+                <UpdateRoom
+                  settings={settings}
+                  roomId={roomId}
+                  isClientAdmin={roomUsers.find((u) => u.id === profile?.id)?.admin || false}
+                  setToggleSettings={setToggleSettings}
+                />
+              )}
+            </div>
 
           <div className="card-pane rounded-md flex flex-col h-[300px] md:h-[275px] shadow-md overflow-hidden">
             <div className="chat-scroll mt-4 flex-1 flex flex-col overflow-y-auto w-full">
@@ -673,69 +690,71 @@ export default function ClientRoom() {
             ))}
           </div>
 
-          <form onSubmit={handleSend} className="flex p-2 gap-1">
-            <input
-              value={inputMessage}
-              placeholder="Enter your message"
-              onChange={(e) => setInputMessage(e.target.value)}
-              className="flex-1 rounded-l-md bg-[rgba(33,28,36,0.6)] text-white px-3 py-3 focus:outline-none"
-            />
-
-            <button
-              className="relative bg-[rgba(33,28,36,0.6)] text-white px-3 flex items-center justify-center rounded-none"
-              type="button"
-              onClick={() => handleSendAi()}
-              disabled={loadAIMessage}
-              title={loadAIMessage ? "Loading AI response..." : "Send to AI tutor"}
-            >
-              <Image
-                src="/images/AI.png"
-                alt="AI png"
-                width={25}
-                height={25}
-                className="invert"
+            <form onSubmit={handleSend} className="flex p-2 gap-1">
+              <input
+                value={inputMessage}
+                placeholder="Enter your message"
+                onChange={(e) => setInputMessage(e.target.value)}
+                className="flex-1 rounded-l-md bg-[rgba(33,28,36,0.6)] text-white px-3 py-3 focus:outline-none min-w-0"
               />
-            </button>
+
+              <button
+                type="button"
+                onClick={() => handleSendAi()}
+                disabled={loadAIMessage}
+                title={loadAIMessage ? "Loading AI response..." : "Send to AI tutor"}
+                className="flex items-center justify-center bg-[rgba(33,28,36,0.6)] text-white px-3 py-3 rounded-none min-w-[44px] hover:bg-gray-700 disabled:opacity-50"
+              >
+                <Image
+                  src="/images/AI.png"
+                  alt="AI png"
+                  width={24}
+                  height={24}
+                  className="invert"
+                  style={{ objectFit: "contain" }}
+                />
+              </button>
+
+              <button
+                type="submit"
+                disabled={loadAIMessage}
+                className="rounded-r-md bg-[rgba(33,28,36,0.6)] text-white px-4 py-3 hover:bg-gray-700 disabled:opacity-50 min-w-[64px]"
+              >
+                Send
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <Popup show={showPopUp} onClose={() => setShowPopUp(false)}>
+          <div className="flex flex-col justify-center items-center">
+            <h1 className="text-white m-3 mt-8 text-center">
+              Are you sure you want to leave this room?
+            </h1>
+
+            {roomUsers.find((u) => u.id === profile?.id)?.admin && (
+              <div className="text-red-500 m-3 text-center">
+                WARNING: As an ADMIN, the room will be permanently deleted if you leave
+                the room.
+              </div>
+            )}
 
             <button
-              type="submit"
-              className="rounded-r-md bg-[rgba(33,28,36,0.6)] text-white px-4 py-3 hover:bg-gray-700 disabled:opacity-50"
-              disabled={loadAIMessage}
+              className="popup-button w-full h-[45px] mt-5"
+              onClick={() => {
+                if (showPopUp == false) return;
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                roomUsers.find((u) => u.id === profile?.id)?.admin
+                  ? deleteRoom(roomId)
+                  : leaveRoom(String(roomCode));
+                setShowPopUp(false);
+              }}
             >
-              Send
+              Confirm
             </button>
-          </form>
-        </div>
-      </div>
-
-      <Popup show={showPopUp} onClose={() => setShowPopUp(false)}>
-        <div className="flex flex-col justify-center items-center">
-          <h1 className="text-white m-3 mt-8 text-center">
-            Are you sure you want to leave this room?
-          </h1>
-
-          {roomUsers.find((u) => u.id === profile?.id)?.admin && (
-            <div className="text-red-500 m-3 text-center">
-              WARNING: As an ADMIN, the room will be permanently deleted if you leave
-              the room.
-            </div>
-          )}
-
-          <button
-            className="popup-button w-full h-[45px] mt-5"
-            onClick={() => {
-              if (showPopUp == false) return;
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              roomUsers.find((u) => u.id === profile?.id)?.admin
-                ? deleteRoom(roomId)
-                : leaveRoom(String(roomCode));
-              setShowPopUp(false);
-            }}
-          >
-            Confirm
-          </button>
-        </div>
-      </Popup>
+          </div>
+        </Popup>
+      </motion.section>
     </main>
   </>
 );

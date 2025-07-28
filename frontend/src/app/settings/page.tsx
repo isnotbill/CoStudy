@@ -7,6 +7,8 @@ import PublicProfile from "@/components/PublicProfile";
 import MainHeader from "@/components/MainHeader";
 import apiClient from "../../../lib/apiClient";
 import axios from "axios";
+import { motion, useAnimation } from "framer-motion";
+import type { Variants } from "framer-motion";
 
 interface UserProfile {
   id: number;
@@ -15,6 +17,11 @@ interface UserProfile {
   image: string;
 }
 
+const fadeInUp: Variants = {
+  initial: { opacity: 0, y: 40 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
 export default function AccountPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("profile");
@@ -22,6 +29,7 @@ export default function AccountPage() {
   const [logoutError, setLogoutError] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [profile, setProfile] = useState<UserProfile>();
+  const controls = useAnimation()
 
   useEffect(() => {
     async function fetchProfile() {
@@ -36,6 +44,12 @@ export default function AccountPage() {
     }
     fetchProfile();
   }, []);
+
+  useEffect(() => {
+    controls.set("initial")
+    controls.start("animate")
+
+  }, [controls, activeTab])
 
   async function handleLogout() {
     setLogoutLoading(true);
@@ -58,7 +72,7 @@ export default function AccountPage() {
         <title>Settings - CoStudy</title>
       </header>
 
-      <div className="min-h-screen bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94] text-white">
+      <div className="min-h-screen bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94] text-white overflow-y-auto [scrollbar-gutter:stable]">
         <MainHeader />
 
         <div className="max-w-5xl mx-auto px-6 py-12">
@@ -100,29 +114,37 @@ export default function AccountPage() {
           </div>
 
           {/* Content Container */}
-          <div className="bg-white rounded-xl shadow-xl p-8 backdrop-blur-lg bg-opacity-85 border border-gray-200">
-            {activeTab === "profile" && profile?.id && (
-              <PublicProfile user={{ id: profile.id, image: profile.image }} />
-            )}
-            {activeTab === "account" && profile?.id && (
-              <AccountSettings
-                user={{
-                  id: profile.id,
-                  username: profile.username,
-                  email: profile.email,
-                }}
-              />
-            )}
-            {!profile?.id && (
-              <p className="text-gray-500 text-center">Loading profile...</p>
-            )}
-            {errorMsg && (
-              <p className="text-red-500 text-center mt-4">{errorMsg}</p>
-            )}
-            {logoutError && (
-              <p className="text-red-500 text-center mt-2">{logoutError}</p>
-            )}
-          </div>
+          <motion.section
+            variants={fadeInUp}
+            initial="initial"
+            animate={controls}
+          >
+            <div className="bg-white rounded-xl shadow-xl p-8 backdrop-blur-lg bg-opacity-85 border border-gray-200">
+              {activeTab === "profile" && profile?.id && (
+                <PublicProfile user={{ id: profile.id, image: profile.image }} />
+              )}
+              {activeTab === "account" && profile?.id && (
+
+                  <AccountSettings
+                    user={{
+                      id: profile.id,
+                      username: profile.username,
+                      email: profile.email,
+                    }}
+                  />
+
+              )}
+              {!profile?.id && (
+                <p className="text-gray-500 text-center">Loading profile...</p>
+              )}
+              {errorMsg && (
+                <p className="text-red-500 text-center mt-4">{errorMsg}</p>
+              )}
+              {logoutError && (
+                <p className="text-red-500 text-center mt-2">{logoutError}</p>
+              )}
+            </div>
+          </motion.section>
         </div>
       </div>
     </>

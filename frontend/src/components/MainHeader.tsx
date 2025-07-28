@@ -3,7 +3,7 @@ import Link from 'next/link'
 const MainHeader = () => {
     return (
         <>
-        <header className="select-none flex justify-between items-center p-[4px] text-[rgb(242,247,253)]  border-b-2 border-[rgba(198,193,216,0.27)] w-full px-10">
+        <header className="select-none flex justify-between items-center p-[4px] text-[rgb(242,247,253)]  w-full px-10">
             <Link href="/home" className="font-cedarville font-thin text-[35px]">
                 costudy
             </Link>
