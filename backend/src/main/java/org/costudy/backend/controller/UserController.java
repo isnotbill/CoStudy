@@ -102,21 +102,21 @@ public class UserController {
         String refreshToken = jwtService.generateRefreshToken(updateInfoDto.getNewUsername());
 
         ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
-                .domain(".costudy.online")
+//                .domain(".costudy.online")
                 .httpOnly(true)
-                .secure(true) // TODO: SET TRUE IN PRODUCTION
+                .secure(false) // TODO: SET TRUE IN PRODUCTION
                 .path("/")
                 .maxAge(24*60*60)
-                .sameSite("None")
+                .sameSite("Lax")
                 .build();
 
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
-                .domain(".costudy.online")
+//                .domain(".costudy.online")
                 .httpOnly(true)
-                .secure(true) // TODO: SET TRUE IN PRODUCTION
+                .secure(false) // TODO: SET TRUE IN PRODUCTION
                 .path("/")
                 .maxAge(24*60*60)
-                .sameSite("None")
+                .sameSite("Lax")
                 .build();
 
         System.out.println("Refresh: " + refreshToken);
