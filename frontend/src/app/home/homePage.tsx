@@ -49,7 +49,7 @@ export default function HomePage() {
   const src = profile?.image ? `https://costudy-images-bucket.s3.ca-central-1.amazonaws.com/${profile.image}?t=${Date.now()}` : 'https://api.costudy.online/avatars/default-avatar.png'
 
   return (
-    <main className="bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94] text-white min-h-screen w-full overflow-hidden [scrollbar-gutter:stable]">
+    <main className="bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94] text-white min-h-screen w-full overflow-hidden">
       <MainHeader />
       <motion.section
         ref={framerRef}

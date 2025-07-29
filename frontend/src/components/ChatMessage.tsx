@@ -1,4 +1,3 @@
-
 import Image from "next/image"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
@@ -83,49 +82,38 @@ export default function ChatMessage(props: ChatInterface){
   }
 
   // USER message
-  return (
-    <>
-
-      {props.isClient
-      ? (<div className="flex justify-end items-start gap-2">
-
-          <div className="bg-[rgba(226,121,255,0.92)] rounded-3xl p-2 flex justify-end max-w-xs break-words break-all">
-            {props.content}
-          </div>
-
-          {/* <div className="w-12 h-12 rounded-full bg-white overflow-hidden mt-[4px]">
-            <Image
-            src={props.iconImage}
-            alt="Profile icon"
-            width={56}
-            height={56}
-            />
-          </div> */}
-      </div>)
-
-
-      : (<div className="flex items-start gap-2">
-
-          <div className="relative w-12 h-12 overflow-hidden rounded-full bg-white mt-[5px] border-red border-[1px]">
-            <Image
+return (
+  <>
+    {props.isClient ? (
+      <div className="flex justify-end items-start gap-2">
+        <div className="bg-[rgba(226,121,255,0.92)] rounded-3xl p-2 px-3 inline-block max-w-xs w-fit break-words">
+          {props.content}
+        </div>
+      </div>
+    ) : (
+      <div className="flex items-start gap-2">
+        <div className="relative w-12 h-12 overflow-hidden rounded-full bg-white mt-[5px] border-red border-[1px]">
+          <Image
             src={props.iconImage}
             alt="Profile icon"
             fill
             className="object-cover"
-            />
-          </div>
+          />
+        </div>
 
-          <div className="flex flex-col items-start ">
+        <div className="flex flex-col justify-start items-start">
             <label className="text-white">{props.username}</label>
-            <div className="bg-[rgba(255,255,255,0.91)] rounded-3xl p-2 max-w-xs break-words break-all">
+            <div
+              style={{ display: "table", maxWidth: "20rem", overflowWrap: "break-word" }}
+              className="bg-purple-200 p-2 rounded-3xl break-words"
+            >
               {props.content}
             </div>
           </div>
 
+      </div>
+    )}
+  </>
+)
 
-      </div>)}
-
-    </>
-
-  )
 }

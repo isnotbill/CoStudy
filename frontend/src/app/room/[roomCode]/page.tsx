@@ -551,7 +551,7 @@ export default function ClientRoom() {
     if (error){return <p className="text-red-500">{error}</p>}
     return (
   <>
-    <main className={`main-bg w-screen min-h-screen flex flex-col items-center overflow-y-auto [scrollbar-gutter:stable]
+    <main className={`main-bg w-screen min-h-screen flex flex-col items-center overflow-y-hidden
       ${bgClass}`}
     >
       <MainHeader />
