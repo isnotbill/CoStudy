@@ -219,7 +219,7 @@ export default function ClientRoom() {
 
 
         const client = new Client({
-            webSocketFactory: () => new SockJS('https://api.costudy.online/ws'),
+            webSocketFactory: () => new SockJS(`${process.env.NEXT_PUBLIC_API_BASE_URL}/ws`),
             reconnectDelay: 5000,
             debug: str => console.log('[STOMP]', str),
         })
@@ -551,7 +551,7 @@ export default function ClientRoom() {
     if (error){return <p className="text-red-500">{error}</p>}
     return (
   <>
-    <main className={`main-bg w-screen min-h-screen flex flex-col items-center overflow-y-auto [scrollbar-gutter:stable]
+    <main className={`main-bg w-screen min-h-screen flex flex-col items-center overflow-y-hidden
       ${bgClass}`}
     >
       <MainHeader />

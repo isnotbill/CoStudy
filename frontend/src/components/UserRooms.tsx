@@ -58,7 +58,7 @@ export default function UserRooms() {
       </div>
 
       {/* Room List */}
-      <div className="flex flex-col gap-1 h-[500] overflow-y-auto chat-scroll">
+      <div className="flex flex-col gap-1 h-[500px] overflow-y-auto chat-scroll">
         {filteredRooms.map(room => (
           <div
             key={room.roomId}
@@ -79,7 +79,7 @@ export default function UserRooms() {
 
             {/* Leave/Delete */}
             <button
-              className="p-1.5 rounded-full hover:bg-red-600 bg-red-500 transition"
+              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-600 bg-red-500 transition transform hover:scale-105"
               onClick={(e) => {
                 e.stopPropagation()
                 setPopupRoom(room)
@@ -89,8 +89,9 @@ export default function UserRooms() {
               <Image
                 src="/images/leaveRoom.png"
                 alt="Leave"
-                width={22}
-                height={22}
+                width={35}
+                height={35}
+                className="object-contain"
               />
             </button>
           </div>
