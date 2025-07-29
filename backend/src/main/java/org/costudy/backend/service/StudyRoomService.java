@@ -175,18 +175,20 @@ public class StudyRoomService {
         }
 
         Optional<UserStudyRoom> relationship = userStudyRoomRepo.findByIdUserIdAndIdRoomId(admin.getId(), room.getRoomId());
-        if(relationship.isEmpty()) {
-            throw new AccessDeniedException("This admin is not in this room");
+        Optional<UserStudyRoom> relationshipUser = userStudyRoomRepo.findByIdUserIdAndIdRoomId(user.getId(), room.getRoomId());
+        if(relationship.isEmpty() || relationshipUser.isEmpty()) {
+            throw new AccessDeniedException("This admin or user is not in this room");
         }
 
         UserStudyRoom rel = relationship.get();
+        UserStudyRoom relUser = relationshipUser.get();
         if(!rel.isAdmin()) {
             throw new AccessDeniedException("This user is not an admin");
         }
 
-        rel.setHasLeft(true);
+        relUser.setHasLeft(true);
 
-        userStudyRoomRepo.save(rel);
+        userStudyRoomRepo.save(relUser);
     }
 
     public ChatMessage announceJoin(User user, StudyRoom room) {

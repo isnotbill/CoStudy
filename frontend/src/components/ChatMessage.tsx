@@ -104,8 +104,7 @@ return (
         <div className="flex flex-col justify-start items-start">
             <label className="text-white">{props.username}</label>
             <div
-              style={{ display: "table", maxWidth: "20rem", overflowWrap: "break-word" }}
-              className="bg-purple-200 p-2 rounded-3xl break-words"
+              className="bg-purple-200 p-2 rounded-3xl max-w-xs break-words"
             >
               {props.content}
             </div>
