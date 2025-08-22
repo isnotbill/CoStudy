@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 @Configuration
@@ -36,12 +37,14 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final UserRepo userRepo;
     private final JwtService jwtService;
+    private final RateLimitFilter rateLimitFilter;
 
     public SecurityConfig(UserDetailsService userDetailsService,
                           JwtFilter jwtFilter,
                           CustomOAuth2UserService oAuth2UserService,
                           UserRepo userRepo,
-                          JwtService jwtService
+                          JwtService jwtService,
+                          RateLimitFilter rateLimitFilter
     ) {
 
         this.userDetailsService = userDetailsService;
@@ -49,6 +52,7 @@ public class SecurityConfig {
         this.customOAuth2UserService = oAuth2UserService;
         this.userRepo = userRepo;
         this.jwtService = jwtService;
+        this.rateLimitFilter = rateLimitFilter;
     }
 
     @Bean
@@ -131,7 +135,9 @@ public class SecurityConfig {
                                     response.sendRedirect("https://costudy.online/home");
                                 })))
 
+
                 .addFilterBefore(jwtFilter, OAuth2LoginAuthenticationFilter.class)
+                .addFilterAfter(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
