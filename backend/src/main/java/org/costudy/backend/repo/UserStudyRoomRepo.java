@@ -23,6 +23,9 @@ public interface UserStudyRoomRepo extends JpaRepository<UserStudyRoom, Integer>
     @Query("SELECT u FROM UserStudyRoom u WHERE u.studyRoom = :studyRoom AND u.hasLeft = false")
     List<UserStudyRoom> findActiveByStudyRoom(@Param("studyRoom") StudyRoom studyRoom);
 
+    @Query("SELECT COUNT(u) FROM UserStudyRoom u WHERE u.user = :user AND u.hasLeft = false")
+    int countActiveByUser(@Param("user") User user);
+
     int countByStudyRoom(StudyRoom room);
     int countByUser(User user);
     int countByStudyRoomAndHasLeftFalse(StudyRoom room);

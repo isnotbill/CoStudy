@@ -45,7 +45,7 @@ public class StudyRoomService {
 
 
     public String createRoom(User user, CreateRoomDto createRoomDto) {
-        if(userStudyRoomRepo.countByUser(user) >= maxRooms) {
+        if(userStudyRoomRepo.countActiveByUser(user) >= maxRooms) {
             throw new RoomLimitExceededException("Room limit exceeded (15)");
         }
 
@@ -122,7 +122,7 @@ public class StudyRoomService {
             throw new ConflictException("Duplicate");
         }
 
-        if(userStudyRoomRepo.countByUser(currentUser) >= maxRooms) {
+        if(userStudyRoomRepo.countActiveByUser(currentUser) >= maxRooms) {
             throw new RoomLimitExceededException("Room limit exceeded (15)");
         }
 
