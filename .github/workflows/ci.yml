@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  pull_request:
+    branches: ["develop"]
+    paths:
+      - "backend/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Build and test
+        working-directory: backend
+        run: mvn -B clean test
+
+      - name: Upload results
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-test-reports
+          path: backend/target/surefire-reports/
