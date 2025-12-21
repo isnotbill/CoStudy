@@ -65,8 +65,6 @@ public class SecurityConfig {
         return provider;
     }
 
-
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, HttpServletResponse httpServletResponse) throws Exception {
         http.cors(withDefaults -> {});
@@ -105,23 +103,8 @@ public class SecurityConfig {
                                     String accessToken = jwtService.generateAccessToken(user.getUsername());
                                     String refreshToken = jwtService.generateRefreshToken(user.getUsername());
 
-                                    ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
-                                            .domain(".costudy.online")
-                                            .httpOnly(true)
-                                            .secure(true) // set true in production!
-                                            .path("/")
-                                            .maxAge(24 * 60 * 60)
-                                            .sameSite("None")
-                                            .build();
-
-                                    ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
-                                            .domain(".costudy.online")
-                                            .httpOnly(true)
-                                            .secure(true)
-                                            .path("/")
-                                            .maxAge(24 * 60 * 60)
-                                            .sameSite("None")
-                                            .build();
+                                    ResponseCookie accessTokenCookie = jwtService.accessTokenCookie(accessToken);
+                                    ResponseCookie refreshTokenCookie = jwtService.refreshTokenCookie(refreshToken);
 
                                     response.setStatus(HttpServletResponse.SC_OK);
                                     response.setContentType("application/json");
