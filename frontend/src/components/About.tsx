@@ -19,16 +19,10 @@ export const tech = [
 
 export const devs = [
   {
-    name: "Bill Huynh‑Lu",
-    role: "Software Engineering Student",
-    img: "/images/bill.jpg",
-    github:"https://github.com/isnotbill"
-  },
-  {
-    name: "Rei Shibatani",
-    role: "Software Engineering Student",
-    img: "/images/rei.jpg",
-    github: "https://github.com/reiiiiiiiiii",
+    name: "CoStudy",
+    role: "GitHub Repository",
+    img: "/images/",
+    github:"https://github.com/isnotbill/CoStudy"
   },
 ];
 
@@ -120,9 +114,9 @@ export default function AboutPage() {
           className=" bg-gradient-to-br from-[#7464ae] via-[#644fb1] to-[#5c4d94] w-full py-20 px-6"
         >
           <div className="max-w-5xl mx-auto text-center space-y-16">
-            <h2 className="text-4xl md:text-5xl font-bold">The Developers</h2>
+            <h2 className="text-4xl md:text-5xl font-bold">Information</h2>
 
-            <div className="grid sm:grid-cols-2 gap-10">
+            <div className="grid sm:grid-cols-1 gap-10 mx-48">
               {devs.map((dev) => (
                 <motion.div
                   key={dev.name}
