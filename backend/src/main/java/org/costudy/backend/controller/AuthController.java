@@ -137,14 +137,7 @@ public class AuthController {
         }
 
         String accessToken = jwtService.generateAccessToken(username);
-        ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
-                .domain(".costudy.online")
-                .httpOnly(true)
-                .secure(true) // TODO: SET TRUE IN PRODUCTION
-                .path("/")
-                .maxAge(24*60*60)
-                .sameSite("None")
-                .build();
+        ResponseCookie accessTokenCookie = jwtService.accessTokenCookie(accessToken);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())

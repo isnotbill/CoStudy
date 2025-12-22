@@ -45,7 +45,7 @@ public class ChatMessageService {
         if(room == null) {
             throw new IllegalArgumentException("Room does not exist");
         }
-        return chatRepo.getChatMessageByStudyRoom(room);
+        return chatRepo.getChatMessageByStudyRoomOrderBySentAtAsc(room);
 
     }
 }
