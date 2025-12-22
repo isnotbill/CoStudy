@@ -89,23 +89,8 @@ public class AuthController {
             String accessToken = jwtService.generateAccessToken(userDetails.getUsername());
             String refreshToken = jwtService.generateRefreshToken(userDetails.getUsername());
 
-            ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", accessToken)
-                    .domain(".costudy.online")
-                    .httpOnly(true)
-                    .secure(true) // TODO: SET TRUE IN PRODUCTION
-                    .path("/")
-                    .maxAge(24*60*60)
-                    .sameSite("None")
-                    .build();
-
-            ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
-                    .domain(".costudy.online")
-                    .httpOnly(true)
-                    .secure(true) // TODO: SET TRUE IN PRODUCTION
-                    .path("/")
-                    .maxAge(24*60*60)
-                    .sameSite("None")
-                    .build();
+            ResponseCookie accessTokenCookie = jwtService.accessTokenCookie(accessToken);
+            ResponseCookie refreshTokenCookie = jwtService.refreshTokenCookie(refreshToken);
 
             System.out.println("Refresh: " + refreshToken);
             System.out.println("Access: " + accessToken);

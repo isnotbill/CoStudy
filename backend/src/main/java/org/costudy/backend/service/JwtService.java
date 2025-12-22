@@ -5,7 +5,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
+import org.costudy.backend.config.JwtProperties;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -20,16 +23,24 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
-    @Value("${jwt.secret}")
-    private String secretKey;
+    private final JwtProperties props;
 
-    @Value("${jwt.expiration}")
-    private long expiration;
+//    @Value("${jwt.secret}")
+//    private String secretKey;
+//
+//    @Value("${jwt.expiration}")
+//    private long expiration;
+//
+//    @Value("${jwt.refreshExpiration}")
+//    private long refreshExpiration;
 
-    @Value("${jwt.refreshExpiration}")
-    private long refreshExpiration;
+    private Key getKey(){
+        byte[] keyBytes = Decoders.BASE64.decode(props.getSecret());
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 
     private String generateToken(
             String username,
@@ -45,28 +56,42 @@ public class JwtService {
     }
 
     public String generateRefreshToken(String username) {
-
         Map<String, Object> claims = new HashMap<>();
-
-        return generateToken(username, claims, refreshExpiration);
+        return generateToken(username, claims, props.getRefreshExpiration());
     }
 
     public String generateAccessToken(String username) {
-
         Map<String, Object> claims = new HashMap<>();
-
-        return generateToken(username, claims, expiration);
-    }
-
-    private Key getKey(){
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
-
+        return generateToken(username, claims, props.getExpiration());
     }
 
     public String extractUserName(String token) {
-
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public ResponseCookie accessTokenCookie(String token) {
+        return buildCookie("access_token", token, props.getExpiration());
+    }
+
+    public ResponseCookie refreshTokenCookie(String token) {
+        return buildCookie("refresh_token", token, props.getRefreshExpiration());
+    }
+
+    private ResponseCookie buildCookie(
+            String name,
+            String value,
+            long maxAge
+    ) {
+        JwtProperties.Cookie c = props.getCookie();
+
+        return ResponseCookie.from(name, value)
+                .domain(c.getDomain())
+                .httpOnly(c.isHttpOnly())
+                .secure(c.isSecure())
+                .path(c.getPath())
+                .maxAge(maxAge)
+                .sameSite(c.getSameSite())
+                .build();
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
