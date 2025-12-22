@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Service
 public class S3Service {
-    @Value("${aws.s3.bucket-name}")
+    @Value("${cloud.aws.s3.bucket-name}")
     private String bucketName;
 
     private final S3Client s3Client;

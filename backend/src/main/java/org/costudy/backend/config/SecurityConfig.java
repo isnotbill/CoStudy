@@ -129,23 +129,8 @@ public class SecurityConfig {
     @Bean
     public LogoutHandler cookieClearingLogoutHandler(){
         return (request, response, authentication) -> {
-            ResponseCookie clearAccess = ResponseCookie.from("access_token", "")
-                    .domain(".costudy.online")
-                    .path("/")
-                    .httpOnly(true)
-                    .secure(true)
-                    .sameSite("None")
-                    .maxAge(0)
-                    .build();
-
-            ResponseCookie clearRefresh = ResponseCookie.from("refresh_token", "")
-                    .domain(".costudy.online")
-                    .path("/")
-                    .httpOnly(true)
-                    .secure(true)
-                    .sameSite("None")
-                    .maxAge(0)
-                    .build();
+            ResponseCookie clearAccess = jwtService.clearAccess();
+            ResponseCookie clearRefresh = jwtService.clearRefresh();
             response.addHeader(HttpHeaders.SET_COOKIE, clearAccess.toString());
             response.addHeader(HttpHeaders.SET_COOKIE, clearRefresh.toString());
         };
