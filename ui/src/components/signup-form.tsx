@@ -13,8 +13,43 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { useState } from 'react'
+import { apiClient } from "@/lib/apiClient"
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
+  const [formData, setFormData] = useState({
+    email: '',
+    name: '',
+    password: '',
+    confirmPassword: ''
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.id]: e.target.value
+    }))
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!")
+      return
+    }
+
+    try {
+      const res = await apiClient.post('/register', {
+        email: formData.email,
+        name: formData.name,
+        password: formData.password
+      })
+    } catch (err: any) {
+      console.error("Registration failed:", err)
+    }
+  }
+
   return (
     <Card {...props}>
       <CardHeader>
@@ -27,35 +62,33 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         <form>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="name">Full Name</FieldLabel>
-              <Input id="name" type="text" placeholder="John Doe" required />
-            </Field>
-            <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="me@example.com"
                 required
               />
-              <FieldDescription>
-                We&apos;ll use this to contact you. We will not share your email
-                with anyone else.
-              </FieldDescription>
             </Field>
+
+            <Field>
+              <FieldLabel htmlFor="name">Full Name</FieldLabel>
+              <Input id="name" type="text" placeholder="John Doe" required />
+            </Field>
+          
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <Input id="password" type="password" required />
-              <FieldDescription>
+              {/* <FieldDescription>
                 Must be at least 8 characters long.
-              </FieldDescription>
+              </FieldDescription> */}
             </Field>
             <Field>
               <FieldLabel htmlFor="confirm-password">
                 Confirm Password
               </FieldLabel>
               <Input id="confirm-password" type="password" required />
-              <FieldDescription>Please confirm your password.</FieldDescription>
+              {/* <FieldDescription>Please confirm your password.</FieldDescription> */}
             </Field>
             <FieldGroup>
               <Field>
@@ -64,7 +97,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                   Sign up with Google
                 </Button>
                 <FieldDescription className="px-6 text-center">
-                  Already have an account? <a href="#">Sign in</a>
+                  Already have an account? <a href="/login">Sign in</a>
                 </FieldDescription>
               </Field>
             </FieldGroup>
