@@ -16,8 +16,4 @@ public class ApiResponse<T> {
     public ApiResponse(boolean success, String message) {
          this(success, message, null);
     }
-
-
-
-
 }
