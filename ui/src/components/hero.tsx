@@ -39,7 +39,7 @@ export const Hero = () => {
             </div>
 
             {/* SECTION 2: Right Side - Custom Interactive Area */}
-            <SignupForm className="max-w-100 min-w-75 w-[90vw] mb-10 md:mb-0 border border-white/20 mx-6 bg-white/10 backdrop-blur-md shadow-purple-glow"/>
+            <SignupForm className="max-w-100 min-w-75 w-[90vw] mb-10 md:mb-0 border border-white/20 mx-6 bg-white/5 backdrop-blur-md shadow-purple-glow"/>
 
           </div>
         </div>
