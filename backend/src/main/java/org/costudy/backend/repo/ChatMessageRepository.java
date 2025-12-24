@@ -9,5 +9,6 @@ import java.util.List;
 
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
-    List<ChatMessage> getChatMessageByStudyRoom(StudyRoom studyRoom);
+
+    List<ChatMessage> getChatMessageByStudyRoomOrderBySentAtAsc(StudyRoom studyRoom);
 }

@@ -77,6 +77,14 @@ public class JwtService {
         return buildCookie("refresh_token", token, props.getRefreshExpiration());
     }
 
+    public ResponseCookie clearAccess(){
+        return buildCookie("access_token", "", 0);
+    }
+
+    public ResponseCookie clearRefresh(){
+        return buildCookie("refresh_token", "", 0);
+    }
+
     private ResponseCookie buildCookie(
             String name,
             String value,
