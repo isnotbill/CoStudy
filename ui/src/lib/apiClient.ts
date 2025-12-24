@@ -1,106 +1,101 @@
-let isRefreshing = false
-let refreshPromise: Promise<void> | null = null
+// ApiClient.ts
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 
-type ApiError = {
-  status: number
-  message: string
+import { getToken, setToken } from './TokenService'
+
+
+const apiClient: AxiosInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL!,
+  withCredentials: true, // Send cookies automatically
+});
+
+apiClient.interceptors.request.use((cfg: InternalAxiosRequestConfig) => {
+  const token = getToken()
+  if (token && token.includes('.')) {          // must look like a JWT
+    cfg.headers.Authorization = `Bearer ${token}`;
+  } else {
+    delete cfg.headers.Authorization;         // ensure we don’t send “Bearer undefined”
+  }
+  return cfg
+})
+
+let isRefreshing = false;
+type QueueItem = {
+  resolve: (token: string | null) => void
+  reject: (error: unknown) => void
 }
 
-async function refreshToken() {
-  if (isRefreshing && refreshPromise) {
-    return refreshPromise
-  }
 
-  isRefreshing = true
 
-  refreshPromise = fetch("/auth/refresh", {
-    method: "POST",
-    credentials: "include",
-  }).then(res => {
-    if (!res.ok) {
-      throw new Error("Refresh failed")
+let failedQueue: QueueItem[] = []
+
+const processQueue = (error: unknown, token: string | null = null) => {
+  failedQueue.forEach(({ resolve, reject }) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(token);
     }
-  }).finally(() => {
-    isRefreshing = false
-    refreshPromise = null
-  })
+  });
+  failedQueue = [];
+};
 
-  return refreshPromise
-}
+apiClient.interceptors.response.use(
+  (response: AxiosResponse) => response,
+  async (error: AxiosError) => {
 
-export async function api<T>(
-  input: RequestInfo,
-  init: RequestInit = {}
-): Promise<T> {
-  const res = await fetch(input, {
-    ...init,
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...init.headers,
-    },
-  })
+    const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
-  // ✅ success
-  if (res.ok) {
-    return res.status === 204 ? (null as T) : res.json()
-  }
-
-  // 🔁 access token expired → refresh
-  if (res.status === 401) {
-    try {
-      await refreshToken()
-
-      // retry original request
-      const retryRes = await fetch(input, {
-        ...init,
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          ...init.headers,
-        },
-      })
-
-      if (!retryRes.ok) {
-        throw new Error("Retry failed")
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        // Wait for ongoing refresh to finish
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ 
+            resolve: (token: string | null) => {
+            if (token && token.includes('.')) {
+              (originalRequest.headers = originalRequest.headers || {}).Authorization =
+                `Bearer ${token}`;
+            }
+            resolve(apiClient(originalRequest));
+            }
+            , reject });
+        })
       }
 
-      return retryRes.status === 204 ? (null as T) : retryRes.json()
-    } catch {
-      throw {
-        status: 401,
-        message: "Session expired",
-      } satisfies ApiError
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        // Call refresh endpoint; expects new tokens as HttpOnly cookies from backend
+        console.log('refreshing')
+        const { data } = await axios.get<{ accessToken: string}>(
+          `${apiClient.defaults.baseURL}/refresh-token`,
+          {withCredentials: true}
+        )
+        const newToken = data.accessToken
+        setToken(newToken)
+        apiClient.defaults.headers.Authorization = `Bearer ${newToken}`;
+        processQueue(null, newToken);
+        (originalRequest.headers = originalRequest.headers || {}).Authorization = `Bearer ${newToken}`
+        return apiClient(originalRequest)
+
+      } catch (refreshError) {
+        processQueue(refreshError);
+
+        // Handle logout
+
+        await axios.post(`${apiClient.defaults.baseURL}/logout`, null, { withCredentials: true })
+        window.location.assign("/login?reason=expired_token")
+        setToken(null)
+
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
+
+    return Promise.reject(error);
   }
+);
 
-  // ❌ other errors
-  const errorBody = await res.json().catch(() => null)
-
-  throw {
-    status: res.status,
-    message: errorBody?.message || "Request failed",
-  } satisfies ApiError
-}
-
-export const apiClient = {
-  get: <T>(url: string, init?: RequestInit) =>
-    api<T>(url, { ...init, method: "GET" }),
-
-  post: <T>(url: string, body?: any, init?: RequestInit) =>
-    api<T>(url, {
-      ...init,
-      method: "POST",
-      body: JSON.stringify(body),
-    }),
-
-  put: <T>(url: string, body?: any, init?: RequestInit) =>
-    api<T>(url, {
-      ...init,
-      method: "PUT",
-      body: JSON.stringify(body),
-    }),
-
-  delete: <T>(url: string, init?: RequestInit) =>
-    api<T>(url, { ...init, method: "DELETE" }),
-}
+export default apiClient;

@@ -14,14 +14,16 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { useState } from 'react'
-import { apiClient } from "@/lib/apiClient"
+import ReCaptcha from 'react-google-recaptcha'
+import axios from "axios"
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const [formData, setFormData] = useState({
     email: '',
-    name: '',
+    username: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    recaptchaToken: '',
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,22 +33,30 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log(formData)
 
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!")
       return
     }
+    console.log("Submitting form data:", formData)
 
     try {
-      const res = await apiClient.post('/register', {
-        email: formData.email,
-        name: formData.name,
-        password: formData.password
-      })
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/register`,
+        {
+          email: formData.email,
+          username: formData.username,
+          password: formData.password,
+          captchaToken: formData.recaptchaToken,
+        },
+        { timeout: 5000 }
+      )
+      window.location.href='/login'
     } catch (err: any) {
-      console.error("Registration failed:", err)
+      console.error("Registration failed:", err.response?.data)
     }
   }
 
@@ -68,31 +78,49 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 type="email"
                 placeholder="me@example.com"
                 required
+                onChange={(e) => handleChange(e)}
               />
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="name">Full Name</FieldLabel>
-              <Input id="name" type="text" placeholder="John Doe" required />
+              <FieldLabel htmlFor="username">Username</FieldLabel>
+              <Input id="username" type="text" placeholder="John Doe" required onChange={(e) => handleChange(e)}/>
             </Field>
           
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
-              <Input id="password" type="password" required />
+              <Input id="password" type="password" required onChange={(e) => handleChange(e)}/>
               {/* <FieldDescription>
                 Must be at least 8 characters long.
               </FieldDescription> */}
             </Field>
             <Field>
-              <FieldLabel htmlFor="confirm-password">
+              <FieldLabel htmlFor="confirmPassword">
                 Confirm Password
               </FieldLabel>
-              <Input id="confirm-password" type="password" required />
+              <Input id="confirmPassword" type="password" required onChange={(e) => handleChange(e)}/>
               {/* <FieldDescription>Please confirm your password.</FieldDescription> */}
             </Field>
+            <ReCaptcha
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+              onChange={(token : string | null) => {
+                if (token) {
+                  setFormData(prev => ({
+                    ...prev,
+                    ['recaptchaToken']: token
+                  }));
+                } else {
+                  setFormData(prev => ({
+                    ...prev,
+                    ['recaptchaToken']: ''
+                  }));
+                }
+              }}
+              className="flex justify-center items-center w-full">
+            </ReCaptcha>
             <FieldGroup>
               <Field>
-                <Button type="submit">Create Account</Button>
+                <Button type="submit" onClick={(e) => handleSubmit(e)}>Create Account</Button>
                 <Button variant="outline" type="button">
                   Sign up with Google
                 </Button>

@@ -19,7 +19,7 @@ export const AboutSection = () => {
             title="Study together, anywhere in the world"
             description="CoStudy lets students create or join public and private virtual study rooms. Chat in real‑time, keep everyone on track with a synchronized Pomodoro timer (fully customisable), and ask the AI tutor when you hit a roadblock."
             icon={<Users className="w-6 h-6 text-primary" />}
-            image=""
+            image="/images/react.png"
           />
           
           <FeatureBlock 
@@ -27,7 +27,7 @@ export const AboutSection = () => {
             title="Stay on pace with live timers"
             description="The shared timer keeps everyone synced, whether you love Pomodoro or your own rhythm. Gentle alerts appear for every user in the room."
             icon={<Sparkles className="w-6 h-6 text-primary" />}
-            image=""
+            image="/images/react.png"
             reverse
           />
         </div>
