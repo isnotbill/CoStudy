@@ -160,3 +160,73 @@
     transform: translateY(-50%);
   }
 }
+
+/* 1️⃣ Base gradient — NEVER moves */
+.gradient-base {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    #0b0d10 0%,
+    #0e1116 40%,
+    #0a0c10 100%
+  );
+}
+
+/* 2️⃣ Ambient layers */
+.gradient-layer {
+  position: absolute;
+  inset: -20%;
+  opacity: 0.35;
+  will-change: transform, opacity;
+}
+
+/* Soft top-left wash */
+.layer-one {
+  background: radial-gradient(
+    circle at 30% 20%,
+    rgba(120, 140, 255, .4),
+    transparent 70%
+  );
+  animation: driftOne 20s ease-in-out infinite;
+}
+
+/* Bottom-right counter balance */
+.layer-two {
+  background: radial-gradient(
+    circle at 70% 80%,
+    rgba(90, 120, 255, 0.18),
+    transparent 80%
+  );
+  animation: driftTwo 30s ease-in-out infinite;
+}
+
+/* ✨ Motion is slow and subtle */
+@keyframes driftOne {
+  0%, 100% {
+    transform: translate(0, 0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(-5%, -3%);
+    opacity: 0.6;
+  }
+}
+
+@keyframes driftTwo {
+  0%, 100% {
+    transform: translate(0, 0);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translate(5%, 4%);
+    opacity: .6;
+  }
+}
+
+/* ♿ Respect accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .gradient-layer {
+    animation: none;
+  }
+}
