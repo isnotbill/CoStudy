@@ -8,7 +8,7 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        <section className="bg-[rgb(20,11,27)] flex justify-center items-center">
+        <section className="bg-[#0e1116] flex justify-center items-center">
           <AboutSection />
         </section>
       </main>
