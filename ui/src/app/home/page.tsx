@@ -1,4 +1,4 @@
-import DotGridBackground from "@/components/ui/background"
+import DotGridBackground from "@/components/layout/FloatingSupplies"
 import { Header } from "@/components/header"
 
 export default function Home() {

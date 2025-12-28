@@ -1,5 +1,5 @@
 import { LoginForm } from "@/components/login-form"
-import DotGridBackground from "@/components/ui/background"
+import DotGridBackground from "@/components/layout/FloatingSupplies"
 
 export default function LoginPage() {
   return (

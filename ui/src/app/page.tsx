@@ -1,17 +1,14 @@
-import { Header } from "@/components/header";
-import { Hero } from "@/components/hero";
-import { AboutSection } from "@/components/layout/About"
+"use client";
 
-export default function Home() {
+import { BackgroundGrid } from "@/components/layout/BackgroundGrid";
+import { Navbar } from "@/components/root/Navbar";
+import { HeroSection } from "@/components/root/HeroSection";
+
+export default function CoStudyHome() {
   return (
-    <>
-      <Header />
-      <main>
-        <Hero />
-        <section className="bg-[#0e1116] flex justify-center items-center">
-          <AboutSection />
-        </section>
-      </main>
-    </>
+    <BackgroundGrid>
+      <Navbar />
+      <HeroSection />
+    </BackgroundGrid>
   );
 }
