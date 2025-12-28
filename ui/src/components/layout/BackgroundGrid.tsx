@@ -3,7 +3,12 @@
 import React from "react";
 import { FloatingSupplies } from "@/components/layout/FloatingSupplies";
 
-export function BackgroundGrid({ children }: { children: React.ReactNode }) {
+type BackgroundGridProps = {
+  children: React.ReactNode;
+  showFloatingSupplies?: boolean;
+}
+
+export function BackgroundGrid({ children, showFloatingSupplies = true }: BackgroundGridProps) {
   return (
     <div
       className="min-h-screen bg-[#f8f5e6] text-stone-900 overflow-hidden relative selection:bg-yellow-300"
@@ -14,7 +19,7 @@ export function BackgroundGrid({ children }: { children: React.ReactNode }) {
         backgroundPosition: "0 0, 10px 10px",
       }}
     >
-      <FloatingSupplies />
+      {showFloatingSupplies && <FloatingSupplies />}
       {children}
     </div>
   );
