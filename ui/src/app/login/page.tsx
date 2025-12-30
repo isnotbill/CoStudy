@@ -1,15 +1,15 @@
-import { LoginForm } from "@/components/login-form"
-import DotGridBackground from "@/components/ui/background"
+import React from "react";
+import Link from "next/link";
+import { ArrowLeft, BookOpen } from "lucide-react";
+import { BackgroundGrid } from "@/components/layout/BackgroundGrid"; // Using your component
+import { LoginForm } from "./components/LoginForm"
 
 export default function LoginPage() {
   return (
-    <div className="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
-      <div className="absolute inset-0 z-0 from-[#513d9b]">
-        <DotGridBackground />
-      </div>
-      <div className="w-full max-w-sm z-10">
+    <BackgroundGrid showFloatingSupplies={false}>
+      <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <LoginForm />
       </div>
-    </div>
-  )
+    </BackgroundGrid>
+  );
 }
