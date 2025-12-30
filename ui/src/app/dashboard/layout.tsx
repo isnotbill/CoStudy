@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { DashboardLayout } from "@/components/dashboard/DashLayout";
-import { RoomListHeader } from "@/components/dashboard/rooms/RoomListHeader";
-import { RoomGrid } from "@/components/dashboard/rooms/RoomList";
+import { DashboardLayout } from "@/app/dashboard/components/DashLayout";
+import { RoomListHeader } from "@/app/dashboard/rooms/components/RoomListHeader";
+import { RoomGrid } from "@/app/dashboard/rooms/components/RoomList";
 
 export default function DashboardPage({ children }: { children: React.ReactNode }) {
   return (

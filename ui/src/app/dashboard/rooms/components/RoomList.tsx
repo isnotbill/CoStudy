@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { RoomCard } from "@/components/dashboard/rooms/RoomCard"; // Assuming this exists from previous step
+import { RoomCard } from "./RoomCard"; // Assuming this exists from previous step
 
 export function RoomGrid() {
   // Mock Data

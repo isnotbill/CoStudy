@@ -18,7 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { GoogleAuthButton } from "./GoogleAuthButton";
-import { CostudyLogo } from "../layout/Logo";
+import { CostudyLogo } from "@/components/layout/Logo";
 import axios from "axios";
 import { useState } from "react";
 import { ApiResponse } from "@/types/ApiResponse";

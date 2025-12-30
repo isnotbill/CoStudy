@@ -1,7 +1,7 @@
 "use client";
 
-import { RoomListHeader } from "@/components/dashboard/rooms/RoomListHeader";
-import { RoomGrid } from "@/components/dashboard/rooms/RoomList";
+import { RoomListHeader } from "@/app/dashboard/rooms/components/RoomListHeader";
+import { RoomGrid } from "@/app/dashboard/rooms/components/RoomList";
 
 export default function DashboardPage() {
   return (

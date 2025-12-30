@@ -18,8 +18,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { CostudyLogo } from "../layout/Logo";
-import { UserCard } from "../dashboard/UserCard";
+import { CostudyLogo } from "@/components/layout/Logo";
+import { UserCard } from "./UserCard"
 import { cn } from "@/lib/utils";
 
 const tabs = [

@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { BackgroundGrid } from "@/components/layout/BackgroundGrid"; // Using your component
-import { LoginForm } from "@/components/login/LoginForm";
+import { LoginForm } from "./components/LoginForm"
 
 export default function LoginPage() {
   return (
