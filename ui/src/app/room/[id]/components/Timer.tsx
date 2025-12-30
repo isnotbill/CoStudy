@@ -39,9 +39,9 @@ export function Timer() {
   };
 
   return (
-    <RoomCard className={cn("flex flex-col items-center justify-center p-6 md:p-8 transition-colors duration-300 relative overflow-hidden", modes[mode].color)}>
+    <RoomCard className={cn("flex flex-col items-center justify-center h-full gap-6 p-6 md:p-8 transition-colors duration-300 relative overflow-hidden", modes[mode].color)}>
 
-      <div className="flex gap-2 mb-6 z-10 flex-wrap justify-center">
+      <div className="flex gap-2 z-10 flex-wrap justify-center">
         {(Object.keys(modes) as TimerMode[]).map((m) => (
           <button
             key={m}
@@ -59,7 +59,7 @@ export function Timer() {
       </div>
 
       {/* Clock */}
-      <div className="text-[4rem] md:text-[5rem] lg:text-[6rem] font-black leading-none font-mono tracking-tighter tabular-nums mb-6 z-10 text-slate-900">
+      <div className="text-[4rem] md:text-[5rem] lg:text-[6rem] font-black leading-none font-mono tracking-tighter tabular-nums z-10 text-slate-900">
         {formatTime(timeLeft)}
       </div>
 

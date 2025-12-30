@@ -30,7 +30,7 @@ export default function RoomPage() {
           <div className="mx-auto h-full min-h-0 max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-6 pb-6 md:pb-0">
             
             <section className="flex flex-col min-h-0 gap-6">
-              <div className="shrink-0">
+              <div className="flex-1 min-h-0">
                 <Timer />
               </div>
 
