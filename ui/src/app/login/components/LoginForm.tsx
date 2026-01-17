@@ -25,7 +25,7 @@ import { ApiResponse } from "@/types/ApiResponse";
 
 // Form Schema
 const formSchema = z.object({
-  email: z.string().min(1),
+  username: z.string().min(1),
   password: z.string().min(1),
 });
 
@@ -33,7 +33,7 @@ export function LoginForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
@@ -47,9 +47,15 @@ export function LoginForm() {
     form.clearErrors();
 
     try {
-      const res = await axios.post("/login", values)
-
-      console.log("Login successful:", res.data);
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/login`,
+        values,
+        { 
+          withCredentials: true,
+          timeout: 5000
+        }
+      )
+      window.location.replace("/dashboard");
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         if (err.response?.data) {
@@ -78,7 +84,7 @@ export function LoginForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 w-full">
           <FormField
             control={form.control}
-            name="email"
+            name="username"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-bold text-slate-700">Username or Email</FormLabel>
@@ -121,6 +127,14 @@ export function LoginForm() {
           <Button type="submit" className="w-full h-12 text-base bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-sm transition-all">
             {isSubmitting ? <Loader className="animate-spin mr-2 w-4 h-4" /> : <>Sign In <ArrowRight className="ml-2 w-4 h-4" /></> }
           </Button>
+
+          {loginErrors.length > 0 && (
+            <div className="w-full">
+              {loginErrors.map((err, index) => (
+                <p key={index} className="text-red-500 text-sm text-center">{err}</p>
+              ))}
+            </div>
+          )}
         </form>
       </Form>
 

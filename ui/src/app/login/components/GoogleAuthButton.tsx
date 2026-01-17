@@ -6,8 +6,7 @@ import { FcGoogle } from "react-icons/fc";
 
 export function GoogleAuthButton() {
   const handleGoogleLogin = () => {
-    // Add your NextAuth/Clerk logic here
-    console.log("Google login clicked");
+    window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/oauth2/authorization/google`;
   };
 
   return (
