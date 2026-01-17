@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
@@ -21,19 +21,14 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { CostudyLogo } from "@/components/layout/Logo";
 import { UserCard } from "./UserCard"
 import { cn } from "@/lib/utils";
+import apiClient from "@/lib/apiClient";
+import { UserInfo } from "@/types/UserInfo";
 
 const tabs = [
   { name: "My Rooms", icon: LayoutGrid, url: "rooms" },
   { name: "Friends", icon: User, url: "friends" },
   { name: "Settings", icon: Settings, url: "settings" },
 ];
-
-const userData = {
-  username: "costudy_user",
-  avatarUrl: "https://api.dicebear.com/7.x/notionists/svg?seed=Felix",
-  badgeLabel: "Student",
-  streakDays: 14,
-};
 
 type SidebarContentProps = {
   collapsed?: boolean;
@@ -43,6 +38,25 @@ type SidebarContentProps = {
 
 function SidebarContent({ collapsed = false, isMobile = false, onNavigate }: SidebarContentProps) {
   const pathname = usePathname();
+  const [userData, setUserData] = useState<UserInfo>(
+    {
+      username: "username",
+      avatarUrl: "https://api.costudy.online/avatars/default-avatar.png",
+      badgeLabel: "Student",
+      streakDays: 14,
+    }
+  );
+
+  useEffect(() => {
+    apiClient.get('/user')
+      .then(res => {
+        setUserData(res.data);
+      })
+      .catch(err => {
+        console.error(err)
+        // window.location.href = '/login'
+      })
+  }, [])
 
   return (
     <div className="flex flex-col h-full">

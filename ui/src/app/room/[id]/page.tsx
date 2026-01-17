@@ -13,7 +13,9 @@ export default function RoomPage() {
   const data = {
     roomId: 8,
     name: "Test Room",
-    code: "TEST1234"
+    code: "TEST1234",
+    admin: true,
+    members: 5
   }
 
   const parsedRoom = RoomSchema.safeParse(data);

@@ -1,29 +1,41 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { RoomCard } from "./RoomCard"; // Assuming this exists from previous step
 
+import apiClient from "@/lib/apiClient";
+
+interface Room {
+  roomId: number
+  name: string
+  code: string
+  admin: boolean
+  members: number
+  private: boolean // TODO: Add to backend
+  avatars: string[] // TODO: Add to backend
+}
+
 export function RoomGrid() {
-  // Mock Data
-  const rooms = [
-    { title: "Late Night Physics ⚛️", category: "Science", count: 4, avatars: ["Felix", "Sarah"], isPrivate: false },
-    { title: "Lofi Beats & Chill", category: "Music", count: 128, avatars: ["John", "Mike", "Ana"], isPrivate: false },
-    { title: "Pomodoro 25/5 Cycles", category: "Productivity", count: 42, avatars: ["A", "B", "C"], isPrivate: false },
-    { title: "Calculus Exam Prep", category: "Math", count: 8, avatars: ["D", "E"], isPrivate: true },
-    { title: "Silent Reading Hall", category: "Literature", count: 15, avatars: ["F", "G", "H"], isPrivate: false },
-    { title: "Python Coding Club 🐍", category: "CS", count: 6, avatars: ["I", "J"], isPrivate: false },
-  ];
+  const [rooms, setRooms] = React.useState<Room[]>([]);
+
+  useEffect(() => {
+    apiClient
+      .get('/rooms')
+      .then(res => setRooms(res.data.data))
+      .catch((err: unknown) => console.error(err))
+  }, [])
 
   return (
     <div className="grid gap-5 grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
       {rooms.map((room, index) => (
         <RoomCard 
           key={index}
-          title={room.title} 
-          category={room.category} 
-          count={room.count} 
-          avatars={room.avatars}
-          private={room.isPrivate}
+          name={room.name} 
+          code={room.code} 
+          members={room.members} 
+          avatars={["Felix", "Sarah"]}
+          private={true}
+          isAdmin={room.admin}
         />
       ))}
     </div>
