@@ -21,7 +21,7 @@ interface ChatMsg {
   content: string
   sentAt: string
   username: string
-  type: 'USER' | 'AI'
+  type: 'USER' | 'AI' | 'SERVER'
 }
 
 interface Profile {
@@ -259,8 +259,14 @@ export default function RoomClient() {
   const [error,         setError]         = useState<string | null>(null)
 
   const [lastRunPhase,  setLastRunPhase]  = useState<TimerPhase | null>(null)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const audioMapRef    = useRef<Record<string, HTMLAudioElement>>({})
+  const messagesContainerRef  = useRef<HTMLDivElement>(null)
+  const messagesEndRef        = useRef<HTMLDivElement>(null)
+  const audioMapRef           = useRef<Record<string, HTMLAudioElement>>({})
+  const prevScrollHeightRef   = useRef(0)
+  const loadingMoreRef        = useRef(false)
+  const initialScrollDone     = useRef(false)
+
+  const [displayCount, setDisplayCount] = useState(20)
 
   // ── Avatar helpers ──────────────────────────────────────────────────────────
   const s3 = (img: string) =>
@@ -388,10 +394,30 @@ export default function RoomClient() {
     return () => clearInterval(id)
   }, [timer])
 
-  // ── Scroll to bottom ────────────────────────────────────────────────────────
+  // ── Scroll to bottom on new messages ────────────────────────────────────────
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (messages.length === 0) return
+    const el = messagesContainerRef.current
+    if (!el) return
+    if (!initialScrollDone.current) {
+      // First load — jump straight to bottom instantly
+      messagesEndRef.current?.scrollIntoView({ behavior: 'instant' })
+      initialScrollDone.current = true
+      return
+    }
+    // Subsequent messages (STOMP) — only scroll if already near bottom
+    const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 120
+    if (isNearBottom) messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // ── Preserve scroll position when prepending history ─────────────────────
+  useEffect(() => {
+    if (!loadingMoreRef.current) return
+    const el = messagesContainerRef.current
+    if (!el) return
+    el.scrollTop = el.scrollHeight - prevScrollHeightRef.current
+    loadingMoreRef.current = false
+  }, [displayCount])
 
   // ── Audio ───────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -414,15 +440,19 @@ export default function RoomClient() {
     if (timer?.status === 'RUNNING') setLastRunPhase(timer.phase)
   }, [timer])
 
-  // ── Timer background accent ─────────────────────────────────────────────────
-  const timerAccent = useMemo(() => {
-    const phase = timer?.status === 'RUNNING' ? timer.phase : lastRunPhase
-    switch (phase) {
-      case 'WORK':       return 'text-indigo-600 dark:text-indigo-300'
-      case 'SHORT_BREAK':return 'text-emerald-600 dark:text-emerald-300'
-      case 'LONG_BREAK': return 'text-sky-600 dark:text-sky-300'
-      default:           return 'text-gray-800 dark:text-white/85'
+  const timerAccent = 'text-gray-800 dark:text-white/85'
+
+  const isRunning = timer?.status === 'RUNNING'
+
+  const phaseOverlayBg = useMemo(() => {
+    const phase = isRunning ? timer!.phase : lastRunPhase
+    const gradients: Record<TimerPhase, string> = {
+      WORK:        'linear-gradient(-45deg,#4c2539,#91414c,#ae4957,#df7485,#ae4957,#91414c,#4c2539)',
+      SHORT_BREAK: 'linear-gradient(-45deg,#22394b,#326983,#3e8fa6,#346d87,#22394b)',
+      LONG_BREAK:  'linear-gradient(-45deg,#1b3931,#347d65,#51ae95,#367d65,#1b3931)',
     }
+    return phase ? { backgroundImage: gradients[phase], backgroundSize: '400% 400%' } : {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timer, lastRunPhase])
 
   // ── Timer display ───────────────────────────────────────────────────────────
@@ -440,6 +470,16 @@ export default function RoomClient() {
   }
 
   // ── Chat ────────────────────────────────────────────────────────────────────
+  function handleScroll() {
+    const el = messagesContainerRef.current
+    if (!el || loadingMoreRef.current || displayCount >= messages.length) return
+    if (el.scrollTop < 80) {
+      prevScrollHeightRef.current = el.scrollHeight
+      loadingMoreRef.current = true
+      setDisplayCount(c => Math.min(c + 20, messages.length))
+    }
+  }
+
   function handleSend(e: React.FormEvent) {
     e.preventDefault()
     if (!inputMsg.trim() || !stompRef.current?.connected) return
@@ -510,6 +550,14 @@ export default function RoomClient() {
 
   return (
     <PageBackground>
+      {/* Phase background overlay */}
+      <div
+        aria-hidden
+        className={`fixed inset-0 z-0 pointer-events-none transition-opacity duration-1000
+          ${isRunning ? 'opacity-[0.32] dark:opacity-[0.82]' : 'opacity-0'}`}
+        style={phaseOverlayBg}
+      />
+
       <HomeNavbar profile={profile} avatarSrc={profileAvatar} />
 
       <main className="relative z-10 px-4 pb-8 max-w-[1280px] mx-auto">
@@ -561,7 +609,7 @@ export default function RoomClient() {
                     {/* Room name */}
                     <div className="text-center">
                       <h2 className="text-lg font-semibold text-gray-800 dark:text-white/85">{roomName}</h2>
-                      <p className="text-xs text-gray-400 dark:text-white/30 mt-0.5 font-mono tracking-wider">{roomCode}</p>
+                      <p className="text-xs mt-0.5 font-mono tracking-wider text-gray-400 dark:text-white/30">{roomCode}</p>
                     </div>
 
                     {/* Phase tabs */}
@@ -572,8 +620,12 @@ export default function RoomClient() {
                           onClick={() => publish('/app/timer/skipTo', { roomId, skipToPhase: phase })}
                           className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200
                             ${timer?.phase === phase
-                              ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-400/15 dark:text-indigo-300'
-                              : 'text-gray-500 dark:text-white/35 hover:text-gray-700 dark:hover:text-white/55'
+                              ? isRunning
+                                ? 'bg-black/[0.08] text-gray-800 border border-black/[0.15] dark:bg-white/20 dark:text-white dark:border-white/30'
+                                : 'bg-indigo-100 text-indigo-600 dark:bg-indigo-400/15 dark:text-indigo-300'
+                              : isRunning
+                                ? 'text-gray-500 hover:text-gray-700 dark:text-white/50 dark:hover:text-white/80'
+                                : 'text-gray-500 dark:text-white/35 hover:text-gray-700 dark:hover:text-white/55'
                             }`}
                         >
                           {label}
@@ -593,12 +645,29 @@ export default function RoomClient() {
                         else if (timer.status === 'PAUSED') publish('/app/timer/resume', roomId)
                         else                            publish('/app/timer/pause',  roomId)
                       }}
-                      className="w-full py-3 rounded-xl text-sm font-semibold transition-all duration-200
-                        bg-indigo-600 text-white hover:bg-indigo-500
-                        dark:shadow-[0_0_28px_rgba(99,102,241,0.32)]
-                        dark:hover:shadow-[0_0_42px_rgba(99,102,241,0.5)]"
+                      className={`w-full py-3 rounded-xl text-sm font-semibold transition-all duration-300
+                        flex items-center justify-center gap-2
+                        ${isRunning
+                          ? 'bg-black/[0.08] hover:bg-black/[0.13] border border-black/[0.15] text-gray-800 dark:bg-white/20 dark:hover:bg-white/30 dark:border-white/30 dark:text-white'
+                          : 'bg-indigo-600 hover:bg-indigo-500 text-white dark:shadow-[0_0_28px_rgba(99,102,241,0.32)] dark:hover:shadow-[0_0_42px_rgba(99,102,241,0.5)]'
+                        }`}
                     >
-                      {!timer || timer.status === 'PAUSED' ? 'Start' : 'Pause'}
+                      {isRunning ? (
+                        <>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="4" width="4" height="16" rx="1" />
+                            <rect x="14" y="4" width="4" height="16" rx="1" />
+                          </svg>
+                          Pause
+                        </>
+                      ) : (
+                        <>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                          {!timer ? 'Start' : 'Resume'}
+                        </>
+                      )}
                     </button>
                   </motion.div>
                 )}
@@ -673,15 +742,31 @@ export default function RoomClient() {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3
-              [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-black/10
-              dark:[&::-webkit-scrollbar-thumb]:bg-white/10">
-              {messages.map(m => {
+            <div
+              ref={messagesContainerRef}
+              onScroll={handleScroll}
+              className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3
+                [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent
+                [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-black/10
+                dark:[&::-webkit-scrollbar-thumb]:bg-white/10"
+            >
+              {displayCount < messages.length && (
+                <p className="text-[11px] text-center text-gray-400 dark:text-white/25 py-1 select-none">
+                  Scroll up for older messages
+                </p>
+              )}
+              {messages.slice(-displayCount).map(m => {
                 const isMe = m.userId === profile?.id
-                const isAI = m.type === 'AI'
 
-                if (isAI) return (
+                if (m.type === 'SERVER') return (
+                  <div key={m.chatMessageId} className="flex items-center gap-3 my-1 select-none">
+                    <div className="flex-1 h-px bg-black/[0.07] dark:bg-white/[0.07]" />
+                    <span className="text-[11px] text-gray-400 dark:text-white/25 whitespace-nowrap">{m.content}</span>
+                    <div className="flex-1 h-px bg-black/[0.07] dark:bg-white/[0.07]" />
+                  </div>
+                )
+
+                if (m.type === 'AI') return (
                   <div key={m.chatMessageId} className="flex gap-3 items-start">
                     <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500
                       flex items-center justify-center text-white text-xs shrink-0">✦</div>
