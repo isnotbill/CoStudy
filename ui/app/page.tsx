@@ -97,15 +97,15 @@ export default function Home() {
 
         {/* Dark mode — main atmospheric glows */}
         <div className="orb-1 absolute -top-[25%] -left-[12%] w-[65vw] h-[65vw] rounded-full
-          bg-indigo-600/[0.13] blur-[150px] opacity-0 dark:opacity-100 transition-opacity duration-700" />
+          bg-indigo-600/13 blur-[150px] opacity-0 dark:opacity-100 transition-opacity duration-700" />
         <div className="orb-2 absolute -bottom-[20%] -right-[8%] w-[50vw] h-[50vw] rounded-full
-          bg-violet-700/[0.11] blur-[120px] opacity-0 dark:opacity-100 transition-opacity duration-700" />
+          bg-violet-700/11 blur-[120px] opacity-0 dark:opacity-100 transition-opacity duration-700" />
 
         {/* Moon — dark mode only */}
         <div className="absolute top-[7%] right-[16%] opacity-0 dark:opacity-100 transition-opacity duration-700">
           <div className="moon-halo absolute rounded-full pointer-events-none"
             style={{ inset: '-130px', background: 'radial-gradient(circle, rgba(200,212,255,0.1) 0%, rgba(160,175,255,0.04) 50%, transparent 72%)' }} />
-          <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-white/95 to-slate-200/85"
+          <div className="relative w-8 h-8 rounded-full bg-linear-to-br from-white/95 to-slate-200/85"
             style={{ boxShadow: '0 0 16px rgba(255,255,255,0.7), 0 0 50px rgba(200,215,255,0.45), 0 0 150px rgba(160,175,255,0.22)' }} />
         </div>
 
@@ -115,7 +115,7 @@ export default function Home() {
             style={{ inset: '-160px', background: 'radial-gradient(circle, rgba(251,191,36,0.16) 0%, rgba(253,186,116,0.07) 45%, transparent 70%)' }} />
           <div className="sun-rays absolute rounded-full pointer-events-none"
             style={{ inset: '-55px', background: 'radial-gradient(circle, transparent 32%, rgba(251,191,36,0.06) 54%, transparent 74%)' }} />
-          <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-yellow-200 to-amber-400"
+          <div className="relative w-10 h-10 rounded-full bg-linear-to-br from-yellow-200 to-amber-400"
             style={{ boxShadow: '0 0 22px rgba(251,191,36,0.6), 0 0 60px rgba(253,186,116,0.32), 0 0 160px rgba(253,220,100,0.18)' }} />
         </div>
 
@@ -206,11 +206,11 @@ export default function Home() {
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.18, ease: 'easeOut' }}
-            className="w-full max-w-[390px] shrink-0"
+            className="w-full max-w-97.5 shrink-0"
           >
             <div className="rounded-2xl p-8 backdrop-blur-xl
               bg-white/85 border border-black/[0.07] shadow-[0_4px_28px_rgba(0,0,0,0.07)]
-              dark:bg-white/[0.05] dark:border-white/[0.09]
+              dark:bg-white/5 dark:border-white/9
               dark:shadow-[0_0_0_1px_rgba(255,255,255,0.04)]">
 
               <h2 className="text-[1.15rem] font-semibold mb-1
@@ -246,7 +246,7 @@ export default function Home() {
                       className="w-full px-4 py-2.5 rounded-xl text-sm transition-all duration-200
                         bg-white border border-gray-200 text-gray-900 placeholder:text-gray-400/70
                         focus:outline-none focus:ring-2 focus:ring-indigo-400/35 focus:border-indigo-300
-                        dark:bg-white/[0.055] dark:border-white/[0.09] dark:text-white/85
+                        dark:bg-white/5.5 dark:border-white/9 dark:text-white/85
                         dark:placeholder:text-white/18 dark:focus:ring-indigo-400/25 dark:focus:border-indigo-400/40"
                     />
                   </div>
