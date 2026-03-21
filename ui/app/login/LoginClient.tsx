@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
 import { Navbar } from '@/components/Navbar'
 import { PageBackground } from '@/components/PageBackground'
-import { Fireflies } from '@/components/Fireflies'
 
 function GoogleIcon() {
   return (
@@ -70,9 +69,7 @@ export default function LoginClient() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#f3ece0] dark:bg-[#080b14] transition-colors duration-500">
-      <PageBackground />
-      <Fireflies />
+    <PageBackground showCelestial>
       <Navbar />
 
       <main className="relative z-10 flex items-center justify-center px-6 pb-16 pt-4 min-h-[calc(100vh-80px)]">
@@ -175,6 +172,6 @@ export default function LoginClient() {
           </div>
         </motion.div>
       </main>
-    </div>
+    </PageBackground>
   )
 }

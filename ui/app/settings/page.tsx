@@ -245,8 +245,7 @@ export default function SettingsPage() {
     : 'https://api.costudy.online/avatars/default-avatar.png'
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#f3ece0] dark:bg-[#080b14] transition-colors duration-500">
-      <PageBackground />
+    <PageBackground>
       <HomeNavbar profile={profile} avatarSrc={avatarSrc} />
 
       <main className="relative z-10 px-4 pb-16 pt-4 max-w-2xl mx-auto">
@@ -318,6 +317,6 @@ export default function SettingsPage() {
           )}
         </motion.div>
       </main>
-    </div>
+    </PageBackground>
   )
 }

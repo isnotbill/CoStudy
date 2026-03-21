@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import apiClient from '@/lib/apiClient'
 import { PageBackground } from '@/components/PageBackground'
-import { Fireflies } from '@/components/Fireflies'
 import { HomeNavbar } from '@/components/HomeNavbar'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -478,9 +477,7 @@ export default function HomeClient() {
     : 'https://api.costudy.online/avatars/default-avatar.png'
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#f3ece0] dark:bg-[#080b14] transition-colors duration-500">
-      <PageBackground />
-      <Fireflies />
+    <PageBackground>
       <HomeNavbar profile={profile} avatarSrc={avatarSrc} />
 
       <main className="relative z-10 px-4 pb-16 pt-4 max-w-6xl mx-auto">
@@ -575,6 +572,6 @@ export default function HomeClient() {
           </motion.div>
         </div>
       </main>
-    </div>
+    </PageBackground>
   )
 }

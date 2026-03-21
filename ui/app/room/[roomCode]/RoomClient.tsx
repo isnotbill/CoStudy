@@ -509,8 +509,7 @@ export default function RoomClient() {
   )
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#f3ece0] dark:bg-[#080b14] transition-colors duration-500">
-      <PageBackground />
+    <PageBackground>
       <HomeNavbar profile={profile} avatarSrc={profileAvatar} />
 
       <main className="relative z-10 px-4 pb-8 max-w-[1280px] mx-auto">
@@ -812,6 +811,6 @@ export default function RoomClient() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </PageBackground>
   )
 }
