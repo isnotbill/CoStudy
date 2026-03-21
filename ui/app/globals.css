@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+/* ── Class-based dark mode (Tailwind v4) ── */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Custom font utilities ── */
+@theme {
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+/* font-cedarville resolves in element scope (inherits --font-cedarville-src from <body>) */
+@layer utilities {
+  .font-cedarville {
+    font-family: var(--font-cedarville-src), cursive;
+  }
+}
+
+/* ── Atmospheric glow animations ── */
+@keyframes glow-breathe {
+  0%, 100% { opacity: 1;   transform: scale(1);    }
+  50%       { opacity: 0.6; transform: scale(1.08); }
+}
+@keyframes glow-drift {
+  0%, 100% { transform: translate(0,    0)    scale(1);    }
+  33%       { transform: translate(18px, -22px) scale(1.06); }
+  66%       { transform: translate(-12px,-10px) scale(0.97); }
+}
+
+/* Named differently from the CSS class to avoid browser conflicts */
+@keyframes halo-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1);    }
+  50%       { opacity: 0.55; transform: scale(1.14); }
+}
+@keyframes sun-rays {
+  0%, 100% { opacity: 0.9; transform: scale(1)    rotate(0deg);   }
+  50%       { opacity: 0.6; transform: scale(1.08) rotate(20deg);  }
+}
+
+.orb-1     { animation: glow-breathe 10s ease-in-out infinite; }
+.orb-2     { animation: glow-drift   16s ease-in-out infinite; }
+.moon-halo { animation: halo-pulse    7s ease-in-out infinite; }
+.sun-halo  { animation: halo-pulse    9s ease-in-out infinite; animation-delay: -3s; }
+.sun-rays  { animation: sun-rays     12s ease-in-out infinite; }
