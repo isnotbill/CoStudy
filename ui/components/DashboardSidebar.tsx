@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '@/components/ThemeProvider'
 import { LayoutGrid, Users, Settings, Sun, Moon, ChevronLeft, X } from 'lucide-react'
@@ -9,31 +10,41 @@ import { LayoutGrid, Users, Settings, Sun, Moon, ChevronLeft, X } from 'lucide-r
 // ─── Nav item ─────────────────────────────────────────────────────────────────
 
 function NavItem({
-  icon, label, active, collapsed, onClick, title,
+  icon, label, active, collapsed, href, onClick,
 }: {
   icon: React.ReactNode
   label: string
   active: boolean
   collapsed: boolean
-  onClick: () => void
-  title?: string
+  href?: string
+  onClick?: () => void
 }) {
-  return (
-    <button
-      onClick={onClick}
-      title={collapsed ? title ?? label : undefined}
-      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-        transition-all duration-200 text-left
-        ${active
-          ? 'bg-indigo-500/10 text-link dark:bg-indigo-400/15'
-          : 'text-body hover:bg-black/[0.04] dark:hover:bg-white/[0.05] hover:text-heading'
-        }
-        ${collapsed ? 'justify-center' : ''}`}
-    >
+  const cls = `w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
+    transition-all duration-200 text-left
+    ${active
+      ? 'bg-indigo-500/10 text-link dark:bg-indigo-400/15'
+      : 'text-body hover:bg-black/[0.04] dark:hover:bg-white/[0.05] hover:text-heading'
+    }
+    ${collapsed ? 'justify-center' : ''}`
+
+  const content = (
+    <>
       <span className={`shrink-0 ${active ? 'text-link' : ''}`}>{icon}</span>
-      {!collapsed && (
-        <span className="truncate">{label}</span>
-      )}
+      {!collapsed && <span className="truncate">{label}</span>}
+    </>
+  )
+
+  if (href) {
+    return (
+      <Link href={href} className={cls} title={collapsed ? label : undefined} onClick={onClick}>
+        {content}
+      </Link>
+    )
+  }
+
+  return (
+    <button onClick={onClick} title={collapsed ? label : undefined} className={cls}>
+      {content}
     </button>
   )
 }
@@ -43,8 +54,6 @@ function NavItem({
 interface Props {
   profile: { username: string; image?: string | null } | null
   avatarSrc: string
-  activeTab: 'rooms' | 'friends'
-  onTabChange: (tab: 'rooms' | 'friends') => void
   collapsed: boolean
   onCollapse: () => void
   mobileOpen: boolean
@@ -54,10 +63,11 @@ interface Props {
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
 export function DashboardSidebar({
-  profile, avatarSrc, activeTab, onTabChange,
+  profile, avatarSrc,
   collapsed, onCollapse, mobileOpen, onMobileClose,
 }: Props) {
   const { theme, toggle } = useTheme()
+  const pathname = usePathname()
 
   return (
     <aside
@@ -75,7 +85,7 @@ export function DashboardSidebar({
         ${collapsed ? 'justify-center' : 'justify-between'}`}>
         {!collapsed && (
           <Link
-            href="/home"
+            href="/home/rooms"
             className="font-cedarville text-[22px] tracking-wide select-none
               text-indigo-700 dark:text-indigo-200
               dark:drop-shadow-[0_0_18px_rgba(165,180,252,0.4)]
@@ -93,7 +103,6 @@ export function DashboardSidebar({
         >
           <ChevronLeft size={16} className={`transition-transform duration-300 ${collapsed ? 'rotate-180' : ''}`} />
         </button>
-        {/* Mobile close button */}
         <button
           onClick={onMobileClose}
           className="flex lg:hidden p-2 rounded-lg ml-auto transition-colors duration-200
@@ -108,36 +117,31 @@ export function DashboardSidebar({
         <NavItem
           icon={<LayoutGrid size={18} />}
           label="Rooms"
-          active={activeTab === 'rooms'}
+          active={pathname.startsWith('/home/rooms')}
           collapsed={collapsed}
-          onClick={() => { onTabChange('rooms'); onMobileClose() }}
+          href="/home/rooms"
+          onClick={onMobileClose}
         />
         <NavItem
           icon={<Users size={18} />}
           label="Friends"
-          active={activeTab === 'friends'}
+          active={pathname.startsWith('/home/friends')}
           collapsed={collapsed}
-          onClick={() => { onTabChange('friends'); onMobileClose() }}
-        />
-
-        {/* Settings — navigates to /settings */}
-        <Link
-          href="/settings"
-          title={collapsed ? 'Settings' : undefined}
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-            transition-all duration-200
-            text-body hover:bg-black/[0.04] dark:hover:bg-white/[0.05] hover:text-heading
-            ${collapsed ? 'justify-center' : ''}`}
+          href="/home/friends"
           onClick={onMobileClose}
-        >
-          <span className="shrink-0"><Settings size={18} /></span>
-          {!collapsed && <span className="truncate">Settings</span>}
-        </Link>
+        />
+        <NavItem
+          icon={<Settings size={18} />}
+          label="Settings"
+          active={pathname.startsWith('/settings')}
+          collapsed={collapsed}
+          href="/settings"
+          onClick={onMobileClose}
+        />
       </nav>
 
       {/* ── Bottom: theme toggle + user card ── */}
       <div className="shrink-0 px-2 py-3 border-t border-border flex flex-col gap-1">
-        {/* Theme toggle */}
         <button
           onClick={toggle}
           aria-label="Toggle theme"
@@ -164,7 +168,6 @@ export function DashboardSidebar({
           )}
         </button>
 
-        {/* User card */}
         <div
           title={collapsed ? (profile?.username ?? '') : undefined}
           className={`flex items-center gap-3 px-3 py-2.5 rounded-xl
