@@ -266,7 +266,8 @@ export default function RoomClient() {
   const loadingMoreRef        = useRef(false)
   const initialScrollDone     = useRef(false)
 
-  const [displayCount, setDisplayCount] = useState(20)
+  const [hasMore,          setHasMore]          = useState(false)
+  const [oldestMessageId,  setOldestMessageId]  = useState<number | null>(null)
 
   // ── Avatar helpers ──────────────────────────────────────────────────────────
   const s3 = (img: string) =>
@@ -319,8 +320,13 @@ export default function RoomClient() {
   // ── Load messages ───────────────────────────────────────────────────────────
   useEffect(() => {
     if (roomId == null) return
-    apiClient.get(`/rooms/${roomId}/messages`, { withCredentials: true })
-      .then(res => setMessages(res.data.data ?? []))
+    apiClient.get(`/rooms/${roomId}/messages`, { params: { limit: 20 }, withCredentials: true })
+      .then(res => {
+        const data: ChatMsg[] = res.data.data?.messages ?? []
+        setMessages(data)
+        setHasMore(res.data.data?.hasMore ?? false)
+        if (data.length > 0) setOldestMessageId(data[0].chatMessageId)
+      })
       .catch(() => setError('Failed to load chat'))
       .finally(() => setLoadMsgs(false))
   }, [roomId])
@@ -417,7 +423,7 @@ export default function RoomClient() {
     if (!el) return
     el.scrollTop = el.scrollHeight - prevScrollHeightRef.current
     loadingMoreRef.current = false
-  }, [displayCount])
+  }, [messages])
 
   // ── Audio ───────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -472,11 +478,21 @@ export default function RoomClient() {
   // ── Chat ────────────────────────────────────────────────────────────────────
   function handleScroll() {
     const el = messagesContainerRef.current
-    if (!el || loadingMoreRef.current || displayCount >= messages.length) return
+    if (!el || loadingMoreRef.current || !hasMore || oldestMessageId == null) return
     if (el.scrollTop < 80) {
       prevScrollHeightRef.current = el.scrollHeight
       loadingMoreRef.current = true
-      setDisplayCount(c => Math.min(c + 20, messages.length))
+      apiClient.get(`/rooms/${roomId}/messages`, {
+        params: { before: oldestMessageId, limit: 20 },
+        withCredentials: true,
+      })
+        .then(res => {
+          const older: ChatMsg[] = res.data.data?.messages ?? []
+          setMessages(prev => [...older, ...prev])
+          setHasMore(res.data.data?.hasMore ?? false)
+          if (older.length > 0) setOldestMessageId(older[0].chatMessageId)
+        })
+        .catch(() => { loadingMoreRef.current = false })
     }
   }
 
@@ -750,12 +766,12 @@ export default function RoomClient() {
                 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-black/10
                 dark:[&::-webkit-scrollbar-thumb]:bg-white/10"
             >
-              {displayCount < messages.length && (
+              {hasMore && (
                 <p className="text-[11px] text-center text-gray-400 dark:text-white/25 py-1 select-none">
                   Scroll up for older messages
                 </p>
               )}
-              {messages.slice(-displayCount).map(m => {
+              {messages.map(m => {
                 const isMe = m.userId === profile?.id
 
                 if (m.type === 'SERVER') return (
