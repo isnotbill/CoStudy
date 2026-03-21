@@ -12,8 +12,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import java.util.Map;
 
 @Controller
 public class ChatController {
@@ -34,8 +35,12 @@ public class ChatController {
     }
 
     @GetMapping("/rooms/{roomId}/messages")
-    public ResponseEntity<ApiResponse<?>> getChatMessage(@PathVariable int roomId){
-            List<ChatMessage> messages = chatService.getRoomMessages(roomId);
-            return ResponseEntity.ok(new ApiResponse<>(true, "Fetched chat room messages", messages));
+    public ResponseEntity<ApiResponse<?>> getChatMessage(
+            @PathVariable int roomId,
+            @RequestParam(required = false) Integer before,
+            @RequestParam(defaultValue = "20") int limit
+    ) {
+        Map<String, Object> result = chatService.getRoomMessages(roomId, before, limit);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Fetched chat room messages", result));
     }
 }
