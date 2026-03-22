@@ -13,4 +13,5 @@ public class PublicRoomDto {
     private String roomName;
     private String hostName;
     private int members;
+    private int onlineCount;
 }

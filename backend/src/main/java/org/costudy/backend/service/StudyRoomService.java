@@ -12,16 +12,12 @@ import org.costudy.backend.repo.ChatMessageRepository;
 import org.costudy.backend.repo.SettingsRepo;
 import org.costudy.backend.repo.StudyRoomRepo;
 import org.costudy.backend.repo.UserStudyRoomRepo;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,12 +31,14 @@ public class StudyRoomService {
     private final StudyRoomRepo roomRepo;
     private final ChatMessageRepository chatRepo;
     private final SettingsService settingsService;
+    private final PresenceRegistry presenceRegistry;
 
-    public StudyRoomService(UserStudyRoomRepo userStudyRoomRepo, StudyRoomRepo studyRoomRepo, ChatMessageRepository chatRepo, SettingsService settingsService) {
+    public StudyRoomService(UserStudyRoomRepo userStudyRoomRepo, StudyRoomRepo studyRoomRepo, ChatMessageRepository chatRepo, SettingsService settingsService, PresenceRegistry presenceRegistry) {
         this.userStudyRoomRepo = userStudyRoomRepo;
         this.roomRepo = studyRoomRepo;
         this.chatRepo = chatRepo;
         this.settingsService = settingsService;
+        this.presenceRegistry = presenceRegistry;
     }
 
 
@@ -220,20 +218,57 @@ public class StudyRoomService {
 
 
     public Page<PublicRoomDto> getPublicRooms(int page, int limit, String keyword, String username) {
-        Pageable pageable = PageRequest.of(page, limit, Sort.by("name").ascending());
-        Page<StudyRoom> studyRooms = roomRepo.findPublicRoomsExcludingUser(keyword, username, pageable);
-        return studyRooms
-                .map(room -> {
-                    List<UserStudyRoom> rels = userStudyRoomRepo.findByStudyRoom(room);
-                    String hostName = null;
-                    for(UserStudyRoom r : rels) {
+        Map<Integer, Integer> activeCounts = presenceRegistry.getActiveRoomCounts();
+        Set<Integer> activeIds = activeCounts.keySet();
 
-                        if(r.isAdmin()) {
-                            hostName = r.getUser().getUsername();
-                        }
-                    }
-                    return new PublicRoomDto(room.getRoomId(), room.getCode(), room.getName(), hostName, userStudyRoomRepo.countByStudyRoomAndHasLeftFalse(room));
-                });
+        // Phase 1: fetch active public rooms (small set, unpaginated)
+        List<PublicRoomDto> activeDtos = Collections.emptyList();
+        if (!activeIds.isEmpty()) {
+            List<StudyRoom> activeRooms = roomRepo.findActivePublicRoomsExcludingUser(activeIds, keyword, username);
+            activeDtos = activeRooms.stream()
+                    .map(room -> toPublicRoomDto(room, activeCounts.getOrDefault(room.getRoomId(), 0)))
+                    .sorted(Comparator.comparingInt(PublicRoomDto::getOnlineCount).reversed())
+                    .collect(Collectors.toList());
+        }
+
+        int totalActive = activeDtos.size();
+        int offset = page * limit;
+
+        // Sentinel for empty IN clause
+        Set<Integer> excludeIds = activeIds.isEmpty() ? Set.of(-1) : activeIds;
+
+        // Phase 2: determine what goes on this page
+        if (offset < totalActive && offset + limit <= totalActive) {
+            // Page falls entirely within active rooms
+            List<PublicRoomDto> pageContent = activeDtos.subList(offset, offset + limit);
+            Page<StudyRoom> inactiveCount = roomRepo.findInactivePublicRoomsExcludingUser(excludeIds, keyword, username, PageRequest.of(0, 1));
+            long total = totalActive + inactiveCount.getTotalElements();
+            return new PageImpl<>(pageContent, PageRequest.of(page, limit), total);
+        }
+
+        // Active rooms partially fill or don't appear on this page — backfill with inactive
+        List<PublicRoomDto> pageContent = new ArrayList<>();
+        if (offset < totalActive) {
+            pageContent.addAll(activeDtos.subList(offset, totalActive));
+        }
+
+        int remainingSlots = limit - pageContent.size();
+        int inactiveSkip = Math.max(0, offset - totalActive);
+        Pageable inactivePageable = PageRequest.of(inactiveSkip / remainingSlots, remainingSlots, Sort.by("name").ascending());
+        Page<StudyRoom> inactivePage = roomRepo.findInactivePublicRoomsExcludingUser(excludeIds, keyword, username, inactivePageable);
+        inactivePage.forEach(room -> pageContent.add(toPublicRoomDto(room, 0)));
+
+        long total = totalActive + inactivePage.getTotalElements();
+        return new PageImpl<>(pageContent, PageRequest.of(page, limit), total);
+    }
+
+    private PublicRoomDto toPublicRoomDto(StudyRoom room, int onlineCount) {
+        String hostName = userStudyRoomRepo.findByStudyRoom(room).stream()
+                .filter(UserStudyRoom::isAdmin)
+                .map(r -> r.getUser().getUsername())
+                .findFirst().orElse(null);
+        int memberCount = userStudyRoomRepo.countByStudyRoomAndHasLeftFalse(room);
+        return new PublicRoomDto(room.getRoomId(), room.getCode(), room.getName(), hostName, memberCount, onlineCount);
     }
 
 

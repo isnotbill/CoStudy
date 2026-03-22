@@ -268,6 +268,7 @@ export default function RoomClient() {
 
   const [hasMore,          setHasMore]          = useState(false)
   const [oldestMessageId,  setOldestMessageId]  = useState<number | null>(null)
+  const [onlineUserIds,    setOnlineUserIds]    = useState<Set<number>>(new Set())
 
   // ── Avatar helpers ──────────────────────────────────────────────────────────
   const s3 = (img: string) =>
@@ -378,7 +379,13 @@ export default function RoomClient() {
         const key = msg.body.replace(/"/g, '') as keyof typeof audioMapRef.current
         playSound(key)
       })
+      client.subscribe(`/topic/room/${roomId}/presence`, msg => {
+        setOnlineUserIds(new Set<number>(JSON.parse(msg.body)))
+      })
       client.publish({ destination: '/app/timer/status', body: String(roomId) })
+      if (profile?.id != null) {
+        client.publish({ destination: `/app/room/${roomId}/presence/join`, body: String(profile.id) })
+      }
     }
 
     client.activate()
@@ -692,10 +699,18 @@ export default function RoomClient() {
 
             {/* Users card */}
             <div className={`${panelCls} p-4 flex flex-col gap-2`}>
-              <p className="text-[11px] font-semibold tracking-[0.18em] uppercase mb-1
-                text-gray-500 dark:text-white/38">
-                In Room
-              </p>
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-[11px] font-semibold tracking-[0.18em] uppercase
+                  text-gray-500 dark:text-white/38">
+                  In Room
+                </p>
+                {onlineUserIds.size > 0 && (
+                  <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-500 dark:text-emerald-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 inline-block" />
+                    {onlineUserIds.size}
+                  </span>
+                )}
+              </div>
 
               <div className="flex flex-col gap-1 max-h-56 overflow-y-auto
                 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent
@@ -705,7 +720,10 @@ export default function RoomClient() {
                   <div key={user.id} className="flex items-center gap-3 px-3 py-2 rounded-xl group
                     hover:bg-black/[0.03] dark:hover:bg-white/[0.03]">
                     <div className="relative">
-                      <div className="w-8 h-8 rounded-full overflow-hidden ring-1 ring-black/5 dark:ring-white/10">
+                      <div className={`w-8 h-8 rounded-full overflow-hidden ring-2 transition-all duration-300
+                        ${onlineUserIds.has(user.id)
+                          ? 'ring-emerald-400 dark:ring-emerald-500'
+                          : 'ring-black/5 dark:ring-white/10'}`}>
                         <Image
                           src={pfpMap[user.id] ?? defaultAvatar}
                           alt={user.username}

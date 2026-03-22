@@ -26,12 +26,14 @@ public class UserService {
     private final UserStudyRoomRepo userStudyRoomRepo;
     private final StudyRoomRepo studyRoomRepo;
     private final PasswordEncoder passwordEncoder;
+    private final PresenceRegistry presenceRegistry;
 
-    public UserService(UserRepo userRepo, UserStudyRoomRepo userStudyRoomRepo, StudyRoomRepo studyRoomRepo, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepo userRepo, UserStudyRoomRepo userStudyRoomRepo, StudyRoomRepo studyRoomRepo, PasswordEncoder passwordEncoder, PresenceRegistry presenceRegistry) {
         this.repo = userRepo;
         this.userStudyRoomRepo = userStudyRoomRepo;
         this.studyRoomRepo = studyRoomRepo;
         this.passwordEncoder = passwordEncoder;
+        this.presenceRegistry = presenceRegistry;
     }
 
     public User getCurrentUser(String username) {
@@ -52,7 +54,7 @@ public class UserService {
         return relationships.stream()
                 .map(rel -> {
                     StudyRoom room = rel.getStudyRoom();
-                    return new UserRoomDto(room, rel.isAdmin(), userStudyRoomRepo.countByStudyRoomAndHasLeftFalse(room));
+                    return new UserRoomDto(room, rel.isAdmin(), userStudyRoomRepo.countByStudyRoomAndHasLeftFalse(room), presenceRegistry.getOnlineCount(room.getRoomId()));
                 })
                 .collect(Collectors.toList());
     }
