@@ -14,12 +14,14 @@ public class UserRoomDto {
     private String code;
     private boolean admin;
     private int members;
+    private int onlineCount;
 
-    public UserRoomDto(StudyRoom room, boolean isAdmin, int members) {
+    public UserRoomDto(StudyRoom room, boolean isAdmin, int members, int onlineCount) {
         this.roomId = room.getRoomId();
         this.name = room.getName();
         this.code = room.getCode();
         this.admin = isAdmin;
         this.members = members;
+        this.onlineCount = onlineCount;
     }
 }

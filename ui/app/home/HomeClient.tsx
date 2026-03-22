@@ -21,6 +21,7 @@ interface Room {
   code: string
   admin: boolean
   members: number
+  onlineCount: number
 }
 
 interface PublicRoom {
@@ -29,6 +30,7 @@ interface PublicRoom {
   roomName: string
   hostName: string
   members: number
+  onlineCount: number
 }
 
 interface SettingsDto {
@@ -288,8 +290,13 @@ function JoinPanel({ username }: { username: string }) {
             >
               <div>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/80">{room.roomName}</p>
-                <p className="text-xs text-gray-400 dark:text-white/30 mt-0.5">
+                <p className="text-xs text-gray-400 dark:text-white/30 mt-0.5 flex items-center gap-1.5">
                   {room.members} member{room.members !== 1 ? 's' : ''} · host: {room.hostName}
+                  {room.onlineCount > 0 && (
+                    <span className="flex items-center gap-1 text-emerald-500 dark:text-emerald-400">
+                      · <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 inline-block" />{room.onlineCount} online
+                    </span>
+                  )}
                 </p>
               </div>
               <span className="text-xs text-indigo-500 dark:text-indigo-400 font-medium">
@@ -369,9 +376,14 @@ function MyRooms() {
 
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-800 dark:text-white/80 truncate">{room.name}</p>
-              <p className="text-xs text-gray-400 dark:text-white/30 mt-0.5">
+              <p className="text-xs text-gray-400 dark:text-white/30 mt-0.5 flex items-center gap-1.5">
                 {room.members} member{room.members !== 1 ? 's' : ''}
-                {room.admin && <span className="ml-1.5 text-amber-500 dark:text-amber-400">· admin</span>}
+                {room.admin && <span className="text-amber-500 dark:text-amber-400">· admin</span>}
+                {room.onlineCount > 0 && (
+                  <span className="flex items-center gap-1 text-emerald-500 dark:text-emerald-400">
+                    · <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 inline-block" />{room.onlineCount} online
+                  </span>
+                )}
               </p>
             </div>
 

@@ -35,12 +35,14 @@ public class StudyRoomService {
     private final StudyRoomRepo roomRepo;
     private final ChatMessageRepository chatRepo;
     private final SettingsService settingsService;
+    private final PresenceRegistry presenceRegistry;
 
-    public StudyRoomService(UserStudyRoomRepo userStudyRoomRepo, StudyRoomRepo studyRoomRepo, ChatMessageRepository chatRepo, SettingsService settingsService) {
+    public StudyRoomService(UserStudyRoomRepo userStudyRoomRepo, StudyRoomRepo studyRoomRepo, ChatMessageRepository chatRepo, SettingsService settingsService, PresenceRegistry presenceRegistry) {
         this.userStudyRoomRepo = userStudyRoomRepo;
         this.roomRepo = studyRoomRepo;
         this.chatRepo = chatRepo;
         this.settingsService = settingsService;
+        this.presenceRegistry = presenceRegistry;
     }
 
 
@@ -232,7 +234,7 @@ public class StudyRoomService {
                             hostName = r.getUser().getUsername();
                         }
                     }
-                    return new PublicRoomDto(room.getRoomId(), room.getCode(), room.getName(), hostName, userStudyRoomRepo.countByStudyRoomAndHasLeftFalse(room));
+                    return new PublicRoomDto(room.getRoomId(), room.getCode(), room.getName(), hostName, userStudyRoomRepo.countByStudyRoomAndHasLeftFalse(room), presenceRegistry.getOnlineCount(room.getRoomId()));
                 });
     }
 
