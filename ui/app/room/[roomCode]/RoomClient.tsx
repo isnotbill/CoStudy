@@ -444,6 +444,7 @@ export default function RoomClient() {
   const playSound = (key: keyof typeof audioMapRef.current) => {
     const a = audioMapRef.current[key]
     if (!a) return
+    a.pause()
     a.currentTime = 0
     a.play().catch(() => {})
   }
