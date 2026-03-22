@@ -9,6 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Set;
+
 @Repository
 public interface StudyRoomRepo extends JpaRepository<StudyRoom, Integer> {
     StudyRoom findByCode(String code);
@@ -45,4 +48,43 @@ public interface StudyRoomRepo extends JpaRepository<StudyRoom, Integer> {
     );
 
     StudyRoom getStudyRoomByRoomId(int roomId);
+
+    @Query("""
+    SELECT r FROM StudyRoom r
+    JOIN r.settings s
+    WHERE s.isPublic = true
+      AND r.roomId IN :roomIds
+      AND LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+      AND NOT EXISTS (
+          SELECT 1 FROM UserStudyRoom usr
+          WHERE usr.studyRoom = r
+            AND usr.user.username = :username
+            AND usr.hasLeft = false
+      )
+""")
+    List<StudyRoom> findActivePublicRoomsExcludingUser(
+            @Param("roomIds") Set<Integer> roomIds,
+            @Param("keyword") String keyword,
+            @Param("username") String username
+    );
+
+    @Query("""
+    SELECT r FROM StudyRoom r
+    JOIN r.settings s
+    WHERE s.isPublic = true
+      AND r.roomId NOT IN :excludeIds
+      AND LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+      AND NOT EXISTS (
+          SELECT 1 FROM UserStudyRoom usr
+          WHERE usr.studyRoom = r
+            AND usr.user.username = :username
+            AND usr.hasLeft = false
+      )
+""")
+    Page<StudyRoom> findInactivePublicRoomsExcludingUser(
+            @Param("excludeIds") Set<Integer> excludeIds,
+            @Param("keyword") String keyword,
+            @Param("username") String username,
+            Pageable pageable
+    );
 }

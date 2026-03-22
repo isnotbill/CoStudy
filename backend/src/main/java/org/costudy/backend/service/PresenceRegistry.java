@@ -3,6 +3,7 @@ package org.costudy.backend.service;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,5 +47,17 @@ public class PresenceRegistry {
 
     public int getOnlineCount(int roomId) {
         return getOnlineUsers(roomId).size();
+    }
+
+    /** Returns a map of roomId → onlineCount for all rooms with at least one online user. */
+    public Map<Integer, Integer> getActiveRoomCounts() {
+        Map<Integer, Integer> result = new HashMap<>();
+        for (Map.Entry<Integer, Set<Integer>> entry : roomOnline.entrySet()) {
+            int count = entry.getValue().size();
+            if (count > 0) {
+                result.put(entry.getKey(), count);
+            }
+        }
+        return result;
     }
 }
