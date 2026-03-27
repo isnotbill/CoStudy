@@ -584,7 +584,7 @@ export default function RoomClient() {
       <HomeNavbar profile={profile} avatarSrc={profileAvatar} />
 
       <main className="relative z-10 px-4 pb-8 max-w-[1280px] mx-auto">
-        <div className="flex flex-col lg:flex-row gap-5 items-start">
+        <div className="flex flex-col lg:flex-row gap-5 lg:h-[calc(100vh-140px)]">
 
           {/* ── Left column: Timer + Users ───────────────────────────────── */}
           <div className="flex flex-col gap-5 w-full lg:w-[400px] shrink-0">
@@ -697,8 +697,8 @@ export default function RoomClient() {
               </AnimatePresence>
             </div>
 
-            {/* Users card */}
-            <div className={`${panelCls} p-4 flex flex-col gap-2`}>
+            {/* Users card — flex-1 so it stretches to align with chat bottom */}
+            <div className={`${panelCls} p-4 flex flex-col gap-2 lg:flex-1 lg:min-h-0`}>
               <div className="flex items-center justify-between mb-1">
                 <p className="text-[11px] font-semibold tracking-[0.18em] uppercase
                   text-gray-500 dark:text-white/38">
@@ -712,7 +712,8 @@ export default function RoomClient() {
                 )}
               </div>
 
-              <div className="flex flex-col gap-1 max-h-56 overflow-y-auto
+              <div className="flex flex-col gap-1 overflow-y-auto lg:flex-1
+                max-h-56 lg:max-h-none
                 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent
                 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-black/10
                 dark:[&::-webkit-scrollbar-thumb]:bg-white/10">
@@ -758,7 +759,7 @@ export default function RoomClient() {
               {/* Leave button */}
               <button
                 onClick={() => setShowLeave(true)}
-                className="mt-1 w-full py-2 rounded-xl text-xs font-medium transition-all duration-200
+                className="mt-auto w-full py-2 rounded-xl text-xs font-medium transition-all duration-200
                   text-red-600 dark:text-red-400 border border-red-200 dark:border-red-400/20
                   hover:bg-red-50 dark:hover:bg-red-400/10"
               >
@@ -768,7 +769,7 @@ export default function RoomClient() {
           </div>
 
           {/* ── Chat ─────────────────────────────────────────────────────── */}
-          <div className={`${panelCls} flex flex-col flex-1 w-full lg:h-[calc(100vh-140px)]`}
+          <div className={`${panelCls} flex flex-col flex-1 w-full min-h-0`}
             style={{ minHeight: '500px' }}>
             <div className="p-4 border-b border-black/[0.05] dark:border-white/[0.05]">
               <p className="text-[11px] font-semibold tracking-[0.18em] uppercase

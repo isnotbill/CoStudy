@@ -82,7 +82,7 @@ export function HomeNavbar({ profile, avatarSrc }: Props) {
 
           {/* Settings */}
           <Link
-            href="/settings"
+            href="/home/settings"
             aria-label="Settings"
             className="p-2 rounded-full transition-all duration-200
               text-gray-500 dark:text-white/40
