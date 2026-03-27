@@ -16,8 +16,40 @@ const cedarville = Cedarville_Cursive({
 })
 
 export const metadata: Metadata = {
-  title: 'CoStudy',
-  description: 'Join virtual study rooms with live pomodoro timer and chat with friends.',
+  title: {
+    default: 'CoStudy, Virtual Study Rooms with Pomodoro Timer & AI Tutor',
+    template: '%s | CoStudy',
+  },
+  description:
+    'CoStudy lets you create or join virtual study rooms with a synced Pomodoro timer, real-time chat, and an AI study assistant. Study with friends, anywhere.',
+  keywords: [
+    'study together',
+    'virtual study room',
+    'pomodoro timer',
+    'study with friends',
+    'online study group',
+    'productivity',
+    'focus',
+    'CoStudy',
+  ],
+  openGraph: {
+    type: 'website',
+    siteName: 'CoStudy',
+    title: 'CoStudy — Study Together, Stress-Free',
+    description:
+      'Create or join virtual study rooms with a synced Pomodoro timer, real-time chat, and an AI study assistant.',
+    url: 'https://costudy.online',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'CoStudy — Study Together, Stress-Free',
+    description:
+      'Create or join virtual study rooms with a synced Pomodoro timer, real-time chat, and an AI study assistant.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
