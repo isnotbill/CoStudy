@@ -2,10 +2,12 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '@/components/ThemeProvider'
-import { LayoutGrid, Users, Settings, Sun, Moon, ChevronLeft, X } from 'lucide-react'
+import { LayoutGrid, Users, Settings, Sun, Moon, ChevronLeft, X, LogOut } from 'lucide-react'
+import apiClient from '@/lib/apiClient'
 
 // ─── Nav item ─────────────────────────────────────────────────────────────────
 
@@ -46,6 +48,97 @@ function NavItem({
     <button onClick={onClick} title={collapsed ? label : undefined} className={cls}>
       {content}
     </button>
+  )
+}
+
+// ─── User card with logout popover ────────────────────────────────────────────
+
+function UserCard({
+  profile, avatarSrc, collapsed,
+}: {
+  profile: Props['profile']
+  avatarSrc: string
+  collapsed: boolean
+}) {
+  const router = useRouter()
+  const [open, setOpen] = useState(false)
+  const [loggingOut, setLoggingOut] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    if (open) document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [open])
+
+  async function handleLogout() {
+    setLoggingOut(true)
+    try {
+      await apiClient.post('/logout')
+      router.replace('/login')
+    } catch { /* ignore */ }
+    finally { setLoggingOut(false) }
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(o => !o)}
+        title={collapsed ? (profile?.username ?? '') : undefined}
+        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
+          transition-all duration-200 cursor-pointer
+          hover:bg-black/[0.04] dark:hover:bg-white/[0.05]
+          ${collapsed ? 'justify-center' : ''}`}
+      >
+        <div className="w-7 h-7 rounded-full overflow-hidden ring-2 ring-indigo-400/25 shrink-0">
+          {profile ? (
+            <Image
+              src={avatarSrc}
+              alt={profile.username}
+              width={28}
+              height={28}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-indigo-400/20" />
+          )}
+        </div>
+        {!collapsed && (
+          <span className="text-sm font-medium text-heading truncate">
+            {profile?.username ?? '…'}
+          </span>
+        )}
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 6, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 6, scale: 0.95 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+            className={`absolute bottom-full mb-2 z-50
+              rounded-xl border border-border bg-white dark:bg-zinc-900 shadow-lg
+              overflow-hidden
+              ${collapsed ? 'left-1/2 -translate-x-1/2 w-40' : 'left-0 right-0'}`}
+          >
+            <button
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm font-medium
+                text-red-600 dark:text-red-400
+                hover:bg-red-50 dark:hover:bg-red-400/10
+                transition-colors disabled:opacity-50"
+            >
+              <LogOut size={15} />
+              {loggingOut ? 'Logging out…' : 'Log out'}
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   )
 }
 
@@ -133,9 +226,9 @@ export function DashboardSidebar({
         <NavItem
           icon={<Settings size={18} />}
           label="Settings"
-          active={pathname.startsWith('/settings')}
+          active={pathname.startsWith('/home/settings')}
           collapsed={collapsed}
-          href="/settings"
+          href="/home/settings"
           onClick={onMobileClose}
         />
       </nav>
@@ -168,30 +261,7 @@ export function DashboardSidebar({
           )}
         </button>
 
-        <div
-          title={collapsed ? (profile?.username ?? '') : undefined}
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl
-            ${collapsed ? 'justify-center' : ''}`}
-        >
-          <div className="w-7 h-7 rounded-full overflow-hidden ring-2 ring-indigo-400/25 shrink-0">
-            {profile ? (
-              <Image
-                src={avatarSrc}
-                alt={profile.username}
-                width={28}
-                height={28}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-indigo-400/20" />
-            )}
-          </div>
-          {!collapsed && (
-            <span className="text-sm font-medium text-heading truncate">
-              {profile?.username ?? '…'}
-            </span>
-          )}
-        </div>
+        <UserCard profile={profile} avatarSrc={avatarSrc} collapsed={collapsed} />
       </div>
     </aside>
   )
